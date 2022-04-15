@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
-<title>Zmhaoo&#39;s Blog</title>
+<title>spring的作用 | Zmhaoo&#39;s Blog</title>
 
 
 <link rel="stylesheet" href="/styles/main.css">
@@ -40,16 +40,14 @@
 </header>
             <main class="main">
                 <section class="posts clearfix">
-    <div class="posts-wrapper">
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/04/15/%E5%85%B3%E4%BA%8E%E5%AD%A6%E4%B9%A0Spring%E7%9A%84%E6%80%BB%E7%BB%93%E5%92%8C%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/">spring的作用</a>
-            </div>
-            <p class="sub">Apr 15 2022</p>
-            <div class="post-content">
-                
-                    <h2 id="Spring解耦"><a href="#Spring解耦" class="headerlink" title="Spring解耦"></a>Spring解耦</h2><p>Spring的一大作用就是能够降低代码耦合,让程序的扩展性更好.</p>
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        spring的作用
+    </div>
+    <p class="sub">Apr 15 2022</p>
+    <div class="post-content">
+        <h2 id="Spring解耦"><a href="#Spring解耦" class="headerlink" title="Spring解耦"></a>Spring解耦</h2><p>Spring的一大作用就是能够降低代码耦合,让程序的扩展性更好.</p>
 <h1 id="Spring的注解"><a href="#Spring的注解" class="headerlink" title="Spring的注解"></a>Spring的注解</h1><blockquote>
 <ul>
 <li><p>将自定义Bean交给Spring管理可以使用哪些注解？</p>
@@ -209,146 +207,42 @@
 <p>第三部：定义Mapper接口，在接口上使用@Mapper注解</p>
 </blockquote>
 
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/04/04/%E7%BD%91%E9%A1%B5%E5%92%8CTomcat%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B9%B1%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/">浏览器和Tomcat服务器之间字符集乱码的问题怎么解决?</a>
-            </div>
-            <p class="sub">Apr 04 2022</p>
-            <div class="post-content">
-                
-                    <p>首先说明一下:</p>
-<p>网页的编码和解码默认都是字符集采用的是-&gt; GBK</p>
-<p>Tomcat的编码和解码默认都是使用采用-&gt; ISO-8859-1</p>
-<p>  但是当我们采用html编写网页时,为了展示中文数据,一般会先将网页的编码格式设置为UTF-8,这个时候网页的编码格式就是UTF-8了.</p>
-<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQ9yR"><img src="https://s1.ax1x.com/2022/04/04/qqQ9yR.png" alt="qqQ9yR.png" border="0" /></a></p>
-<p>  这个时候当我们使用Tomcat的Request接受中文数据的时候,因为浏览器采用UTF-8编码,然而tomcat才用的是ISO-8859-1解码,字符集不一致,所以会导致乱码问题.</p>
-<p>解决方式分两种情况:GET请求和POST请求(GET请求请求参数在请求行,POST请求请求参数在请求体,所以方法不同)</p>
-<h2 id="Request请求参数参数中文乱码处理-gt-POST请求"><a href="#Request请求参数参数中文乱码处理-gt-POST请求" class="headerlink" title="Request请求参数参数中文乱码处理-&gt;POST请求:"></a>Request请求参数参数中文乱码处理-&gt;POST请求:</h2><p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQtpQ"><img src="https://s1.ax1x.com/2022/04/04/qqQtpQ.png" alt="qqQtpQ.png" border="0" /></a></p>
-<p>解决方案:</p>
-<p>设置输入流编码:UTF-8</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.setCharacterEncoding(<span class="string">&quot;UTF-8&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<h1 id="Request请求参数参数中文乱码处理-gt-GET请求"><a href="#Request请求参数参数中文乱码处理-gt-GET请求" class="headerlink" title="Request请求参数参数中文乱码处理-&gt;GET请求:"></a>Request请求参数参数中文乱码处理-&gt;GET请求:</h1><p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQ2c9"><img src="https://s1.ax1x.com/2022/04/04/qqQ2c9.png" alt="qqQ2c9.png" border="0" /></a></p>
-<p>ps.如果使用的是Tomcat8以及以后的版本,GET请求中文不会出现乱码问题</p>
-<p>解决办法1：针对使用tomcat7及以前版本的tomcat</p>
-<p>对乱码的字符先使用ISO-8859-1编码，再按照UTF-8解码即可恢复原始数据。可使用jdk提供的URLEncoder、URLDecoder或者String类完成</p>
-<p>编码(URLEncoder):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String s=URLEncoder.encode(username, <span class="string">&quot;ISO-8859-1&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<p>解码(URLDecoder):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=URLDecoder.decode(s, <span class="string">&quot;utf-8&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>编码(String):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">byte</span>[] bytes=username.getBytes (<span class="string">&quot;ISO-8859-1&quot;</span>))</span><br></pre></td></tr></table></figure>
-
-<p>解码(String):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=<span class="keyword">new</span> <span class="title class_">String</span>(bytes,<span class="string">&quot;UTF-8&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-
-
-<p>解决办法2：配置方式解决tomcat7 GET请求中文乱码问题【推荐使用】</p>
-<p>maven tomcat7 插件配置:</p>
-<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQH9e"><img src="https://s1.ax1x.com/2022/04/04/qqQH9e.png" alt="qqQH9e.png" border="0" style="zoom: 50%;" /></a></p>
-<p>本地 tomcat7 配置: conf&#x2F;server.xml</p>
-<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQLjA"><img src="https://s1.ax1x.com/2022/04/04/qqQLjA.png" alt="qqQLjA.png" border="0" style="zoom: 50%;" /></a></p>
-<h1 id="Response响应数据中文乱码处理"><a href="#Response响应数据中文乱码处理" class="headerlink" title="Response响应数据中文乱码处理:"></a>Response响应数据中文乱码处理:</h1><p>​    当我们试图使用Response直接对浏览器响应中文数据时,为什么会产生乱码问题?</p>
-<p>​    因为此时Tomcat服务器的Response对象的默认编码是ISO-8859-1,而浏览器的解码方式仍然是GBK,所以当我们将中文数据响应到页面上时其实是,Response对中文数据用了ISO-8859-1的字符集编码,而响应到浏览器那边,浏览器确是用的GBK来解码,字符集不一致,所以导致乱码</p>
-<p>​    那么我们能不能像处理Request那样的方式来处理Response响应乱码的问题呢?</p>
-<p>​    其实是可以的,我们可以通过设置Response的响应输出流的编码为GBK,与浏览器字符集保持一致就可以了,方式如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.setCharacterEncoding(<span class="string">&quot;GBK&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>​    但是此方法并不推荐,因为我们在处理请求参数时用的是UTF-8,为了保持请求和响应一致,我们应该也同样设置响应输出流的字符集为UTF-8,但是当我们设置了Response的输出流字符集为UTF-8时,与浏览器的GBK解码方式又再一次对应不上了,那么我们有没有办法能够在设置Response字符集的时候同时告诉浏览器使用同样的字符集解码吗?答案是有的,设置响应头参数即可,解决方式如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.setContentType(<span class="string">&quot;text/html;charset=utf-8&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQzAf"><img src="https://s1.ax1x.com/2022/04/04/qqQzAf.png" alt="qqQzAf.png" border="0" style="zoom: 67%;" /></a></p>
-<p>此时,我们的服务器和浏览器之间不管是请求还是响应都是以UTF-8的方式处理了,完美解决了乱码的问题!</p>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/04/03/Mybatis%E4%B8%AD%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%A4%9A%E5%AF%B9%E4%B8%80%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2%E7%9A%84?/">Mybatis中是如何实现多对一分步查询的?</a>
-            </div>
-            <p class="sub">Apr 03 2022</p>
-            <div class="post-content">
-                
-                    <p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qHYoKH"><img src="https://s1.ax1x.com/2022/04/03/qHYoKH.png" alt="qHYoKH.png" border="0" /></a></p>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/04/03/%E8%BF%99%E6%98%AF%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">这是我的第一篇博客</a>
-            </div>
-            <p class="sub">Apr 03 2022</p>
-            <div class="post-content">
-                
-                    <p>记录一下:</p>
-<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qHd7NR"><img src="https://s1.ax1x.com/2022/04/03/qHd7NR.png" alt="qHd7NR.png" border="0" /></a> </p>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/04/03/hello-world/">Hello World</a>
-            </div>
-            <p class="sub">Apr 03 2022</p>
-            <div class="post-content">
-                
-                    <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-                
-            </div>
-        </article>
-    
-</div>
-<div class="side-bar">
-
-
-    <div class="avator" id="avator">
-    <div class="title">
-        <a href="#" class="text-underline">这是爷</a>
     </div>
-        <img src="WechatIMG68.jpeg" class="ava-img">
-        <h3 class="author">张鸣昊</h3>
-        <div class="icon-list">
-        <a href="yourweibo"><i class="iconfont icon-weibo icon-item"></i></a>
-        <a href="mailto:youremail"><i class="iconfont icon-email icon-item"></i></a>
-        <a href="yourgithub"><i class="iconfont icon-github icon-item"></i></a>
-        <a href="yourlinkedin"><i class="iconfont icon-linkedin icon-item"></i></a>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring%E8%A7%A3%E8%80%A6"><span class="toc-text">Spring解耦</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring%E7%9A%84%E6%B3%A8%E8%A7%A3"><span class="toc-text">Spring的注解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AOP%E5%B8%B8%E7%94%A8%E6%9C%AF%E8%AF%AD"><span class="toc-text">AOP常用术语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFAspectJ%E6%A1%86%E6%9E%B6"><span class="toc-text">什么是AspectJ框架</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AspectJ%E5%B8%B8%E8%A7%81%E9%80%9A%E7%9F%A5%E7%B1%BB%E5%9E%8B"><span class="toc-text">AspectJ常见通知类型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AspectJ-%E7%9A%84%E5%88%87%E5%85%A5%E7%82%B9%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%88%E6%8E%8C%E6%8F%A1%EF%BC%89"><span class="toc-text">AspectJ 的切入点表达式（掌握）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Bean%E7%9A%84%E8%8C%83%E5%9B%B4"><span class="toc-text">Bean的范围</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Bean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">Bean的生命周期</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%A9%E5%B1%95-%E8%BF%94%E5%9B%9E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%87%AA%E5%A2%9E%E9%95%BF%E9%94%AE%E5%80%BC%E6%B3%A8%E8%A7%A3"><span class="toc-text">扩展:返回数据库自增长键值注解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%A9%E5%B1%95-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%BA%93"><span class="toc-text">扩展:初始化库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring%E4%B8%AD%E7%BC%96%E8%AF%91%E5%BC%82%E5%B8%B8%E5%AF%BC%E8%87%B4%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E5%A4%B1%E6%95%88%E9%97%AE%E9%A2%98"><span class="toc-text">Spring中编译异常导致事务回滚失效问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring%E6%8D%95%E6%8D%89%E5%BC%82%E5%B8%B8%E5%AF%BC%E8%87%B4%E7%9A%84%E5%9B%9E%E6%BB%9A%E5%A4%B1%E6%95%88%E9%97%AE%E9%A2%98"><span class="toc-text">Spring捕捉异常导致的回滚失效问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA"><span class="toc-text">事务的传播行为</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA%E5%A4%B1%E6%95%88"><span class="toc-text">事务传播行为失效</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E9%97%AE%E9%A2%98"><span class="toc-text">循环依赖问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8E%9F%E5%AD%90%E6%80%A7%E4%B8%8E%E9%94%81%E5%A4%B1%E6%95%88"><span class="toc-text">原子性与锁失效</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFIOC%EF%BC%9F%E4%BB%80%E4%B9%88%E6%98%AFDI%EF%BC%9F"><span class="toc-text">什么是IOC？什么是DI？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%B7%E6%8C%87%E5%AE%9A%E4%BB%80%E4%B9%88%E6%98%AF%E9%80%9A%E7%9F%A5%E3%80%81%E8%BF%9E%E6%8E%A5%E7%82%B9%E3%80%81%E5%88%87%E7%82%B9%E3%80%81%E5%88%87%E9%9D%A2%EF%BC%9F"><span class="toc-text">请指定什么是通知、连接点、切点、切面？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring%E6%95%B4%E5%90%88MyBatis%E6%B5%81%E7%A8%8B%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">Spring整合MyBatis流程是什么？</span></a>
         </div>
-    <div class="tags">
-    <h3 class="tags-title">Tags</h3>
-    
-</div>
     </div>
-</div>
-
 
 </section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+        
+            <a class="next" href="/2022/04/04/%E7%BD%91%E9%A1%B5%E5%92%8CTomcat%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B9%B1%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/">
+                
+                <span class="prev-text">浏览器和Tomcat服务器之间字符集乱码的问题怎么解决?</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
 
 
 
