@@ -97,7 +97,7 @@
 <p>6)定义切入点@Pointcut(了解) </p>
 <h1 id="AspectJ-的切入点表达式（掌握）"><a href="#AspectJ-的切入点表达式（掌握）" class="headerlink" title="AspectJ 的切入点表达式（掌握）"></a>AspectJ 的切入点表达式（掌握）</h1><p>规范的公式：<br>execution(访问权限 方法返回值 方法声明（参数〉异常类型）<br>简化后的公式：<br>execution(方法返回值 方法声明（参数））<br>用到的符号：</p>
 <p>*代码任意个任意的字符(通配符）<br>..如果出现在方法的参数中,则代表任意参数<br>如果出现在路径中,则代表本路径及其所有的子路径</p>
-<h1 id="Bean的范围"><a href="#Bean的范围" class="headerlink" title="Bean的范围"></a>Bean的范围</h1><p>在类上使用@scope注解定义Bean的作用于,Spring支持五种作用域,后三种在web环境才生效.</p>
+<h1 id="Bean的范围"><a href="#Bean的范围" class="headerlink" title="Bean的范围"></a>Bean的范围</h1><p>在类上使用@scope注解定义Bean的作用域,Spring支持五种作用域,后三种在web环境才生效.</p>
 <ul>
 <li><blockquote>
 <p>@scope(“singleton”) - 容器内同 id 的 bean 只有一个实例（默认） </p>
