@@ -44,6 +44,21 @@
     
         <article class="post article-entry">
             <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/16/%E9%9B%B6%E6%95%A3%E7%9F%A5%E8%AF%86%E7%82%B9/">零散知识点</a>
+            </div>
+            <p class="sub">Apr 16 2022</p>
+            <div class="post-content">
+                
+                    <p>事务:</p>
+<p>把一个操作看做成一个整体,要么同时成功,要么同时失败</p>
+<p>spring的pom文件里依赖后面加started都是jar包集合</p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
                 <a class="post-title-link text-underline" href="/2022/04/15/%E5%85%B3%E4%BA%8E%E5%AD%A6%E4%B9%A0Spring%E7%9A%84%E6%80%BB%E7%BB%93%E5%92%8C%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/">Spring的总结和一些问题</a>
             </div>
             <p class="sub">Apr 15 2022</p>
@@ -181,7 +196,7 @@
 <ul>
 <li><p>方式一:可以将锁上在整个事务代码的外面,也就是当serveci层的方法内部调用的时候,将整个调用过程前面上锁,就可以将,事务代码和业务代码一起包含在内了.</p>
 </li>
-<li><p>方式二:可以在sql修改语句后面加一个for update语句,加上了此语句之后,只要当前客户端不提交事务,其他客户端就无法访问当前客户端正在操作的信息,会锁在原地等待当前用户提交事务后才能进行下一步操作,这个锁也叫做悲观锁.</p>
+<li><p>方式二:可以在sql查询语句后面加一个for update(排他锁)语句,加上了此语句之后,只要当前客户端不提交事务,其他客户端就无法访问当前客户端正在操作的信息,会锁在原地等待当前用户提交事务后才能进行下一步操作,这个锁也叫做悲观锁.</p>
 </li>
 </ul>
 </blockquote>
@@ -208,6 +223,8 @@
 <blockquote>
 <p>第三部：定义Mapper接口，在接口上使用@Mapper注解</p>
 </blockquote>
+<h1 id="配置类读取数据错误问题"><a href="#配置类读取数据错误问题" class="headerlink" title="配置类读取数据错误问题"></a>配置类读取数据错误问题</h1><p>当我们用@Configration定义配置类时,有时候从配置文件读取的数据与我们设置的数据不不符是为什么呢?</p>
+<p>因为spring底层默认先读取系统配置文件,如果你定义的配置名与系统环境变量一样,那么有可能会读取到系统的内容..</p>
 
                 
             </div>
