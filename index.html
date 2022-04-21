@@ -44,14 +44,17 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/04/16/%E9%9B%B6%E6%95%A3%E7%9F%A5%E8%AF%86%E7%82%B9/">零散知识点</a>
+                <a class="post-title-link text-underline" href="/2022/04/21/spring%E7%9A%84%E7%BB%86%E8%8A%82%E6%95%B4%E7%90%86/">spring的细节整理</a>
             </div>
-            <p class="sub">Apr 16 2022</p>
+            <p class="sub">Apr 21 2022</p>
             <div class="post-content">
                 
-                    <p>事务:</p>
-<p>把一个操作看做成一个整体,要么同时成功,要么同时失败</p>
-<p>spring的pom文件里依赖后面加started都是jar包集合</p>
+                    <ul>
+<li><h1 id="spring中-Resource和-Autowired的区别"><a href="#spring中-Resource和-Autowired的区别" class="headerlink" title="spring中@Resource和@Autowired的区别"></a>spring中@Resource和@Autowired的区别</h1></li>
+</ul>
+<blockquote>
+<p>spring中，@Resource和@Autowired都是做bean的注入时使用。使用过程中，有时候@Resource 和 @Autowired可以替换使用；有时，则不可以。<br>    下面，根据自己的学习，整理下这两个注解使用中的共同点和不同点，及用法上的不同。<br>     共同点<br>     @Resource和@Autowired都可以作为注入属性的修饰，在接口仅有单一实现类时，两个注解的修饰效果相同，可以互相替换，不影响使用。<br>    不同点<br>@Resource是Java自己的注解，@Resource有两个属性是比较重要的，分是name和type；Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。<br>@Autowired是spring的注解，是spring2.5版本引入的，Autowired只根据type进行注入，不会去匹配name。如果涉及到type无法辨别注入对象时，那需要依赖@Qualifier或@Primary注解一起来修饰。</p>
+</blockquote>
 
                 
             </div>
@@ -74,6 +77,14 @@
 <p>@Repository    作用:把标注此注解的类交给Spring容器来创建对象（都是由Spring内置的mybatis来创建所以基本不用）(用在dao层)</p>
 </li>
 </ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Bean的范围</li>
+</ul>
+</blockquote>
+<blockquote>
+<p> @Scope</p>
 </blockquote>
 <blockquote>
 <ul>
@@ -112,7 +123,7 @@
 <p>6)定义切入点@Pointcut(了解) </p>
 <h1 id="AspectJ-的切入点表达式（掌握）"><a href="#AspectJ-的切入点表达式（掌握）" class="headerlink" title="AspectJ 的切入点表达式（掌握）"></a>AspectJ 的切入点表达式（掌握）</h1><p>规范的公式：<br>execution(访问权限 方法返回值 方法声明（参数〉异常类型）<br>简化后的公式：<br>execution(方法返回值 方法声明（参数））<br>用到的符号：</p>
 <p>*代码任意个任意的字符(通配符）<br>..如果出现在方法的参数中,则代表任意参数<br>如果出现在路径中,则代表本路径及其所有的子路径</p>
-<h1 id="Bean的范围"><a href="#Bean的范围" class="headerlink" title="Bean的范围"></a>Bean的范围</h1><p>在类上使用@scope注解定义Bean的作用域,Spring支持五种作用域,后三种在web环境才生效.</p>
+<h1 id="Bean的作用域-scope"><a href="#Bean的作用域-scope" class="headerlink" title="Bean的作用域(scope)"></a>Bean的作用域(scope)</h1><p>在类上使用@scope注解定义Bean的作用域,Spring支持五种作用域,后三种在web环境才生效.</p>
 <ul>
 <li><blockquote>
 <p>@scope(“singleton”) - 容器内同 id 的 bean 只有一个实例（默认） </p>
@@ -127,11 +138,30 @@
 <li><p>@scope(“session”) - 在 web 环境中，每个会话范围内会创建新的实例</p>
 </li>
 <li><p>@scope(“application”)- 在 web 环境中，每个应用范围内会创建新的实例</p>
-<p>注:singleton单例模式默认是饿汉单例</p>
+<ul>
+<li>注:singleton和prototype区别</li>
+</ul>
+<p>第一 ,singleton单实例,protptype多实例</p>
+<p>第二,设置scope值是singleton时候,加载spring配置文件时就会创建单实例对象</p>
+<p>​        设置scpe值是prototype时候,不是在加载spring配置文件的时候创建对象,</p>
+<p>在调用getBean方法时候创建多实例对象</p>
 </li>
 </ul>
-<h1 id="Bean的生命周期"><a href="#Bean的生命周期" class="headerlink" title="Bean的生命周期"></a>Bean的生命周期</h1><ul>
-<li>标注了&#x3D;&#x3D;<strong>@PostConstruct</strong>&#x3D;&#x3D;的方法是初始化方法,会&#x3D;&#x3D;<strong>在bean被创建之后</strong>&#x3D;&#x3D;调用.</li>
+<h1 id="Bean的生命周期"><a href="#Bean的生命周期" class="headerlink" title="Bean的生命周期"></a>Bean的生命周期</h1><blockquote>
+<p> 1.生命周期</p>
+<p>​    从对象创建到对象销毁的过程</p>
+<p>2.bean生命周期的七步</p>
+<p>​    1).通过构造器创建bean实例(无参数构造)</p>
+<p>​    2).为bean的属性设置值和对其他bean引用(调用set方法)</p>
+<p>​    2.1)把bean实例传递bean后置处理器的方法postProcessBeforeInitialization</p>
+<p>​    3).调用bean的初始化的方法(需要进行配置初始化的方法)</p>
+<p>​     3.1)把bean实例传递bean后置处理器的方法postProcessAfterInitialization</p>
+<p>​    4).bean可以使用了(对象获取到了)<br>​    5).当容器关闭的时候,调用bean的销毁的方法(需要进行配置销毁方法)</p>
+<p>3.后置处理器如何创建</p>
+<p>   创建类,实现接口beanpostProcessor,创建后置处理器</p>
+</blockquote>
+<ul>
+<li>标注了&#x3D;&#x3D;<strong>@PostConstruct</strong>&#x3D;&#x3D;的方法是初始化方法,会&#x3D;&#x3D;<strong>在bean实例被创建之后</strong>&#x3D;&#x3D;调用.</li>
 <li>标注了**@PreDestroy** 的方法是销毁方法,**&#x3D;&#x3D;singleton范围的bean&#x3D;&#x3D;**的销毁方法会在Spring&#x3D;&#x3D;在容器关闭前被调用&#x3D;&#x3D;.</li>
 <li>延迟初始化<ul>
 <li>默认情况下singleton范围的bean是容器创建时就会&#x3D;&#x3D;<strong>创建</strong>&#x3D;&#x3D;</li>
@@ -225,6 +255,23 @@
 </blockquote>
 <h1 id="配置类读取数据错误问题"><a href="#配置类读取数据错误问题" class="headerlink" title="配置类读取数据错误问题"></a>配置类读取数据错误问题</h1><p>当我们用@Configration定义配置类时,有时候从配置文件读取的数据与我们设置的数据不不符是为什么呢?</p>
 <p>因为spring底层默认先读取系统配置文件,如果你定义的配置名与系统环境变量一样,那么有可能会读取到系统的内容..</p>
+<h1 id="什么时候会通知失效"><a href="#什么时候会通知失效" class="headerlink" title="什么时候会通知失效"></a>什么时候会通知失效</h1><p>没有经过代理调用方法就会失效,使用@autowired注入一个代理对象来调用就可以了(循环依赖)</p>
+<h1 id="接口WebMvcConfigurer的作用及常用的2个方法"><a href="#接口WebMvcConfigurer的作用及常用的2个方法" class="headerlink" title="接口WebMvcConfigurer的作用及常用的2个方法"></a>接口WebMvcConfigurer的作用及常用的2个方法</h1><ul>
+<li><p>WebMvcConfigurer配置类其实是Spring内部的一种配置方式，采用JavaBean的形式来代替传统的xml配置文件形式进行针对框架个性化定制，可以自定义一些Handler，Interceptor，ViewResolver，MessageConverter</p>
+<blockquote>
+<p>1.1 addInterceptors：拦截器</p>
+<p>addInterceptor：需要一个实现HandlerInterceptor接口的拦截器实例<br>addPathPatterns：用于设置拦截器的过滤路径规则；addPathPatterns(“&#x2F;**”)对所有请求都拦截<br>excludePathPatterns：用于设置不需要拦截的过滤规则<br>拦截器主要用途：进行用户登录状态的拦截，日志的拦截等</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.addInterceptors(registry);</span><br><span class="line">    registry.addInterceptor(<span class="keyword">new</span> <span class="title class_">TestInterceptor</span>()).addPathPatterns(<span class="string">&quot;/**&quot;</span>).excludePathPatterns(<span class="string">&quot;/emp/toLogin&quot;</span>,<span class="string">&quot;/emp/login&quot;</span>,<span class="string">&quot;/js/**&quot;</span>,<span class="string">&quot;/css/**&quot;</span>,<span class="string">&quot;/images/**&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>2.3 addResourceHandlers：静态资源</p>
+<p>比如，我们想自定义静态资源映射目录的话，只需重写addResourceHandlers方法即可。<br>注：如果继承WebMvcConfigurationSupport类实现配置时必须要重写该方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyWebMvcConfigurerAdapter</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置静态访问资源</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> registry</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> &#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/my/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/my/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>addResoureHandler：指的是对外暴露的访问路径<br>addResourceLocations：指的是内部文件放置的目录</p>
+</blockquote>
+</li>
+</ul>
 
                 
             </div>
