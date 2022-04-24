@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>SpringMVC使用 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        SpringMVC使用
+    </div>
+    <p class="sub">Apr 24 2022</p>
+    <div class="post-content">
+        <h1 id="1-什么是Mvc"><a href="#1-什么是Mvc" class="headerlink" title="1.什么是Mvc"></a>1.什么是Mvc</h1><p>Mvc是一种软件架构的思想,将软件按照模型,视图,控制器来划分</p>
+<blockquote>
+<p>M:Model,模型层,指工程中的JavaBean,作用是数据处理</p>
+</blockquote>
+<p>JavaBean分为两类:</p>
+<ul>
+<li><p>一类称为实体类Bean:专门存储业务数据的,如Student,User等</p>
+</li>
+<li><p>一类称为业务处理Bean:指Service或Dao对象,专门用于处理业务逻辑和数据访问.</p>
+<blockquote>
+<p>V:View,视图层,指工程中的html或jsp等页面,作用是与用户进行交互,展示数据</p>
+</blockquote>
+<blockquote>
+<p>C:Controller,控制层,指工程中的servlet,作用是接受请求和响应浏览器</p>
+</blockquote>
+</li>
+</ul>
+<p>Mvc的工作流程:</p>
+<ul>
+<li>用户通过视图层发送请求到服务器,在服务器中请求被Controller接受,Controller调用相应的Model层处理请求,处理完毕将结果返回到Controller,Controller再根据请求处理的结果找到相应的View视图,渲染数据后最终响应给浏览器</li>
+</ul>
+<h1 id="2-什么是SpringMvc"><a href="#2-什么是SpringMvc" class="headerlink" title="2.什么是SpringMvc"></a>2.什么是SpringMvc</h1><ul>
+<li><p>SpringMvc是Spring的一个后续产品,是Spring的一个子项目,是基于Servlet的</p>
+</li>
+<li><p>SpringMvc就是Spring的Mvc模块的内容,他是Spring为表述层开发提供的一整套完整的解决方案</p>
+</li>
+<li><p>在SpringMcv所封装的带有功能的Servlet,把处理请求的功能都进行了封装</p>
+</li>
+<li><p>我们只需要使用SpringMvc提供的实现功能的代码,就可以完成请求的处理了</p>
+</li>
+<li><p>前台页面发送请求到服务器中,服务器来使用Servlet来接受请求处理请求,  需要根据请求地址找到相应的Servlet,其中Servlet的service(生命周期的方法之一)方法就是处理请求和响应的方法</p>
+</li>
+</ul>
+<p><strong>注:三层架构为表述层(前台页面+后台Servlte)+业务逻辑层+数据访问层</strong></p>
+<h1 id="3-springMvc的特点"><a href="#3-springMvc的特点" class="headerlink" title="3.springMvc的特点"></a>3.springMvc的特点</h1><p>为什么有Servlet不用,要使用SpringMvc?</p>
+<blockquote>
+<p>SpringMvc就是一个Servlet,封装Servlet后就有了一个功能非常强大的前端控制器DispatcherServlet,原来页面发送来的请求,需要我们自己写Servlet来处理,然而使用SpringMvc后就通过SpringMvc来进行统一处理,并且SpringMvc就会对我们很多的过程进行封装,比如用原生Servlet获取请求参数,比如往域对象放值的时候,比如页面跳转和重定向的时候,那么这个时候DispatcherServle会对这些操作进行统一处理</p>
+</blockquote>
+<p>特点总结:</p>
+<ul>
+<li><strong>spring家族原生产品</strong>,与IOC容器等基础设施无缝对接</li>
+<li><strong>基于原生的Servlet</strong>,通过了功能强大的<strong>前端控制器DispatcherServlet</strong>,对请求响应进行统一处理</li>
+<li>表述层各细分领域需要解决的问题<strong>全方位覆盖</strong>,提供<strong>全面解决方案</strong></li>
+<li><strong>代码清新简介</strong>,大幅度提升开发效率</li>
+<li>内部组件化程度高,可插拔式组件<strong>即插即用</strong>,想要什么功能配置相应组件即可</li>
+<li><strong>性能卓越</strong>,尤其是和现代大型吗,超大型互联网项目需求</li>
+</ul>
+<h1 id="4-web-xml是什么"><a href="#4-web-xml是什么" class="headerlink" title="4.web.xml是什么?"></a>4.web.xml是什么?</h1><ul>
+<li>web.xml是我们web工程的一个<strong>入口配置文件</strong>,在文件里我们可以注册Servlet可以注册Filter过滤器,监听器等..</li>
+</ul>
+<h2 id="5-为什么要在web-xml文件里面注册Servlet"><a href="#5-为什么要在web-xml文件里面注册Servlet" class="headerlink" title="5.为什么要在web.xml文件里面注册Servlet?"></a>5.为什么要在web.xml文件里面注册Servlet?</h2><p>web.xml配置文件是web工程的一个入口文件,<strong>因为浏览器不能去直接访问一个类</strong>,所以要在web.xml文件里面来跟Servlet注册一个匹配路径,才能让浏览器去访问到Servlet,每当我们访问的路径符合目前所设置的匹配路径的时候,那么这个时候当前的请求就会让Servlet来接受参数并处理</p>
+<h1 id="6-为什么在web-xml中注册DispatcherServlet的而不是Servlet"><a href="#6-为什么在web-xml中注册DispatcherServlet的而不是Servlet" class="headerlink" title="6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?"></a>6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?</h1><p>因为DispatcherServlet中封装了Servlet,配置SpringMVC的前端控制器DispatcherServlet可以对浏览器发送的请求进行统一处理,极大的简化了我们的表述层的代码!</p>
+<h1 id="7-为什么在web-xml中注册DispatcherServlet的匹配路径是-x2F-而不是-x2F"><a href="#7-为什么在web-xml中注册DispatcherServlet的匹配路径是-x2F-而不是-x2F" class="headerlink" title="7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?"></a>7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?</h1><p>因为&#x2F;所配置的请求可以是&#x2F;login或.html或.js或.css方式的请求路径,但是&#x2F;不能匹配.jsp请求路径的请求</p>
+<h2 id="8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件"><a href="#8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件" class="headerlink" title="8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?"></a>8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?</h2><p>因为<strong>JSP文件</strong>的本质就是一个<strong>Servlet文件</strong>,它是需要<strong>服务器指定的Servlet来进行特殊处理</strong>的,所以.jsp文件不需要DispatcherServlet来处理,如果路径能够匹配.jsp文件的话,那么这个.jsp文件的请求也会被当前的SpringMVC来进行处理,那SpringMVC会把当前这个.jps的请求当做一个<strong>普通的请求来处理</strong>,而不会找到相对于的jsp页面,所以要用&#x2F;来排除.jsp页面的请求路径给排除掉,然后<strong>其他的请求</strong>都要交给我们的<strong>前端控制器DispatcherServlet来进行处理</strong></p>
+<h2 id="9-x2F-代表什么"><a href="#9-x2F-代表什么" class="headerlink" title="9.&#x2F;*代表什么?"></a>9.&#x2F;*代表什么?</h2><p>&#x2F;*代表所有请求路径,包括.jsp页面的请求,一般适用于注册Filter过滤器的匹配路径</p>
+<h2 id="10-框架是什么"><a href="#10-框架是什么" class="headerlink" title="10.框架是什么?"></a>10.框架是什么?</h2><p>配置文件+jar包</p>
+<h1 id="11-SpringMVC配置方式①-默认配置方式"><a href="#11-SpringMVC配置方式①-默认配置方式" class="headerlink" title="11.SpringMVC配置方式①:默认配置方式"></a>11.SpringMVC配置方式①:默认配置方式</h1><p>此配置作用下,SpringMVC的配置文件<strong>默认文件位于WEB-INF</strong>下,<strong>默认名称为<servlet-name>-servlet.xml</strong>,例如:一下配置所对应SpringMVC的配置文件位于WEB-INF下,文件名为springMVC-servlet.xml</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置ServletMapping映射路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        设置springMvc的核心控制器所能处理的请求的请求路径</span></span><br><span class="line"><span class="comment">        /所配置的请求可以是/login或.html或.js或.css方式的请求路径</span></span><br><span class="line"><span class="comment">        ,但是/不能匹配.jsp请求路径的请求</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>注:此配置方式不好,我们学习了maven工程后,配置文件应该统一放在resource资源路径下面,因为WEB-INF下只放页面和静态资源</strong></p>
+<h2 id="12-SpringMVC配置方式②-扩展配置方式"><a href="#12-SpringMVC配置方式②-扩展配置方式" class="headerlink" title="12.SpringMVC配置方式②:扩展配置方式"></a>12.SpringMVC配置方式②:扩展配置方式</h2><ul>
+<li>可以通过init-param初始化参数标签设置SpringMVC配置文件的位置和名称:</li>
+</ul>
+<blockquote>
+<p> 初始化时设置参数,将DispatcherServlet的父类FrameworkServlet中的**contextConfigLocation(上下文配置路径)**参数路径设置为自定义路径(classpath:文件名.xml) —–&gt;classpath对应的类路径也就是java包和resource包</p>
+</blockquote>
+<ul>
+<li>可以通过load-on-startup标签设置SpringMVC前端控制器DispatcherServlet的初始化时间:</li>
+</ul>
+<blockquote>
+<p> 因为DispatcherServlet就是一个Servlet,所以声明周期和Servlet是一样的,默认都是在第一次访问的时候进行初始化,但是DispatcherServlet封装了对请求过程所有的处理,所以初始化中要执行很多的内容,如果把众多的处理内容放在第一次访问的时候初始化,就会严重的影响第一次访问的速度</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--配置SpringMVC配置文件的位置和名称--&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--初始化时设置参数,将DispatcherServlet的父类DispatcherServlet</span></span><br><span class="line"><span class="comment">        的contextConfigLocation参数路径设置为自定义路径--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--上下文配置路径--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:springMVC.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--将前端控制器DispatcherServlet的初始化时间提前到服务器启动时</span></span><br><span class="line"><span class="comment">            因为DispatcherServlet封装了对请求过程所有的处理,所以初始化中要执行很多的内容</span></span><br><span class="line"><span class="comment">            如果把众多的内容放在第一次访问的时候初始化,就会严重的影响第一次访问的速度</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置ServletMapping映射路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        设置springMvc的核心控制器所能处理的请求的请求路径</span></span><br><span class="line"><span class="comment">        /所配置的请求可以是/login或.html或.js或.css方式的请求路径</span></span><br><span class="line"><span class="comment">        ,但是/不能匹配.jsp请求路径的请求</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFMvc"><span class="toc-text">1.什么是Mvc</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AFSpringMvc"><span class="toc-text">2.什么是SpringMvc</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-springMvc%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">3.springMvc的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-web-xml%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">4.web.xml是什么?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%9C%A8web-xml%E6%96%87%E4%BB%B6%E9%87%8C%E9%9D%A2%E6%B3%A8%E5%86%8CServlet"><span class="toc-text">5.为什么要在web.xml文件里面注册Servlet?</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9C%A8web-xml%E4%B8%AD%E6%B3%A8%E5%86%8CDispatcherServlet%E7%9A%84%E8%80%8C%E4%B8%8D%E6%98%AFServlet"><span class="toc-text">6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9C%A8web-xml%E4%B8%AD%E6%B3%A8%E5%86%8CDispatcherServlet%E7%9A%84%E5%8C%B9%E9%85%8D%E8%B7%AF%E5%BE%84%E6%98%AF-x2F-%E8%80%8C%E4%B8%8D%E6%98%AF-x2F"><span class="toc-text">7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%AE%A9DispatcherServlet%E5%8C%B9%E9%85%8D%E8%B7%AF%E5%BE%84%E5%8E%BB%E5%8C%B9%E9%85%8D-jsp%E6%96%87%E4%BB%B6"><span class="toc-text">8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-x2F-%E4%BB%A3%E8%A1%A8%E4%BB%80%E4%B9%88"><span class="toc-text">9.&#x2F;*代表什么?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%A1%86%E6%9E%B6%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">10.框架是什么?</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#11-SpringMVC%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F%E2%91%A0-%E9%BB%98%E8%AE%A4%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-text">11.SpringMVC配置方式①:默认配置方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#12-SpringMVC%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F%E2%91%A1-%E6%89%A9%E5%B1%95%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-text">12.SpringMVC配置方式②:扩展配置方式</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+        
+            <a class="next" href="/2022/04/22/springboot%E9%AB%98%E7%BA%A7/">
+                
+                <span class="prev-text">springboot高级</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
