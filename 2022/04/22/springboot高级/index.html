@@ -53,17 +53,17 @@
 <li>从以下图片可以得知SpringBoot默认静态资源的存放目录为:classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</li>
 </ul>
 <p>①当启动引导类时,引导类会自动装配,加载spring.factories文件</p>
-<p>[<img src="https://s1.ax1x.com/2022/04/25/LILA3Q.png" alt="LILA3Q.png"></p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILA3Q.png" alt="LILA3Q.png"></p>
 <p>②在文件里读取到WebMvcAutoConfiguration时</p>
-<p>[<img src="https://s1.ax1x.com/2022/04/25/LILnH0.png" alt="LILnH0.png"></p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILnH0.png" alt="LILnH0.png"></p>
 <p>③会通过@ConditionalOnMissingBean(WebMvcConfigurationSupport.class)来判断容器里是否有WebMvcConfigurationSupport这个类</p>
-<p>[<img src="https://s1.ax1x.com/2022/04/25/LILQ4U.png" alt="LILQ4U.png"></p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILQ4U.png" alt="LILQ4U.png"></p>
 <p>④如果没有WebMvcConfigurationSupport,那么会创建WebMvcAutoConfiguration,并且在构造方法执行时将找到resourceProperties并赋值</p>
-<p>[<img src="https://s1.ax1x.com/2022/04/25/LIL1CF.png" alt="LIL1CF.png"></p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LIL1CF.png" alt="LIL1CF.png"></p>
 <p>⑤通过this.resourceProperties.getStaticLocations调用方法,得到类中的默认资源常量添加到资源路径中</p>
-<p>[<img src="https://s1.ax1x.com/2022/04/25/LILgbt.png" alt="LILgbt.png"></p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILgbt.png" alt="LILgbt.png"></p>
 <p>⑥通过Resources类中可以看到资源常量是一个字符串数组存储,最终赋值给staticLocations的变量,并且通过get方法可以获取到</p>
-<p>[<img src="https://s1.ax1x.com/2022/04/25/LILWUf.png" alt="LILWUf.png"></p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILWUf.png" alt="LILWUf.png"></p>
 <p><strong>总结:所以当我们没有通过实现WebMvcConfigurationSupport的方式来配置自定义静态资源访问路径时,默认访问路径为classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</strong></p>
 
     </div>
