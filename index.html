@@ -79,7 +79,7 @@
 <p><strong>注:三层架构为表述层(前台页面+后台Servlte)+业务逻辑层+数据访问层</strong></p>
 <h1 id="3-springMvc的特点"><a href="#3-springMvc的特点" class="headerlink" title="3.springMvc的特点"></a>3.springMvc的特点</h1><p>①为什么有Servlet不用,要使用SpringMvc?</p>
 <blockquote>
-<p>SpringMvc就是一个Servlet,封装Servlet后就有了一个功能非常强大的前端控制器DispatcherServlet,原来页面发送来的请求,需要我们自己写Servlet来处理,然而使用SpringMvc后就通过SpringMvc来进行统一处理,并且SpringMvc就会对我们很多的过程进行封装,比如用原生Servlet获取请求参数,比如往域对象放值的时候,比如页面跳转和重定向的时候,那么这个时候DispatcherServle会对这些操作进行统一处理</p>
+<p>SpringMvc就是一个Servlet,封装Servlet后就有了一个功能非常强大的前端控制器DispatcherServlet,原来页面发送来的请求,需要我们自己写Servlet来处理,然而使用SpringMvc后就通过SpringMvc来进行统一处理,SpringMvc会对接受请求做出响应的很多的过程进行封装,比如用原生Servlet获取请求参数,比如往域对象放值的时候,比如页面跳转和重定向的时候,那么这个时候DispatcherServle会对这些操作进行统一处理</p>
 </blockquote>
 <p>②特点总结:</p>
 <ul>
@@ -105,17 +105,17 @@
 <h2 id="8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件"><a href="#8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件" class="headerlink" title="8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?"></a>8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?</h2><ul>
 <li>因为<strong>JSP文件</strong>的本质就是一个<strong>Servlet文件</strong>,它是需要<strong>服务器指定的Servlet来进行特殊处理</strong>的,所以.jsp文件不需要DispatcherServlet来处理,如果路径能够匹配.jsp文件的话,那么这个.jsp文件的请求也会被当前的SpringMVC来进行处理,那SpringMVC会把当前这个.jps的请求当做一个<strong>普通的请求来处理</strong>,而不会找到相对于的jsp页面,所以要用&#x2F;来排除.jsp页面的请求路径给排除掉,然后<strong>其他的请求</strong>都要交给我们的<strong>前端控制器DispatcherServlet来进行处理</strong></li>
 </ul>
-<h2 id="9-x2F-代表什么"><a href="#9-x2F-代表什么" class="headerlink" title="9.&#x2F;*代表什么?"></a>9.&#x2F;*代表什么?</h2><ul>
+<h1 id="9-x2F-代表什么"><a href="#9-x2F-代表什么" class="headerlink" title="9.&#x2F;*代表什么?"></a>9.&#x2F;*代表什么?</h1><ul>
 <li>&#x2F;*代表所有请求路径,包括.jsp页面的请求,一般适用于注册Filter过滤器的匹配路径</li>
 </ul>
-<h2 id="10-框架是什么"><a href="#10-框架是什么" class="headerlink" title="10.框架是什么?"></a>10.框架是什么?</h2><ul>
+<h1 id="10-框架是什么"><a href="#10-框架是什么" class="headerlink" title="10.框架是什么?"></a>10.框架是什么?</h1><ul>
 <li>配置文件+jar包</li>
 </ul>
 <h1 id="11-SpringMVC配置方式①-默认配置方式"><a href="#11-SpringMVC配置方式①-默认配置方式" class="headerlink" title="11.SpringMVC配置方式①:默认配置方式"></a>11.SpringMVC配置方式①:默认配置方式</h1><p>此配置作用下,SpringMVC的配置文件<strong>默认文件位于WEB-INF</strong>下,<strong>默认名称为<servlet-name>-servlet.xml</strong>,例如:一下配置所对应SpringMVC的配置文件位于WEB-INF下,文件名为springMVC-servlet.xml</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置ServletMapping映射路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        设置springMvc的核心控制器所能处理的请求的请求路径</span></span><br><span class="line"><span class="comment">        /所配置的请求可以是/login或.html或.js或.css方式的请求路径</span></span><br><span class="line"><span class="comment">        ,但是/不能匹配.jsp请求路径的请求</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>注:此配置方式不好,我们学习了maven工程后,配置文件应该统一放在resource资源路径下面,因为WEB-INF下只放页面和静态资源</strong></p>
-<h2 id="12-SpringMVC配置方式②-扩展配置方式"><a href="#12-SpringMVC配置方式②-扩展配置方式" class="headerlink" title="12.SpringMVC配置方式②:扩展配置方式"></a>12.SpringMVC配置方式②:扩展配置方式</h2><ul>
+<h1 id="12-SpringMVC配置方式②-扩展配置方式"><a href="#12-SpringMVC配置方式②-扩展配置方式" class="headerlink" title="12.SpringMVC配置方式②:扩展配置方式"></a>12.SpringMVC配置方式②:扩展配置方式</h1><ul>
 <li>可以通过init-param初始化参数标签设置SpringMVC配置文件的位置和名称:</li>
 </ul>
 <blockquote>
@@ -142,7 +142,24 @@
                 
                     <h1 id="SpringBoot最重要的两个功能"><a href="#SpringBoot最重要的两个功能" class="headerlink" title="SpringBoot最重要的两个功能"></a>SpringBoot最重要的两个功能</h1><p>1.版本锁定(mybatis为什么没有锁定,因为mybatis开发的比较晚)</p>
 <p>2.自动装配</p>
-<h1 id="SpringBootApplication"><a href="#SpringBootApplication" class="headerlink" title="@SpringBootApplication"></a>@SpringBootApplication</h1>
+<h1 id="SpringBoot默认静态资源的存放目录是什么"><a href="#SpringBoot默认静态资源的存放目录是什么" class="headerlink" title="@SpringBoot默认静态资源的存放目录是什么?"></a>@SpringBoot默认静态资源的存放目录是什么?</h1><ul>
+<li>从以下图片可以得知SpringBoot默认静态资源的存放目录为:classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</li>
+</ul>
+<p>①当启动引导类时,引导类会自动装配,加载spring.factories文件</p>
+<img src="/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220425121700452.png" alt="image-20220425121700452"  />
+
+<p>②在文件里读取到WebMvcAutoConfiguration时</p>
+<p>![image-20220425121725294](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425121725294.png)</p>
+<p>③会通过@ConditionalOnMissingBean(WebMvcConfigurationSupport.class)来判断容器里是否有WebMvcConfigurationSupport这个类</p>
+<p>![image-20220425121735855](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425121735855.png)</p>
+<p>④如果没有WebMvcConfigurationSupport,那么会创建WebMvcAutoConfiguration,并且在构造方法执行时将找到resourceProperties并赋值</p>
+<p>![image-20220425131305911](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425131305911.png)</p>
+<p>⑤通过this.resourceProperties.getStaticLocations调用方法,得到类中的默认资源常量添加到资源路径中</p>
+<p>![image-20220425130053100](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425130053100.png)</p>
+<p>⑥通过Resources类中可以看到资源常量是一个字符串数组存储,最终赋值给staticLocations的变量,并且通过get方法可以获取到</p>
+<p>![image-20220425130214678](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425130214678.png)</p>
+<p>总结:所以当我们没有通过实现WebMvcConfigurationSupport的方式来配置自定义静态资源访问路径时,默认访问路径为classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</p>
+
                 
             </div>
         </article>

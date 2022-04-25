@@ -49,7 +49,24 @@
     <div class="post-content">
         <h1 id="SpringBoot最重要的两个功能"><a href="#SpringBoot最重要的两个功能" class="headerlink" title="SpringBoot最重要的两个功能"></a>SpringBoot最重要的两个功能</h1><p>1.版本锁定(mybatis为什么没有锁定,因为mybatis开发的比较晚)</p>
 <p>2.自动装配</p>
-<h1 id="SpringBootApplication"><a href="#SpringBootApplication" class="headerlink" title="@SpringBootApplication"></a>@SpringBootApplication</h1>
+<h1 id="SpringBoot默认静态资源的存放目录是什么"><a href="#SpringBoot默认静态资源的存放目录是什么" class="headerlink" title="@SpringBoot默认静态资源的存放目录是什么?"></a>@SpringBoot默认静态资源的存放目录是什么?</h1><ul>
+<li>从以下图片可以得知SpringBoot默认静态资源的存放目录为:classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</li>
+</ul>
+<p>①当启动引导类时,引导类会自动装配,加载spring.factories文件</p>
+<img src="/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220425121700452.png" alt="image-20220425121700452"  />
+
+<p>②在文件里读取到WebMvcAutoConfiguration时</p>
+<p>![image-20220425121725294](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425121725294.png)</p>
+<p>③会通过@ConditionalOnMissingBean(WebMvcConfigurationSupport.class)来判断容器里是否有WebMvcConfigurationSupport这个类</p>
+<p>![image-20220425121735855](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425121735855.png)</p>
+<p>④如果没有WebMvcConfigurationSupport,那么会创建WebMvcAutoConfiguration,并且在构造方法执行时将找到resourceProperties并赋值</p>
+<p>![image-20220425131305911](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425131305911.png)</p>
+<p>⑤通过this.resourceProperties.getStaticLocations调用方法,得到类中的默认资源常量添加到资源路径中</p>
+<p>![image-20220425130053100](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425130053100.png)</p>
+<p>⑥通过Resources类中可以看到资源常量是一个字符串数组存储,最终赋值给staticLocations的变量,并且通过get方法可以获取到</p>
+<p>![image-20220425130214678](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220425130214678.png)</p>
+<p>总结:所以当我们没有通过实现WebMvcConfigurationSupport的方式来配置自定义静态资源访问路径时,默认访问路径为classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</p>
+
     </div>
     </article>
 </div>
@@ -59,7 +76,7 @@
         Contents
         </strong>
         <div class="toc-content">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E4%B8%A4%E4%B8%AA%E5%8A%9F%E8%83%BD"><span class="toc-text">SpringBoot最重要的两个功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBootApplication"><span class="toc-text">@SpringBootApplication</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E4%B8%A4%E4%B8%AA%E5%8A%9F%E8%83%BD"><span class="toc-text">SpringBoot最重要的两个功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot%E9%BB%98%E8%AE%A4%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E7%9A%84%E5%AD%98%E6%94%BE%E7%9B%AE%E5%BD%95%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">@SpringBoot默认静态资源的存放目录是什么?</span></a></li></ol>
         </div>
     </div>
 
