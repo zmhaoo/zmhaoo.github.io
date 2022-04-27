@@ -68,6 +68,110 @@
 <p>​        ④那么就找出问题的原因,很明显原因出在返回值,在springboot框架中,我们在controller层返回给页面的数据都是springmvc框架帮我们自动封装成json数据,而spring默认处理json数据的对象,SpringMVC的消息转换器,默认会帮我们转换参数类型.</p>
 <p>​        ⑤所以我们需要将springmvc中的消息转换器进行扩展,也就是上述提供的自定义JacksonObjectMapper类,通过自定义设定–&gt;当遇到Long类型数据是,自动转为换为字符串返回给页面存储.</p>
 <p>​        ⑥这样就可以避免js在接受数据时精度丢失了.</p>
+<h1 id="MD5加密"><a href="#MD5加密" class="headerlink" title="MD5加密"></a>MD5加密</h1><p>MD5加密:</p>
+<p>可以使用apache的commons-codec工具类或者Spring提供的DigestUtils工具类,导不同的包就行了(工具包名字一样)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.util.DigestUtils;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhangminghao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2022/4/26 8:19 下午</span></span><br><span class="line"><span class="comment"> * 最难不过坚持👊🏻</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> org.apache.commons.codec.digest.DigestUtils.md5Hex(<span class="string">&quot;123456&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;apache----&gt;&quot;</span>+s1);</span><br><span class="line">        <span class="comment">//输出:apache----&gt;e10adc3949ba59abbe56e057f20f883e</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">s2</span> <span class="operator">=</span> DigestUtils.md5DigestAsHex(<span class="string">&quot;123456&quot;</span>.getBytes());</span><br><span class="line">        System.out.println(<span class="string">&quot;spring----&gt;&quot;</span>+s2);</span><br><span class="line">        <span class="comment">//输出:spring----&gt;e10adc3949ba59abbe56e057f20f883e</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>区别:apache的commons-codec的优势,拥有大部分的加密方式,而spring只有md5加密</p>
+<p>①apache的commons-codec:</p>
+<p>Commons codec，是项目中用来处理常用的编码方法的工具类包，例如DES、SHA1、MD5、Base64，URL，Soundx等等。不仅是编码，也可用于解码</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqC4Pg.png" alt="LqC4Pg.png"></p>
+<p>②spring的DigestUtils:</p>
+<p>MD5加密</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqCfIS.png" alt="LqCfIS.png"></p>
+<h1 id="MD5和Base64加密方式-扩充上面知识点"><a href="#MD5和Base64加密方式-扩充上面知识点" class="headerlink" title="MD5和Base64加密方式,扩充上面知识点"></a>MD5和Base64加密方式,扩充上面知识点</h1><p>1.MD5散列算法</p>
+<p>词汇解释：<br>MD5消息摘要算法（英语：MD5 Message-Digest Algorithm），一种被广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。MD5由美国密码学家罗纳德·李维斯特（Ronald Linn Rivest）设计，于1992年公开，用以取代MD4算法(MD5不可逆)</p>
+<p>2.Base64</p>
+<p>是网络上最常见的用于传输8Bit字节码的编码方式之一，Base64就是一种基于64个可打印字符来表示二进制数据的方法。可查看RFC2045～RFC2049，上面有MIME的详细规范(Base64 的加密算法是可逆的)</p>
+<h1 id="用户退出销毁session"><a href="#用户退出销毁session" class="headerlink" title="用户退出销毁session"></a>用户退出销毁session</h1><p><img src="https://s1.ax1x.com/2022/04/27/LqCRVf.png" alt="LqCRVf.png"></p>
+<h1 id="AntPathMatcher基本使用"><a href="#AntPathMatcher基本使用" class="headerlink" title="AntPathMatcher基本使用"></a>AntPathMatcher基本使用</h1><p>首先，AntPathMatcher是什么？有什么能力？<br>AntPathMather是Spring提供的用于对资源路径进行解析或者对url的字符串做匹配用的。无论是资源路径还是url字符串都是采用的是Ant格式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个不用拦截的数组</span></span><br><span class="line">        String[] urls = &#123;</span><br><span class="line">                <span class="string">&quot;/backend/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/front/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/employee/login&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/employee/logout&quot;</span></span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//获取url路径</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">uri</span> <span class="operator">=</span> request.getRequestURI();</span><br><span class="line">        <span class="comment">//判断是否有非拦截路径</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> checkFilter(urls, uri); <span class="comment">//调用下面方法,匹配非拦截路径</span></span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="comment">//有就放行</span></span><br><span class="line">            filterChain.doFilter(request,response);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">checkFilter</span><span class="params">( String[] urls,String uri)</span>&#123;</span><br><span class="line">        <span class="type">AntPathMatcher</span> <span class="variable">antPathMatcher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AntPathMatcher</span>();</span><br><span class="line">        <span class="keyword">for</span> (String url : urls) &#123;</span><br><span class="line">            <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> antPathMatcher.match(url, uri);</span><br><span class="line">            <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Mybatis-plus中使用自动填充的坑"><a href="#Mybatis-plus中使用自动填充的坑" class="headerlink" title="Mybatis-plus中使用自动填充的坑"></a>Mybatis-plus中使用自动填充的坑</h1><p>当我想在项目中使用MyBatis-plus中的自动填充功能用来自动填充数据的修改和创建时间时,发现数据在创建时可以自动注入,修改时不可以,这是为什么呢?</p>
+<p>先来看看代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyMetaObjectHandler</span> <span class="keyword">implements</span> <span class="title class_">MetaObjectHandler</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insertFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;start insert fill ....&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.strictInsertFill(metaObject, <span class="string">&quot;createTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br><span class="line">        <span class="built_in">this</span>.strictInsertFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;start update fill ....&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.strictUpdateFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>新增数据</strong>时的请求数据和自动执行的sql语句:</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqCWa8.png" alt="LqCWa8.png"></p>
+<p><strong>修改数据</strong>时的请求数据和自动执行的sql语句:</p>
+<p>修改数据分为2步:</p>
+<p>①当我们点击编辑按钮的时候通过页面通过向服务器发送待编辑的id,让服务器通过id查找数据再回显到页面表单中<img src="https://s1.ax1x.com/2022/04/27/LqPGFS.png" alt="LqPGFS.png"></p>
+<p>②修改完数据后,将数据提交给服务器,让服务端修改数据</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqP1df.png" alt="LqP1df.png"></p>
+<p>发现:</p>
+<p>①<strong>在上面的整体流程中我们发现</strong>,在执行新增数据的时候,createTime和updateTime都实现了mysq-plus提供的自动注入功能,但是在修改时,数据对应的修改时间却没有发生变化</p>
+<p>②<strong>从请求方式发现</strong>,新增的时候,createTime和updateTime我们是没有给值的,所以传到服务器的时候,这两个值都是以null的形式传过去的,但是在修改的时候,是通过id查找数据回显到页面表单的,当我们修改基本数据后,该数据createTime和updateTime在修改前就已经被自动填充了,所以不是null</p>
+<p>③<strong>通过SQL语句发现</strong>,当页面表单的createTime和updateTime为NULL的时候,在执行sql的时候会自动填充,反之,当页面表单的数据createTime和updateTime不为NULL的时候,服务器执行sql的时候则不会自动填充覆盖原有的值,而是将原有的值纹丝不动的设置到数据中,也就没有发生改变.</p>
+<p>原因:</p>
+<p>因为Mybatis-plus中的的自动填充功能的strictInsertFill和strictUpdateFill默认是被自动填充的值为NULL则自动填充,不为NULL则不自动填充</p>
+<p>解决方式:<br>①在填充前判断metaObject中有没有需要自动填充的值,如果有则设置为null</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">     <span class="type">Object</span> <span class="variable">updateTime</span> <span class="operator">=</span> metaObject.getValue(<span class="string">&quot;updateTime&quot;</span>);</span><br><span class="line">     <span class="keyword">if</span>(metaObject.hasSetter(<span class="string">&quot;updateTime&quot;</span>))&#123;</span><br><span class="line">         metaObject.setValue(<span class="string">&quot;updateTime&quot;</span>,<span class="literal">null</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="built_in">this</span>.strictUpdateFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br></pre></td></tr></table></figure>
+
+<p>②使用setFieldValByName直接设置updateTime的值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;start update fill ....&quot;</span>);</span><br><span class="line">    <span class="built_in">this</span>.setFieldValByName(<span class="string">&quot;updateTime&quot;</span>,LocalDateTime.now(),metaObject);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 
             </div>
