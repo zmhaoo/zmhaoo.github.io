@@ -112,10 +112,10 @@
 <p>DTO含义:指浏览器提交参数给服务器,服务器用来封装对应参数的对象</p>
 <p>VO含义:指服务器响应给浏览器的数据,将数据封装后传递给浏览器</p>
 <h1 id="使用过滤器的时候-WebFilter注意事项"><a href="#使用过滤器的时候-WebFilter注意事项" class="headerlink" title="使用过滤器的时候@WebFilter注意事项"></a>使用过滤器的时候@WebFilter注意事项</h1><p>因为@WebFilter是Servlet管理,所以需要在引导类加上@ServletComponentScan,扫描到@WebFilter才能生效</p>
-<h2 id="common-Fileupload—–-gt-MultipartFile-file"><a href="#common-Fileupload—–-gt-MultipartFile-file" class="headerlink" title="common-Fileupload—–&gt;MultipartFile file"></a>common-Fileupload—–&gt;MultipartFile file</h2><p>![image-20220430084336123](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220430084336123.png)</p>
+<h2 id="common-Fileupload—–-gt-MultipartFile-file"><a href="#common-Fileupload—–-gt-MultipartFile-file" class="headerlink" title="common-Fileupload—–&gt;MultipartFile file"></a>common-Fileupload—–&gt;MultipartFile file</h2><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ndr842j215o07mwgf.jpg" alt="image-20220430084336123"></p>
 <h1 id="Transaction可能事务失效的地方"><a href="#Transaction可能事务失效的地方" class="headerlink" title="@Transaction可能事务失效的地方"></a>@Transaction可能事务失效的地方</h1><p>项目采用了Mybatis-plus,mapper和service都各自实现和继承了mybatis-lpus提供的的接口,所以在项目中的Service层可以直接用this调用父类serviceImpl的方法,这样可能导致被this所调用的方法事务失效,因为this直接调父类的方法,没有被代理对象所代理,但是加上@Transaction注解的方法,必须要代理对象调用时,才能实现事务保护</p>
 <p>解决方案:自己注入自己@Autowired—&gt;xxxservice,但是需要解决循环依赖问题.</p>
-<h1 id="做项目中加上ToDo-表示项目未完成"><a href="#做项目中加上ToDo-表示项目未完成" class="headerlink" title="做项目中加上ToDo,表示项目未完成"></a>做项目中加上ToDo,表示项目未完成</h1><p>![image-20220430110948139](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220430110948139.png)</p>
+<h1 id="做项目中加上ToDo-表示项目未完成"><a href="#做项目中加上ToDo-表示项目未完成" class="headerlink" title="做项目中加上ToDo,表示项目未完成"></a>做项目中加上ToDo,表示项目未完成</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5nfdafdj20cw07ugma.jpg" alt="image-20220430110948139"></p>
 <h1 id="pojo四大特征"><a href="#pojo四大特征" class="headerlink" title="pojo四大特征"></a>pojo四大特征</h1><p>无参构造方法,get方法,set方法,实现serializable接口序列化</p>
 
     </div>

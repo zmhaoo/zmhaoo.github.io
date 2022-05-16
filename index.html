@@ -44,20 +44,99 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/05/14/SpringSecurity%E5%AE%89%E5%85%A8%E6%A1%86%E6%9E%B6%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">SpringSecurity</a>
+                <a class="post-title-link text-underline" href="/2022/05/13/Mysql%E7%9A%84Sql%E4%BC%98%E5%8C%96/">Mysql的Sql优化</a>
             </div>
-            <p class="sub">May 14 2022</p>
+            <p class="sub">May 13 2022</p>
             <div class="post-content">
                 
-                    <h1 id="SpringSecurity是什么"><a href="#SpringSecurity是什么" class="headerlink" title="SpringSecurity是什么"></a>SpringSecurity是什么</h1><p>![image-20220514223231961](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220514223231961.png)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- spring security 安全认证 --&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+                    <h1 id="插入数据优化"><a href="#插入数据优化" class="headerlink" title="插入数据优化"></a>插入数据优化</h1><ul>
+<li><p>insert优化</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5gdckvkj20ep0bzq3q.jpg" alt="image-20220513213453462"></p>
+</li>
+</ul>
+<p>经量减少网络之间的I&#x2F;O传输,可以提高性能</p>
+<ul>
+<li>大批量插入数据</li>
+</ul>
+<p>如果需要一次性大批量插入数据,使用insert语句插入性能较低,此时可以使用MYSQL数据库提供的load指令进行插入.操作如下;</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5g91h2dj20vn06ftar.jpg" alt="image-20220513213651727"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#客户端连接服务器时,加上参数 --local-infile</span><br><span class="line">mysql --local-infile -u root -p</span><br><span class="line">#设置全局参数local_infile为1.开启从本地加载文件导入数据的开关(默认关闭的)</span><br><span class="line">set global local_infile = 1;</span><br><span class="line"></span><br><span class="line">mysql&gt; select @@local_infile</span><br><span class="line">    -&gt; ;</span><br><span class="line">+----------------+</span><br><span class="line">| @@local_infile |</span><br><span class="line">+----------------+</span><br><span class="line">|              1 |     -------------&gt;设置为1</span><br><span class="line">+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line">#执行load指令将准备好的数据,加载到表就诶够中</span><br><span class="line">load data local infeil &#x27;/root/sql.log&#x27; into table &#x27;tb_user&#x27; fields terminated by &#x27;,&#x27; lines terminated by &#x27;\n&#x27;;</span><br><span class="line">					       #文件位置                     到那张表           字段用什么分隔              每一行用什么分隔</span><br></pre></td></tr></table></figure>
 
-<p>​    引入依赖后我们尝试去访问页面是就自动会跳转到一个SpringSecurity的默认登录页面,默认用户名是user,密码会输出在控制台.必须登录后才能对接口进行访问</p>
-<p>![image-20220514224636877](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220514224636877.png)</p>
-<h1 id="登录校验流程图"><a href="#登录校验流程图" class="headerlink" title="登录校验流程图"></a>登录校验流程图</h1><p>![image-20220514224611640](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220514224611640.png)</p>
-<h1 id="SpringSecurity完整流程"><a href="#SpringSecurity完整流程" class="headerlink" title="SpringSecurity完整流程"></a>SpringSecurity完整流程</h1><p>![image-20220514225132512](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220514225132512.png)</p>
-<p>![image-20220514231906633](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220514231906633.png)![image-20220515093825801](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220515093825801.png)</p>
-<p>![image-20220514231813066](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220514231813066.png)</p>
+<p><strong>主键顺序插入性能高于乱序插入</strong></p>
+<h1 id="主键优化"><a href="#主键优化" class="headerlink" title="主键优化"></a>主键优化</h1><h3 id="数据组织方式"><a href="#数据组织方式" class="headerlink" title="数据组织方式"></a>数据组织方式</h3><p>​    在InnoDB存储引擎中,表数据都是根据主键顺序存放的,这种存储方式的表称为<strong>索引组织表</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5g5lvquj20tg0ca75y.jpg" alt="image-20220516093022006"></p>
+<h3 id="页分裂"><a href="#页分裂" class="headerlink" title="页分裂"></a>页分裂</h3><p>页可以为空,可以填充一半,也可以填充100%.每个页包含了2-N行数据(如果一行数据过多,会行溢出),根据主键排列</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fy2n63j20wj0580tf.jpg" alt="image-20220516093248234"></p>
+<p>如果主键不是顺序插入,那么新插入过来的数据,会找出比自己小一级的那个页,截取50%的内容</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fva5qcj20uj0af0tf.jpg" alt="image-20220516093713899"></p>
+<p>并开辟一个新的页空间,然后和截取的那一部分一同存入新的页空间中,最后被截取的那部分页再重新指向那段新的页空间.</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fstyg2j20w808v757.jpg" alt="image-20220516093818505"></p>
+<h3 id="页合并"><a href="#页合并" class="headerlink" title="页合并"></a>页合并</h3><p>当删除一行记录时,实际上记录并没有被屋里删除,只是记录被标记为删除,并且它的空间变得允许其他记录声明使用.</p>
+<p>当页中删除的记录达到了MERGE_THRESHOLD(默认为页的50%),InnoDB会开始寻找靠近的页(前或后)看看是否可以合并,以优化空间使用.</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fo5ng1j20w10333z9.jpg" alt="image-20220516094302614"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fmeqh8j20ww058dgi.jpg" alt="image-20220516094319791"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fhtxesj20xs09gmyn.jpg" alt="image-20220516094410407"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#添加索引的时候设置(默认百分之50)</span><br><span class="line">create index ix_person_birthday on tempdb.person(birthday) comment &#x27;MERGE_THRESHOLD=48&#x27;</span><br><span class="line"></span><br><span class="line">#可以从information_schema中查询索引页的合并阀值</span><br><span class="line">select * from INNODB_INDEXES where name in (&#x27;ix_person_name&#x27;,&#x27;ix_person_birthday&#x27;) ;</span><br><span class="line">+----------+--------------------+----------+------+----------+---------+-------+-----------------+</span><br><span class="line">| INDEX_ID | NAME               | TABLE_ID | TYPE | N_FIELDS | PAGE_NO | SPACE | MERGE_THRESHOLD |</span><br><span class="line">+----------+--------------------+----------+------+----------+---------+-------+-----------------+</span><br><span class="line">|      147 | ix_person_name     |     1059 |    0 |        2 |       5 |     2 |              45 |</span><br><span class="line">|      148 | ix_person_birthday |     1059 |    0 |        2 |       6 |     2 |              48 |</span><br><span class="line">+----------+--------------------+----------+------+----------+---------+-------+-----------------+</span><br><span class="line">2 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<h1 id="主键的设计原则"><a href="#主键的设计原则" class="headerlink" title="主键的设计原则"></a>主键的设计原则</h1><p>1.满足业务需求的情况下,尽量降低主键的长度,主键长度过长,当二级索引较多时,会占用大量的磁盘空间,而且在搜索的时候会耗费大量的磁盘IO,所以要尽量降低主键的长度</p>
+<p>2.插入数据时,尽量选择顺序插入,选择使用AUTO_INCREMENT自增主键,如果不是顺序插入,可能会出现页分裂现象</p>
+<p>3.尽量不要用UUID做主键或者其他自然主键,如身份证号,因为这些数据都是无序的,就会导致页分裂,数据过长,检索时间增加,也会增加磁盘IO</p>
+<p>4.在业务操作时,避免对主键的修改,应为修改主键也会改变对应的索引结构,代价很大</p>
+<h1 id="mysql8-0新特性——-gt-order-by优化"><a href="#mysql8-0新特性——-gt-order-by优化" class="headerlink" title="mysql8.0新特性——-&gt;order by优化"></a>mysql8.0新特性——-&gt;order by优化</h1><p>1.Using filesort:通过表的索引或全表扫描,读取满足条件的数据行,然后再排序缓冲区sort buffer中完成排序操作,所有不是通过索引直接返回结果的排序都叫FileSort排序</p>
+<p>2,Using index:通过有序索引顺序扫描直接返回的有序数据,这种情况下即为Using index,不需要额外排序,操作小效率高</p>
+<h3 id="新特性一-Backward-index-scan关键字"><a href="#新特性一-Backward-index-scan关键字" class="headerlink" title="新特性一:Backward  index scan关键字"></a>新特性一:Backward  <em>index</em> <em>scan</em>关键字</h3><p>当我们创建联合索引进行<strong>升序查询</strong>时,通过explain查看执行计划可以发现EXtra是<strong>Using index</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by phone asc ,id_number  asc;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>当我们创建联合索引进行<strong>升序查询</strong>时,通过explain查看执行计划可以发现EXtra是<strong><em>Backward</em> <em>index</em> <em>scan</em>,Using index</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by phone asc ,id_number  asc;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Backward index scan,Using index |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>在8.0中,对于反向扫描,有一个专门的词进行描述“<em><strong>Backward* <em>index</em> *scan</strong></em>“反向索引扫描,5.7版本没有</p>
+<h3 id="新特性二-支持反向索引"><a href="#新特性二-支持反向索引" class="headerlink" title="新特性二:支持反向索引"></a>新特性二:支持反向索引</h3><p>当我们向通过一个字段升序ASC,一个字段降序DESC,或者反之,需要通过创建索引的时候指定,不然会出现全表扫描Using filesort关键字</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by phone asc  ,id_number desc;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra                       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#按照上面需求创建降序联合索引</span><br><span class="line">create index  idx_phone_id_numbe on employee(phone asc,id_number desc); #-------&gt; 指定那个字段降序 </span><br><span class="line">#再次查询索引信息发现Collation字段A代表ASC,D代表DESC </span><br><span class="line">mysql&gt; show index from employee;</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| employee |          0 | PRIMARY              |                   1 | id         		 | A         |          15 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            1 | phone      		 | A         |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            2 | id_number       | D        |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+-</span><br></pre></td></tr></table></figure>
+
+<p>在<strong>Mysql5.7</strong>中支持此语法,但是设置降序索引时,还是创建的升序,并没有改变</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create index  idx_phone_id_numbe on employee(phone asc,id_number desc)</span><br><span class="line">mysql&gt; show index from employee;</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| employee |          0 | PRIMARY              |                   1 | id         		 | A         |          15 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            1 | phone      		 | A         |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            2 | id_number       | A        |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+-</span><br></pre></td></tr></table></figure>
+
+<p>图解:</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5f3m94kj20wv074gms.jpg" alt="image-20220516105542348"></p>
+<h3 id="ORDER-BY注意事项"><a href="#ORDER-BY注意事项" class="headerlink" title="ORDER BY注意事项"></a>ORDER BY注意事项</h3><p><strong>事项一</strong>:根据排序字段建立合适的索引,多字段排序时,<strong>应当遵循最左前缀法则</strong>,不然虽然会走索引但是会出现<strong>Using filesort</strong></p>
+<p>降低了查询效率.<strong>(前提是索引覆盖)</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by id_number,phone ;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra                       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>事项二</strong>:如果没有遵循最左前缀也没有达到索引覆盖条件,则会全表扫描,<strong>索引尽量要索引覆盖</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from employee order by id_number,phone ;</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra          |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   15 |   100.00 | Using filesort |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>事项三</strong>:多字段排序时,一个升序一个降序,此时需要注意联合索引在创建时的规则(ASC&#x2F;DESC)</p>
+<p><strong>事项四</strong>:如果不可避免的出现filesort,大数据量排序时,<strong>可以适当增大排序缓冲区大小sort_buffer_size(默认256k)</strong>,如果在排序时,占满了256k的排序缓冲区,则会涉及到磁盘文件当中进行排序,会降低性能,可以适量增大</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#默认排序缓冲区大小sort_buffer_size为256k</span><br><span class="line">mysql&gt; show variables like &#x27;sort_buffer_size&#x27;;</span><br><span class="line">+------------------+--------+</span><br><span class="line">| Variable_name    | Value  |</span><br><span class="line">+------------------+--------+</span><br><span class="line">| sort_buffer_size | 262144 |</span><br><span class="line">+------------------+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="GROUP-BY-优化"><a href="#GROUP-BY-优化" class="headerlink" title="GROUP BY 优化"></a>GROUP BY 优化</h1><p>1,在分组时,也可以通过索引来提高效率,如果没有索引则会出现 <strong>Using temporary</strong>临时表关键字,效率低下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select name,count(*) from employee group by name;</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+---------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                           |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+---------------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   15 |   100.00 | Using temporary; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+---------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>2.分组操作时,索引的使用也是满足最左前缀法则的</p>
+<p>情况一:索引没有满足最左前缀,但满足索引覆盖(Using index; Using temporary; Using filesort)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; explain select  id_number,count(*) from employee group by id_number;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys       | key                 | key_len | ref  | rows | filtered | Extra                                        |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | idx_phone_id_number | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index; Using temporary; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>情况二:索引满足最左前缀,也满足索引覆盖(Using index )</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select  phone,count(*) from employee group by phone;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys       | key                 | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | idx_phone_id_number | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="LIMIT优化"><a href="#LIMIT优化" class="headerlink" title="LIMIT优化"></a>LIMIT优化</h1><p>一个常见有非常头疼的问题就是limit 200000,10 ,此时mysql排序前200000,10 记录,仅仅返回200000,200010的记录,其他记录丢弃,查询排序的代价非常大</p>
+<p>优化思路:一般分页查询时,通过创建覆盖所以,能够比较好的提高性能,可以通过覆盖索引加子查询形式优化.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from tb_sku t,(select id from tb_sku order by id limit 200000,10)  a  where t.id = a.id;</span><br></pre></td></tr></table></figure>
+
+<p>mysql官方给出的优化方案</p>
+<h1 id="Count优化"><a href="#Count优化" class="headerlink" title="Count优化"></a>Count优化</h1><h3 id="COUNT的几种用法"><a href="#COUNT的几种用法" class="headerlink" title="COUNT的几种用法"></a>COUNT的几种用法</h3><p>![image-20220516113046371](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220516113046371.png)</p>
+<h1 id="update优化-InnoDB中索引-行锁-表锁的关系"><a href="#update优化-InnoDB中索引-行锁-表锁的关系" class="headerlink" title="update优化(InnoDB中索引-行锁-表锁的关系)"></a>update优化(InnoDB中索引-行锁-表锁的关系)</h1><h3 id="正常情况"><a href="#正常情况" class="headerlink" title="正常情况"></a>正常情况</h3><p>Mysql中的InnoDB引擎<strong>默认是行级锁</strong>,当一个客户端通过主键id修改一个条数据时,这条数据会被锁上,另一个客户端通过<strong>同一个ID修改</strong>这个被锁住的数据时,就会堵塞**(如果是不同id则不会阻塞)**</p>
+<p>客户端A:条件相同</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ewvch5j20jj078q43.jpg" alt="image-20220516114611297"></p>
+<p>客户端B:条件相同</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ei8t8gj20l108j40e.jpg" alt="image-20220516114824459"></p>
+<p>等待一段时间后会抛出:ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction(等待超时)</p>
+<h3 id="异常情况"><a href="#异常情况" class="headerlink" title="异常情况"></a>异常情况</h3><p>当一个客户端通过名字name修改一个条数据时,这条数据会被锁上,另一个客户端修改<strong>另一条数据</strong>通过<strong>另一个名字name修改,发现也会阻塞</strong>,这是为什么呢????</p>
+<blockquote>
+<p>因为InnoDB的行锁针对索引加锁,不是针对记录加的锁,并且改索引不能失效,否则会从行锁升级为表说</p>
+<p>也就是只要你的条件不是索引字段,那么这一次操作则会锁住整张表</p>
+</blockquote>
 
                 
             </div>
@@ -80,15 +159,15 @@
 <ul>
 <li><input disabled="" type="checkbox"> 基于内存存储，读写性能高</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927090555559.png" alt="image-20210927090555559"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sbs9ygj20b106v74l.jpg" alt="image-20210927090555559"></p>
 <ul>
 <li><input disabled="" type="checkbox"> 适合存储热点数据（热点商品、资讯、新闻）</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927090604994.png" alt="image-20210927090604994"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5scrk8rj20bk07o0tn.jpg" alt="image-20210927090604994"></p>
 <ul>
 <li><input disabled="" type="checkbox"> 企业应用广泛</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927090612540.png" alt="image-20210927090612540"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sdng30j20c007o74l.jpg" alt="image-20210927090612540"></p>
 <h3 id="1-2-使用Redis能做什么"><a href="#1-2-使用Redis能做什么" class="headerlink" title="1.2 使用Redis能做什么"></a>1.2 使用Redis能做什么</h3><ul>
 <li>数据缓存</li>
 <li>消息队列</li>
@@ -118,7 +197,7 @@
 <li>Linux版下载地址： <a target="_blank" rel="noopener" href="https://download.redis.io/releases/">https://download.redis.io/releases/</a></li>
 </ul>
 <p>下载后得到下面安装包：</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927092053283.png" alt="image-20210927092053283"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sj9t3rj20ug02jq34.jpg" alt="image-20210927092053283"></p>
 <h4 id="2-2-2-Redis安装"><a href="#2-2-2-Redis安装" class="headerlink" title="2.2.2 Redis安装"></a>2.2.2 Redis安装</h4><p><strong>1）在Linux中安装Redis</strong></p>
 <p>在Linux系统安装Redis步骤：</p>
 <ol>
@@ -136,23 +215,23 @@
 </blockquote>
 <p><strong>2）在Windows中安装Redis</strong></p>
 <p>Redis的Windows版属于绿色软件，直接解压即可使用，解压后目录结构如下：</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927093112281.png" alt="image-20210927093112281"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sl2swwj20sp0bqq48.jpg" alt="image-20210927093112281"></p>
 <h3 id="2-3-Redis服务启动与停止"><a href="#2-3-Redis服务启动与停止" class="headerlink" title="2.3 Redis服务启动与停止"></a>2.3 Redis服务启动与停止</h3><p><strong>1）Linux系统中启动和停止Redis</strong></p>
 <p>执行Redis服务启动脚本文件&#x3D;&#x3D;redis-server&#x3D;&#x3D;：</p>
 <p><code>路径：</code></p>
 <p><code>/usr/local/redis-4.0.0/src/redis-server</code></p>
 <p><code>/usr/local/redis-4.0.0/src/redis-cli</code></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927094452556.png" alt="image-20210927094452556"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5spmhpoj216c0k4jxz.jpg" alt="image-20210927094452556"></p>
 <p>通过启动日志可以看到，Redis默认端口号为&#x3D;&#x3D;6379&#x3D;&#x3D;。</p>
 <p>&#x3D;&#x3D;Ctrl + C&#x3D;&#x3D;停止Redis服务</p>
 <p>通过&#x3D;&#x3D;redis-cli&#x3D;&#x3D;可以连接到本地的Redis服务，默认情况下不需要认证即可连接成功。</p>
 <p>退出客户端可以输入&#x3D;&#x3D;exit&#x3D;&#x3D;或者&#x3D;&#x3D;quit&#x3D;&#x3D;命令。</p>
 <p><strong>2）Windows系统中启动和停止Redis</strong></p>
 <p>Windows系统中启动Redis，直接双击redis-server.exe即可启动Redis服务，redis服务默认端口号为6379</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927100421213.png" alt="image-20210927100421213"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sqhzd8j20xz0hrdix.jpg" alt="image-20210927100421213"></p>
 <p>&#x3D;&#x3D;Ctrl + C&#x3D;&#x3D;停止Redis服务</p>
 <p>双击&#x3D;&#x3D;redis-cli.exe&#x3D;&#x3D;即可启动Redis客户端，默认连接的是本地的Redis服务，而且不需要认证即可连接成功。</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927100319016.png" alt="image-20210927100319016"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sqsuvzj20xz0hr0t8.jpg" alt="image-20210927100319016"></p>
 <p>退出客户端可以输入&#x3D;&#x3D;exit&#x3D;&#x3D;或者&#x3D;&#x3D;quit&#x3D;&#x3D;命令。</p>
 <h3 id="2-4-Redis配置文件"><a href="#2-4-Redis配置文件" class="headerlink" title="2.4 Redis配置文件"></a>2.4 Redis配置文件</h3><p>前面我们已经启动了Redis服务，默认情况下Redis启动后是在前台运行，而且客户端不需要密码就可以连接到Redis服务。如果我们希望Redis服务启动后是在后台运行，同时希望客户端认证通过后才能连接到Redis服务，应该如果做呢？</p>
 <p>此时就需要修改Redis的配置文件：</p>
@@ -181,9 +260,9 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 进入Redis安装目录</span><br><span class="line">cd /usr/local/redis-4.0.0</span><br><span class="line"># 启动Redis服务，指定使用的配置文件</span><br><span class="line">./src/redis-server ./redis.conf</span><br></pre></td></tr></table></figure>
 
 <p>2）Windows中启动Redis服务</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927104929169.png" alt="image-20210927104929169"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ssqiloj20xz0e4dit.jpg" alt="image-20210927104929169"></p>
 <p>由于Redis配置文件中开启了认证校验，即客户端连接时需要提供密码，此时客户端连接方式变为：</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927105909600.png" alt="image-20210927105909600"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sti807j20ny09uq3j.jpg" alt="image-20210927105909600"></p>
 <p><strong>解释说明：</strong></p>
 <blockquote>
 <p>-h：指定连接的Redis服务的ip地址</p>
@@ -198,7 +277,7 @@
 <li>集合 set</li>
 <li>有序集合 sorted set &#x2F; zset</li>
 </ul>
-<h3 id="3-2-Redis-5种常用数据类型"><a href="#3-2-Redis-5种常用数据类型" class="headerlink" title="3.2 Redis 5种常用数据类型"></a>3.2 Redis 5种常用数据类型</h3><p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927111819871.png" alt="image-20210927111819871"></p>
+<h3 id="3-2-Redis-5种常用数据类型"><a href="#3-2-Redis-5种常用数据类型" class="headerlink" title="3.2 Redis 5种常用数据类型"></a>3.2 Redis 5种常用数据类型</h3><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5svuyd2j20od0e50tf.jpg" alt="image-20210927111819871"></p>
 <p><strong>解释说明：</strong></p>
 <blockquote>
 <p>字符串(string)：普通字符串，常用</p>
@@ -224,7 +303,7 @@
 <li><strong>HVALS</strong> key                              获取哈希表中所有值</li>
 <li><strong>HGETALL</strong> key                         获取在哈希表中指定 key 的所有字段和值</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927113014567.png" alt="image-20210927113014567"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5t21hlmj20m503jmx3.jpg" alt="image-20210927113014567"></p>
 <h3 id="4-3-列表list操作命令"><a href="#4-3-列表list操作命令" class="headerlink" title="4.3 列表list操作命令"></a>4.3 列表list操作命令</h3><p>Redis 列表是简单的字符串列表，按照插入顺序排序，常用命令：</p>
 <ul>
 <li><strong>LPUSH</strong> key value1 [value2]         将一个或多个值插入到列表头部</li>
@@ -233,7 +312,7 @@
 <li><strong>LLEN</strong> key                                        获取列表长度</li>
 <li><strong>BRPOP</strong> key1 [key2 ] timeout       移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超    时或发现可弹出元素为止</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927113312384.png" alt="image-20210927113312384"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5t3ub6oj20nh042t8n.jpg" alt="image-20210927113312384"></p>
 <p>list特点：双端阻塞队列</p>
 <p>操作技巧：FIFO，先进先出。</p>
 <h3 id="4-4-集合set操作命令"><a href="#4-4-集合set操作命令" class="headerlink" title="4.4 集合set操作命令"></a>4.4 集合set操作命令</h3><p>Redis set 是string类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据，常用命令：</p>
@@ -246,7 +325,7 @@
 <li><strong>SDIFF</strong> key1 [key2]                                      返回给定所有集合的差集</li>
 <li><strong>SREM</strong> key member1 [member2]            移除集合中一个或多个成员</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927113632472.png" alt="image-20210927113632472"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5t66f4mj20ma03xgli.jpg" alt="image-20210927113632472"></p>
 <h3 id="4-5-有序集合sorted-set操作命令"><a href="#4-5-有序集合sorted-set操作命令" class="headerlink" title="4.5 有序集合sorted set操作命令"></a>4.5 有序集合sorted set操作命令</h3><p>Redis sorted set 有序集合是 string 类型元素的集合，且不允许重复的成员。每个元素都会关联一个double类型的分数(score) 。redis正是通过分数来为集合中的成员进行从小到大排序。有序集合的成员是唯一的，但分数却可以重复。</p>
 <p>常用命令：</p>
 <ul>
@@ -255,7 +334,7 @@
 <li><strong>ZINCRBY</strong> key increment member                              有序集合中对指定成员的分数加上增量 increment</li>
 <li><strong>ZREM</strong> key member [member …]                                移除有序集合中的一个或多个成员</li>
 </ul>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927114003383.png" alt="image-20210927114003383"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5t72qyej20ng04pt8n.jpg" alt="image-20210927114003383"></p>
 <h3 id="4-6-通用命令"><a href="#4-6-通用命令" class="headerlink" title="4.6 通用命令"></a>4.6 通用命令</h3><p>Redis中的通用命令，主要是针对key进行操作的相关命令：</p>
 <ul>
 <li><p><strong>KEYS</strong> pattern  查找所有符合给定模式( pattern)的 key </p>
@@ -293,7 +372,7 @@
 
 <h3 id="5-3-Spring-Data-Redis"><a href="#5-3-Spring-Data-Redis" class="headerlink" title="5.3 Spring Data Redis"></a>5.3 Spring Data Redis</h3><h4 id="5-3-1-介绍"><a href="#5-3-1-介绍" class="headerlink" title="5.3.1 介绍"></a>5.3.1 介绍</h4><p>Spring Data Redis 是 Spring 的一部分，提供了在 Spring 应用中通过简单的配置就可以访问 Redis 服务，对 Redis 底层开发包进行了高度封装。在 Spring 项目中，可以使用Spring Data Redis来简化 Redis 操作。</p>
 <p>网址：<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-data-redis">https://spring.io/projects/spring-data-redis</a></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/10.Redis%E5%9F%BA%E7%A1%80/%E7%AC%94%E8%AE%B0/assets/image-20210927143741458.png" alt="image-20210927143741458"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tadff7j21810r67b7.jpg" alt="image-20210927143741458"></p>
 <p>maven坐标：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.data<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.8<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -419,29 +498,17 @@ character_set_server=utf8
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/05/12/Swagger%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3%E7%9A%84%E4%BD%BF%E7%94%A8/">Swagger自动生成接口文档的使用</a>
-            </div>
-            <p class="sub">May 12 2022</p>
-            <div class="post-content">
-                
-                    
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
                 <a class="post-title-link text-underline" href="/2022/05/11/NGINX%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">NEGINX学习总结</a>
             </div>
             <p class="sub">May 11 2022</p>
             <div class="post-content">
                 
-                    <h2 id="Nginx-概述"><a href="#Nginx-概述" class="headerlink" title="Nginx-概述"></a>Nginx-概述</h2><h3 id="1-1-介绍"><a href="#1-1-介绍" class="headerlink" title="1.1 介绍"></a>1.1 介绍</h3><p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210829234142590.png" alt="image-20210829234142590"> </p>
+                    <h2 id="Nginx-概述"><a href="#Nginx-概述" class="headerlink" title="Nginx-概述"></a>Nginx-概述</h2><h3 id="1-1-介绍"><a href="#1-1-介绍" class="headerlink" title="1.1 介绍"></a>1.1 介绍</h3><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5q6nrd7j206t01pgli.jpg" alt="image-20210829234142590"> </p>
 <p>Nginx是一款轻量级的Web服务器&#x2F;反向代理服务器及电子邮件（IMAP&#x2F;POP3）代理服务器。其特点是占有内存少，并发能力强，事实上nginx的并发能力在同类型的网页服务器中表现较好，中国大陆使用nginx的网站有：百度、京东、新浪、网易、腾讯、淘宝等。</p>
 <p>Nginx是由<strong>伊戈尔·赛索耶夫</strong>为俄罗斯访问量第二的Rambler.ru站点（俄文：Рамблер）开发的，第一个公开版本0.1.0发布于2004年10月4日。</p>
 <p>官网：<a target="_blank" rel="noopener" href="https://nginx.org/">https://nginx.org/</a></p>
 <h3 id="4-2-下载和安装"><a href="#4-2-下载和安装" class="headerlink" title="4.2 下载和安装"></a>4.2 下载和安装</h3><h4 id="4-2-1-下载"><a href="#4-2-1-下载" class="headerlink" title="4.2.1 下载"></a>4.2.1 下载</h4><p>在Nginx的官网的下载页面中(<a target="_blank" rel="noopener" href="http://nginx.org/en/download.html)%EF%BC%8C%E5%B0%B1%E5%B1%95%E7%A4%BA%E4%BA%86%E5%BD%93%E5%89%8DNginx%E7%89%88%E6%9C%AC%EF%BC%8C%E5%B9%B6%E6%8F%90%E4%BE%9B%E4%BA%86%E4%B8%8B%E8%BD%BD%E7%9A%84%E8%BF%9E%E6%8E%A5%E3%80%82">http://nginx.org/en/download.html)，就展示了当前Nginx版本，并提供了下载的连接。</a> 如下： </p>
-<img src="/Users/zhangminghao/czbk/瑞吉外卖/java140项目一/12.项目优化2_主从复制/笔记/assets/image-20210829234623737.png" alt="image-20210829234623737" style="zoom:80%;" /> 
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5q8htihj217c0inwk1.jpg" alt="image-20210829234623737" style="zoom:80%;" /> 
 
 <p>在本项目中，我们所学习的Nginx选择的是稳定版本的1.16这个版本，我们可以直接从官网下载</p>
 <h4 id="4-2-2-安装"><a href="#4-2-2-安装" class="headerlink" title="4.2.2 安装"></a>4.2.2 安装</h4><p><strong>1). 安装依赖包</strong></p>
@@ -472,7 +539,7 @@ character_set_server=utf8
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp; make install</span><br></pre></td></tr></table></figure>
 
 <h3 id="4-3-目录结构"><a href="#4-3-目录结构" class="headerlink" title="4.3 目录结构"></a>4.3 目录结构</h3><p>安装完Nginx后，我们可以切换到Nginx的安装目录(&#x2F;usr&#x2F;local&#x2F;nginx)，先来熟悉一下Nginx的目录结构，如下图：</p>
-<img src="/Users/zhangminghao/czbk/瑞吉外卖/java140项目一/12.项目优化2_主从复制/笔记/assets/image-20210830000933352.png" alt="image-20210830000933352" style="zoom:90%;" /> 
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qd1z0zj21310jl78b.jpg" alt="image-20210830000933352" style="zoom:90%;" /> 
 
 <blockquote>
 <p>备注： </p>
@@ -518,20 +585,20 @@ character_set_server=utf8
 <p><strong>1). 查看版本</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./nginx -v</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830223435585.png" alt="image-20210830223435585"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qdraafj213002d0t9.jpg" alt="image-20210830223435585"> </p>
 <p><strong>2). 检查配置文件</strong></p>
 <p>修改了nginx.conf核心配置文件之后，在启动Nginx服务之前，可以先检查一下conf&#x2F;nginx.conf文件配置的是否有错误，命令如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./nginx -t</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830223511878.png" alt="image-20210830223511878"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qfj1shj211z03u75q.jpg" alt="image-20210830223511878"> </p>
 <p><strong>3). 启动</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./nginx</span><br></pre></td></tr></table></figure>
 
 <p>启动之后，我们可以通过ps -ef指令来查看nginx的进程是否存在。</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830224019661.png" alt="image-20210830224019661"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qglixpj2139036t9x.jpg" alt="image-20210830224019661"> </p>
 <p>注意： nginx服务启动后，默认就会有两个进程。</p>
 <p>启动之后，我们可以直接访问Nginx的80端口， <a target="_blank" rel="noopener" href="http://192.168.200.200/">http://192.168.200.200</a></p>
-<img src="/Users/zhangminghao/czbk/瑞吉外卖/java140项目一/12.项目优化2_主从复制/笔记/assets/image-20210830224605952.png" alt="image-20210830224605952" style="zoom:80%;" /> 
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qiatq9j20wg07e0u8.jpg" alt="image-20210830224605952" style="zoom:80%;" /> 
 
 
 
@@ -550,20 +617,16 @@ character_set_server=utf8
 <p>停止之后，我们可以查看nginx的进程： </p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep nginx</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830224121489.png" alt="image-20210830224121489"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qkle8hj21550330tk.jpg" alt="image-20210830224121489"> </p>
 <p><strong>5). 重新加载</strong></p>
 <p>当修改了Nginx配置文件后，需要重新加载才能生效，可以使用下面命令重新加载配置文件：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./nginx -s reload</span><br></pre></td></tr></table></figure>
 
-
-
-
-
 <h3 id="5-2-环境变量配置"><a href="#5-2-环境变量配置" class="headerlink" title="5.2 环境变量配置"></a>5.2 环境变量配置</h3><p>在上述我们在使用nginx命令在进行服务的启动、停止、重新加载时，都需要用到一个指令nginx，而这个指令是在nginx&#x2F;sbin目录下的，我们每一次使用这个指令都需要切换到sbin目录才可以，使用相对繁琐。那么我们能不能在任意目录下都可以执行该指令来操作nginx呢？答案是可以的，配置nginx的环境变量即可。</p>
 <p>通过vim编辑器，打开&#x2F;etc&#x2F;profile文件, 在PATH环境变量中增加nginx的sbin目录，如下： </p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830225544343.png" alt="image-20210830225544343"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qmhcirj20v302wt9b.jpg" alt="image-20210830225544343"> </p>
 <p>修改完配置文件之后，需要执行 source &#x2F;etc&#x2F;profile 使文件生效。 接下来，我们就可以在任意目录下执行nginx的指令了，如： </p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830225702899.png" alt="image-20210830225702899"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qoam9sj2127043t9y.jpg" alt="image-20210830225702899"> </p>
 <h2 id="6-Nginx-应用"><a href="#6-Nginx-应用" class="headerlink" title="6. Nginx-应用"></a>6. Nginx-应用</h2><p>介绍了并安装了Nginx之后，本章节将要讲解的是Nginx的使用，我们主要从以下四个方面进行讲解。</p>
 <h3 id="6-1-配置文件结构"><a href="#6-1-配置文件结构" class="headerlink" title="6.1 配置文件结构"></a>6.1 配置文件结构</h3><p>nginx的配置文件(conf&#x2F;nginx.conf)整体上分为三部分: 全局块、events块、http块。这三块的分别配置什么样的信息呢，看下表： </p>
 <table>
@@ -587,7 +650,7 @@ character_set_server=utf8
 </tr>
 </tbody></table>
 <p>具体结构图如下: </p>
-<img src="/Users/zhangminghao/czbk/瑞吉外卖/java140项目一/12.项目优化2_主从复制/笔记/assets/image-20210830230827686.png" alt="image-20210830230827686" style="zoom:80%;" /> 
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qun39kj20rf0k7dj8.jpg" alt="image-20210830230827686" style="zoom:80%;" /> 
 
 <blockquote>
 <p>在全局块、events块以及http块中，我们经常配置的是http块。</p>
@@ -598,26 +661,22 @@ character_set_server=utf8
 <p>将静态资源部署到Nginx非常简单，只需要将文件复制到Nginx安装目录下的html目录中即可。</p>
 <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="attr">listen</span> <span class="string">80;				#监听端口	</span></span><br><span class="line">    <span class="attr">server_name</span> <span class="string">localhost;	#服务器名称</span></span><br><span class="line">    <span class="attr">location</span> <span class="string">/ &#123;			#匹配客户端请求url</span></span><br><span class="line">        <span class="attr">root</span> <span class="string">html;			#指定静态资源根目录</span></span><br><span class="line">        <span class="attr">index</span> <span class="string">index.html;	#指定默认首页</span></span><br><span class="line">    <span class="attr">&#125;</span></span><br><span class="line"><span class="attr">&#125;</span></span><br></pre></td></tr></table></figure>
 
-
-
-
-
 <h4 id="6-2-2-测试"><a href="#6-2-2-测试" class="headerlink" title="6.2.2 测试"></a>6.2.2 测试</h4><p>在资料中，我们提供了一个静态的html文件，我们需要将这个文件部署到nginx中，然后通过nginx访问html静态资源。</p>
 <p><strong>1). 将静态资源上传到 &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;html 目录</strong></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830232238402.png" alt="image-20210830232238402"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r16sh0j213v04qmyi.jpg" alt="image-20210830232238402"> </p>
 <p><strong>2). 启动nginx</strong></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830232419462.png" alt="image-20210830232419462"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r27gfuj214609dadc.jpg" alt="image-20210830232419462"> </p>
 <p><strong>3). 访问</strong></p>
 <p><a target="_blank" rel="noopener" href="http://192.168.100.100/hello.html">http://192.168.100.100/hello.html</a></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20220220180550093.png" alt="image-20220220180550093"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r4itx5j20g605daa9.jpg" alt="image-20220220180550093"> </p>
 <p><a target="_blank" rel="noopener" href="http://192.168.100.100/">http://192.168.100.100</a> ， 访问该地址，访问的是nginx的默认首页</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20220220180207165.png" alt="image-20220220180207165"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r6eu4aj20lv0a8ta8.jpg" alt="image-20220220180207165"></p>
 <p><strong>4). 配置首页</strong></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830232720821.png" alt="image-20210830232720821"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r5ooaij20lv0a8ta8.jpg" alt="image-20210830232720821"> </p>
 <p>如果我们需要将hello.html作为nginx的首页，可以修改location的index指令，配置为hello.html，如下：</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830233019489.png" alt="image-20210830233019489"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r9td6ij214609dadc.jpg" alt="image-20210830233019489"> </p>
 <p>配置完毕后，我们可以通过指令，来检查配置文件是否配置正确： nginx -t</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830233122708.png" alt="image-20210830233122708"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r82i9mj214609dadc.jpg" alt="image-20210830233122708"> </p>
 <p>配置文件修改了，我们需要重新加载一下，才可以生效： </p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
 
@@ -625,28 +684,28 @@ character_set_server=utf8
 
 <p><strong>5). 访问</strong></p>
 <p><a target="_blank" rel="noopener" href="http://192.168.100.100/">http://192.168.100.100</a></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20220220180805583.png" alt="image-20220220180805583"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5radelvj20h4054weq.jpg" alt="image-20220220180805583"> </p>
 <h3 id="6-3-反向代理"><a href="#6-3-反向代理" class="headerlink" title="6.3 反向代理"></a>6.3 反向代理</h3><h4 id="6-3-1-概念介绍"><a href="#6-3-1-概念介绍" class="headerlink" title="6.3.1 概念介绍"></a>6.3.1 概念介绍</h4><p>1). 正向代理</p>
 <p>正向代理服务器是一个位于客户端和原始服务器(origin server)之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标(原始服务器)，然后代理向原始服务器转交请求并将获得的内容返回给客户端。</p>
 <p><strong>正向代理的典型用途是为在防火墙内的局域网客户端提供访问Internet的途径</strong>。</p>
 <p>正向代理一般是<strong>在客户端设置代理服务器</strong>，通过代理服务器转发请求，最终访问到目标服务器。</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830233450415.png" alt="image-20210830233450415"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rdb0ajj20h507imxi.jpg" alt="image-20210830233450415"> </p>
 <p>2). 反向代理</p>
 <p>反向代理服务器位于用户与目标服务器之间，<strong>但是对于用户而言，反向代理服务器就相当于目标服务器</strong>，即用户直接访问反向代理服务器就可以获得目标服务器的资源，反向代理服务器负责将请求转发给目标服务器。<strong>用户不需要知道目标服务器的地址，也无须在用户端作任何设定，对于用户来说，访问反向代理服务器是完全无感知的。</strong></p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210830233634695.png" alt="image-20210830233634695"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rewzahj20of09o754.jpg" alt="image-20210830233634695"> </p>
 <p>那么在本小节，我们就是要使用nginx来作为反向代理服务器使用。 在nginx中，我们可以在nginx.conf中配置反向代理: </p>
 <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="attr">listen</span> <span class="string">80;</span></span><br><span class="line">    <span class="attr">server_name</span> <span class="string">localhost;</span></span><br><span class="line">    <span class="attr">location</span> <span class="string">/ &#123;</span></span><br><span class="line">        <span class="attr">proxy_pass</span> <span class="string">http://192.168.100.200:8080; 	#反向代理配置，将请求转发到指定服务</span></span><br><span class="line">    <span class="attr">&#125;</span></span><br><span class="line"><span class="attr">&#125;</span></span><br></pre></td></tr></table></figure>
 
 <p>上述配置的含义为: 当我们访问nginx的80端口时，</p>
 <p>根据反向代理配置，会将请求转发到 <a target="_blank" rel="noopener" href="http://192.168.100.200:8080/">http://192.168.100.200:8080</a> 对应的服务上。</p>
 <h4 id="6-3-2-测试"><a href="#6-3-2-测试" class="headerlink" title="6.3.2 测试"></a>6.3.2 测试</h4><p>需求: 在192.168.100.200这台服务器中部署了java应用，运行端口为8080，并提供了一个可访问的链接 &#x2F;hello。现在我们需要在访问nginx时，通过nginx将请求转发到192.168.100.200:8080的服务。</p>
-<img src="/Users/zhangminghao/czbk/瑞吉外卖/java140项目一/12.项目优化2_主从复制/笔记/assets/image-20210830235803013.png" alt="image-20210830235803013" style="zoom:67%;" /> 
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rgs9s9j20rc06vq3j.jpg" alt="image-20210830235803013" style="zoom:67%;" /> 
 
 
 
 <p><strong>1). 在192.168.100.200 部署服务并启动</strong></p>
 <p>将资料中提供的 helloworld-8080.jar 上传到服务器端，并通过指令 java -jar helloworld-8080.jar 运行服务。</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210831000152199.png" alt="image-20210831000152199"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rmlqi8j21g40hu48d.jpg" alt="image-20210831000152199"> </p>
 <p><strong>2). 在192.168.100.100中的nginx.conf中配置反向代理</strong></p>
 <p>进入nginx的安装目录，并编辑配置文件nginx.conf:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/nginx/conf/</span><br><span class="line">vim nginx.conf</span><br></pre></td></tr></table></figure>
@@ -656,7 +715,7 @@ character_set_server=utf8
 <p><strong>3). 检查配置文件，并重新加载</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20210831001021252.png" alt="image-20210831001021252"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rnv8hxj213u02dmy1.jpg" alt="image-20210831001021252"> </p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
 
 
@@ -666,7 +725,7 @@ character_set_server=utf8
 <h3 id="6-4-负载均衡"><a href="#6-4-负载均衡" class="headerlink" title="6.4 负载均衡"></a>6.4 负载均衡</h3><h4 id="6-4-1-概念介绍"><a href="#6-4-1-概念介绍" class="headerlink" title="6.4.1 概念介绍"></a>6.4.1 概念介绍</h4><p>早期的网站流量和业务功能都比较简单，单台服务器就可以满足基本需求，但是随着互联网的发展，业务流量越来越大并且业务逻辑也越来越复杂，单台服务器的性能及单点故障问题就凸显出来了，因此需要多台服务器组成应用集群，进行性能的水平扩展以及避免单点故障出现。</p>
 <p><strong>应用集群：</strong>将同一应用部署到多台机器上，组成应用集群，接收负载均衡器分发的请求，进行业务处理并返回响应数据</p>
 <p><strong>负载均衡器：</strong>将用户请求根据对应的负载均衡算法分发到应用集群中的一台服务器进行处理</p>
-<img src="/Users/zhangminghao/czbk/瑞吉外卖/java140项目一/12.项目优化2_主从复制/笔记/assets/image-20210831080743617.png" alt="image-20210831080743617" style="zoom:80%;" />  
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rogb0lj213u02dmy1.jpg" alt="image-20210831080743617" style="zoom:80%;" />  
 
 <p>此处的负载均衡器，我们将会使用Nginx来实现，而Nginx的负载均衡是基于反向代理的，只不过此时所代理的服务器不是一台，而是多台。</p>
 <h4 id="6-4-2-测试"><a href="#6-4-2-测试" class="headerlink" title="6.4.2 测试"></a>6.4.2 测试</h4><p><strong>1). 将资料中提供的两个jar包，上传到 192.168.100.200 服务器上</strong></p>
@@ -710,13 +769,13 @@ character_set_server=utf8
 
 
 <p>具体的配置位置如下: </p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20220220182717939.png" alt="image-20220220182717939"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rsejyxj20qc08s0tf.jpg" alt="image-20220220182717939"> </p>
 <p><strong>4). 重新加载nginx配置文件,访问</strong></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
 
 <p>测试时,我们直接访问nginx(<a target="_blank" rel="noopener" href="http://192.168.100.100/">http://192.168.100.100</a>), 此时nginx会根据负载均衡策略,将请求转发到后面的两台服务器。</p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20220220182548353.png" alt="image-20220220182548353"> </p>
-<p><img src="/Users/zhangminghao/czbk/%E7%91%9E%E5%90%89%E5%A4%96%E5%8D%96/java140%E9%A1%B9%E7%9B%AE%E4%B8%80/12.%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%962_%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/%E7%AC%94%E8%AE%B0/assets/image-20220220182613070.png" alt="image-20220220182613070"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5s04giaj20p403omxc.jpg" alt="image-20220220182548353"> </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rrfbfhj20ow03v74g.jpg" alt="image-20220220182613070"> </p>
 <p>在上述的测试过程中，我们看到请求均衡的转发到了8080和8081，因为模式的负载均衡策略是&#x3D;&#x3D;轮询&#x3D;&#x3D;。</p>
 <p><font color="red" size="5">注意: 上述所有涉及到的端口号，都需要在对应的服务器的防火墙中开放，或者彻底关闭防火墙</font></p>
 <h4 id="6-4-3-负载均衡策略"><a href="#6-4-3-负载均衡策略" class="headerlink" title="6.4.3 负载均衡策略"></a>6.4.3 负载均衡策略</h4><p>处理上述默认的轮询策略以外，在Nginx中还提供了其他的负载均衡策略，如下： </p>
@@ -899,9 +958,9 @@ character_set_server=utf8
 <ul>
 <li>比较</li>
 </ul>
-<p>![image-20220511191019291](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220511191019291.png)</p>
-<h1 id="JVM内存结构图"><a href="#JVM内存结构图" class="headerlink" title="JVM内存结构图"></a>JVM内存结构图</h1><p>![image-20220511192331436](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220511192331436.png)</p>
-<p><img src="/Users/zhangminghao/Desktop/WechatIMG244.png" alt="WechatIMG244"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5weo104j20mx0dx406.jpg" alt="image-20220511191019291"></p>
+<h1 id="JVM内存结构图"><a href="#JVM内存结构图" class="headerlink" title="JVM内存结构图"></a>JVM内存结构图</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5whivtvj20qs0e8ta9.jpg" alt="image-20220511192331436"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wj7543j20tl0gqgon.jpg" alt="WechatIMG244"></p>
 <h1 id="内存结构之程序计数器-寄存器"><a href="#内存结构之程序计数器-寄存器" class="headerlink" title="内存结构之程序计数器(寄存器)"></a>内存结构之程序计数器(寄存器)</h1><p>作用:</p>
 <p>​       记住下一条JVM指令的执行地址</p>
 <p>特点:</p>
@@ -920,7 +979,7 @@ character_set_server=utf8
 <p>​    并不是,每个栈内存大小初始值一般都是1024KB,除了windows系统会根据虚拟内存影响内存大小,栈内存越大</p>
 <p>线程数越少,线程数少了就会影响执行效率,一般让栈内存扩大只是为了一些方法的递归调用,不容易栈溢出.并不会因为</p>
 <p>栈内存越大,执行效率越高,反而会让线程减少,降低执行效率.(一般采用默认大小就可以了)</p>
-<p>![image-20220511201653094](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220511201653094.png)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wmfr7xj20bu0600t2.jpg" alt="image-20220511201653094"></p>
 <p>3.方法内的局部变量是否线程安全?</p>
 <p>​    首先要看,这个变量是对外共享的,还是对每个线程私有的,比如两个线程同时调用一个方法,方法中的局部变量是static修饰的,那么这个变量是共享的,因为静态变量只加载一次存在于静态区域,线程也就自然不安全,如果这个变量是个普通的局部变量,那么不会有线程安全问题,因为每个线程调用方法时都会生成对应线程的的栈帧.</p>
 <p>​      <strong>如果方法内部局部变量没有逃离方法的作用访问,他是线程安全的</strong></p>
@@ -933,16 +992,16 @@ character_set_server=utf8
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#查看进程对cup占用情况-------&gt;只能定位进程,不能定位线程</span><br><span class="line">zhangminghao@zhangminghaodeMacBook-Pro ~ % top</span><br><span class="line">PID    COMMAND      %CPU TIME     #TH   #WQ   #PORT MEM    PURG   CMPRS  PGRP</span><br><span class="line">1704   FinalShell            63.3 02:14:05       150      0       1030  1364M       0B     360M   1704</span><br><span class="line">368    WindowServer     35.1 73:51.63        21        5       2665+ 379M-  43M+     57M       368</span><br><span class="line">1687   iTerm2                 30.8 04:04.45 8      5       314     54M    3536K     6608K       1687</span><br><span class="line"></span><br><span class="line">#查看线程对cup的占用情况</span><br><span class="line">#H:进程里的线程数</span><br><span class="line">#eo:需要展示的字段</span><br><span class="line">zhangminghao@zhangminghaodeMacBook-Pro ~ %  ps H -eo pid,tid,%cpu | grep 进程id    </span><br><span class="line"></span><br><span class="line">#利用jdk提供的工具命令,可以根据线程id找到有问题的线程,进一步定位到问题代码的源码行号</span><br><span class="line">zhangminghao@zhangminghaodeMacBook-Pro ~ % jstack 进程id   </span><br></pre></td></tr></table></figure>
 
 <p><strong>通过进程id的16进制来找出对应的线程,知道了是那个那个程序运行出了问题</strong></p>
-<img src="/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220512203716530.png" alt="image-20220512203716530" style="zoom: 50%;" />
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wpm1lsj210b0ipn1g.jpg" alt="image-20220512203716530" style="zoom: 50%;" />
 
 <p><strong>通过信息找到java代码中的行号,检查到cpu占用过高的原因</strong></p>
-<img src="/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220512203955346.png" alt="image-20220512203955346"  />
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wr4cotj20c2076t96.jpg" alt="image-20220512203955346"  />
 
 
 
 <h3 id="案例2-运行很长时间没有结果"><a href="#案例2-运行很长时间没有结果" class="headerlink" title="案例2:运行很长时间没有结果"></a>案例2:运行很长时间没有结果</h3><p> 1,通过jstack 进程id命令查看线程执行信息</p>
 <p>2.观察最后的输出结果(发现死锁问题)</p>
-<p>![image-20220512210643175](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220512210748789.png)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ws4yldj20t30g9dit.jpg" alt="image-20220512210643175"></p>
 <h1 id="本地方法栈Native-Method-Stack"><a href="#本地方法栈Native-Method-Stack" class="headerlink" title="本地方法栈Native Method Stack"></a>本地方法栈Native Method Stack</h1><h3 id="什么是本地方法"><a href="#什么是本地方法" class="headerlink" title="什么是本地方法"></a>什么是本地方法</h3><p>​    本地方法Native Method ,指的是那些不是JAVA代码编写的方法</p>
 <h3 id="本地方法的作用"><a href="#本地方法的作用" class="headerlink" title="本地方法的作用"></a>本地方法的作用</h3><p>​    JAVA代码是受限制的,有时候不能直接跟底层操作系统打交道,需要调用一些 用C或者C++编写的本地方法来间接调用执行.</p>
 <h1 id="Heap堆"><a href="#Heap堆" class="headerlink" title="Heap堆"></a>Heap堆</h1><h3 id="什么是堆"><a href="#什么是堆" class="headerlink" title="什么是堆"></a>什么是堆</h3><p>​    通过new关键字,创建的对象都会使用堆内存,堆内存默认大小是4个G </p>
@@ -953,7 +1012,7 @@ character_set_server=utf8
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            List&lt;String&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();-----------一直在做死循环做添加操作,且是引用中状态,导致堆不能垃圾回收</span><br><span class="line">            <span class="type">String</span> <span class="variable">a</span> <span class="operator">=</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">            <span class="keyword">while</span>(<span class="literal">true</span>)&#123;---------</span><br><span class="line">                list.add(a);</span><br><span class="line">                a = a+a;</span><br><span class="line">                i++;</span><br><span class="line">                System.out.println(i);-----------&gt;最终输出<span class="number">26</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(i);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">#异常信息</span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">	at java.util.Arrays.copyOf(Arrays.java:<span class="number">3332</span>)</span><br><span class="line">	at java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:<span class="number">124</span>)</span><br><span class="line">	at java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:<span class="number">448</span>)</span><br><span class="line">	at java.lang.StringBuilder.append(StringBuilder.java:<span class="number">136</span>)</span><br><span class="line">	at com.itheima.test.Test.main(Test.java:<span class="number">19</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>堆内存默认为4G,通过设置堆内存空间为8m,发现在i值到达17的时候就内存溢出了,所以可以通过这种方式,尽早的暴露出内存溢出的问题:</p>
-<p>![image-20220513203904487](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220513203904487.png)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wvth3wj218o0u0tej.jpg" alt="image-20220513203904487"></p>
 <h1 id="堆的内存诊断jmap"><a href="#堆的内存诊断jmap" class="headerlink" title="堆的内存诊断jmap"></a>堆的内存诊断jmap</h1><h3 id="1-jps工具"><a href="#1-jps工具" class="headerlink" title="1.jps工具:"></a>1.jps工具:</h3><p>​    是 java 提供的一个用来显示当前所有 java 进程的 pid 的命令,可以查看当前系统中有那些JAVA进程</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zhangminghao<span class="meta">@localhost</span> java-Spring % jps </span><br><span class="line"><span class="number">1488</span> </span><br><span class="line"><span class="number">1956</span> Jps</span><br><span class="line"><span class="number">1684</span> Launcher</span><br></pre></td></tr></table></figure>
 
@@ -962,7 +1021,263 @@ character_set_server=utf8
 <h3 id="3-jconsole工具"><a href="#3-jconsole工具" class="headerlink" title="3,jconsole工具"></a>3,jconsole工具</h3><p>​     图形界面的,多功能的检测工具,可以连续检测</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zhangminghao<span class="meta">@localhost</span> java-Spring % jconsole</span><br></pre></td></tr></table></figure>
 
-<p>![image-20220513210926906](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220513210926906.png)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ww8dmgj20qf0713zs.jpg" alt="image-20220513210926906"></p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/05/10/Mysql%E7%B4%A2%E5%BC%95-%E6%A0%B8%E5%BF%83/">Mysql索引(核心)</a>
+            </div>
+            <p class="sub">May 10 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="索引的概述"><a href="#索引的概述" class="headerlink" title="索引的概述"></a>索引的概述</h1><p>索引是帮助Mysql高效获取数据的一个有序的数据结构</p>
+<p>优缺点:</p>
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tqtt6gj20r504ajru.jpg" alt="image-20220510102517966" style="zoom:150%;" />
+
+<h1 id="索引的结构"><a href="#索引的结构" class="headerlink" title="索引的结构"></a>索引的结构</h1><p>Mysql的索引是在存储引擎实层实现的,不同的存储索引有不同的结构,主要包括以下几种</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5trrd5nj20r907gdgr.jpg" alt="image-20220510102752768"></p>
+<p>不同存储引擎支持的索引结构</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ts6jk2j20r407j3yx.jpg" alt="image-20220510102843612"></p>
+<p><strong>平常所说的索引,如果没有特别指明,都是值B+树结构组织的索引</strong></p>
+<h1 id="各个数据结构的优缺点"><a href="#各个数据结构的优缺点" class="headerlink" title="各个数据结构的优缺点"></a>各个数据结构的优缺点</h1><ul>
+<li>二叉树和红黑树</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tu4tlzj20rz0cg3zr.jpg" alt="image-20220510103435512"></p>
+<ul>
+<li>B树(多路平衡查找树)</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5txaoxkj20tc0cg3zw.jpg" alt="image-20220510103600779"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5txsdvfj20ry0c575o.jpg" alt="image-20220510104003733"><strong>B-Tree(B树)总结:①指针比key多一个②当key等于最大度数时(违背x阶时)中间元素向上分类</strong></p>
+<ul>
+<li>B+树</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tz7djwj20ri08ydgp.jpg" alt="image-20220510104651047"></p>
+<p><strong>B+Tree数相对于B-Tree区别:</strong></p>
+<p><strong>①:所有数据都会出现在叶子节点</strong></p>
+<p><strong>②:叶子节点行程一个单项链表的结构</strong></p>
+<ul>
+<li>Hash</li>
+</ul>
+<p>  <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u4lqq4j20sc0cedht.jpg" alt="image-20220510105739506"></p>
+<p>  索引特点:</p>
+<p>  1.Hash索引只能用于对等比较(&#x3D;,in),不支持范围查询(between,&gt;,&lt;,…),因为存储顺序不一致</p>
+<p>  2.无法利用索引完成排序操作</p>
+<p>  3.查询效率高,通常只需要一次检索就可以了,效率通常要高于B+Tree树(这里的通常指的是,没有哈希碰撞的前提下)</p>
+<p>​    存储引擎支持:</p>
+<p>​    在Mysql中,支持hash索引的是Memory引擎,而InnoDB中具有自适应hash功能,hash索引是存储引擎根据B+Tree索引在指定条件下自动构建的.</p>
+<h1 id="Mysql中的B-树索引"><a href="#Mysql中的B-树索引" class="headerlink" title="Mysql中的B+树索引"></a>Mysql中的B+树索引</h1><p>Mysql索引数据结构对经典的B+Tree进行了优化,在原B+Tree的基础上,增加了一个指向相邻叶子节点的链表指针,就形成了带有顺序指针的B+Tree,提高区间访问的性能**(就是叶子节点的单向链表变成了双向链表)**</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u5j8fhj20rj09075i.jpg" alt="image-20220510105526048"></p>
+<h1 id="为什么InnoDB存储引擎选择使用B-Tree索引结构"><a href="#为什么InnoDB存储引擎选择使用B-Tree索引结构" class="headerlink" title="为什么InnoDB存储引擎选择使用B+Tree索引结构"></a>为什么InnoDB存储引擎选择使用B+Tree索引结构</h1><p>①相对于二叉树,层级更少,搜索效率更高</p>
+<p>②对于B-Tree,无论是叶子节点还是非叶子节点,都会保存数据,这样导致一页(磁盘块,一个节点一个磁盘块,16kb)中存储的键值减少,指针跟着减少,要同样保存大量数据,只能增加树的高度,导致性能降低(B+Tree只有叶子节点才会存储行数据,其他节点只起到了索引的作用,除了叶子节点,其他的页只存放key和索引,因为不存储数据,所以可以存放更多的索引和key,也就可以降低树的高度,层级变小,从而增加查询效率)<strong>而且在mysql中对b+树索引进行了优化,对叶子节点的单项链表变成了双向链表,便于范围搜索和排序</strong></p>
+<p>③相对于Hash索引(只能进行等值匹配),B+Tree支持范围匹配及排序操作</p>
+<h1 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u92miej20r3077t9f.jpg" alt="image-20220510113432105"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u9yambj20rd0ac75g.jpg" alt="image-20220510112749285"></p>
+<p><strong>就会隐式的定义一个 rowid 作为聚集索引</strong></p>
+<h1 id="InnoDB—-gt-回表查询"><a href="#InnoDB—-gt-回表查询" class="headerlink" title="InnoDB—-&gt;回表查询"></a>InnoDB—-&gt;回表查询</h1><p>如果想要执行类似于:selecy*from where name &#x3D; ‘Arm’ 这种sql语句,那么mysql先回根据二级索引找到对应的主键,或者带有唯一约束的值,然后通过主键或者唯一约束的值来通过聚集索引来查询对应row(行数据)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uc5k8yj20xs0h80uo.jpg" alt="image-20220510115518828"></p>
+<h1 id="InnoDB主键索引的B-Tree高度为多高呢"><a href="#InnoDB主键索引的B-Tree高度为多高呢" class="headerlink" title="InnoDB主键索引的B+Tree高度为多高呢?"></a>InnoDB主键索引的B+Tree高度为多高呢?</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5udhri1j20jl0hidhd.jpg" alt="image-20220510123359487"></p>
+<p><strong>可以得出,用innodb来存储2000多万条数据,树也只有三层,大大的提高了检索效率!</strong></p>
+<h1 id="索引的语法"><a href="#索引的语法" class="headerlink" title="索引的语法"></a>索引的语法</h1><ul>
+<li><p>创建索引:<strong>构建B+Tree的数据结构,构建一次,一劳永逸,空间换时间</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* create index idx_user_name on <span class="title function_">tb_user</span><span class="params">(name)</span>;</span><br><span class="line">* create unique index idx_user_phone on <span class="title function_">tb_user</span><span class="params">(phone)</span>;</span><br><span class="line">* create index idx_user_pro_age_sta on <span class="title function_">tb_user</span><span class="params">(profession,age,status)</span>; ---&gt; 创建联合索引</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看索引:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show index from tb_user;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除索引:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop index idx_user_phone on tb_user</span><br></pre></td></tr></table></figure>
+
+<p><strong>SQL语句的优化一般优化的是查询语句,在优化查询语句中索引占主导地位</strong></p>
+</li>
+</ul>
+<h1 id="sql优化性能分析"><a href="#sql优化性能分析" class="headerlink" title="sql优化性能分析"></a>sql优化性能分析</h1><ul>
+<li><p>SQL的执行频率</p>
+<blockquote>
+<p>Mysql客户端链接成功后,通过Show[session|global] status 命令可以提供服务器状态信息,通过如下命令,可以查看当前数据库的insert,update,delete,select的访问频次</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW GLOBAL STATUS LIKE <span class="string">&#x27;COM_______&#x27;</span> -----&gt;<span class="number">7</span>个下划线代表<span class="number">7</span>个字符</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uhipaej20e109qmxx.jpg" alt="image-20220510125834554"></p>
+</blockquote>
+</li>
+</ul>
+<p><strong>如果我们使用执行频率查看到当前数据库select查询的执行频次占据绝大部分,我们就需要对当前数据库来进行优化</strong></p>
+<ul>
+<li><p>慢查询日志</p>
+</li>
+<li><blockquote>
+<p>  慢查询日志记录了所有执行时间超过指定参数(long_query_time,单位:妙,默认10妙)的所有sql语句的日志,我们可以通过查询慢查询日志,来定位执行效率比较低的语句,来做对应的优化处理.</p>
+<p>  Mysql的慢查询日志默认没有开启,需要在Mysql的配置文件(&#x2F;etc&#x2F;my.cnf)中配置如下信息:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#查询慢查询日志是否开启</span><br><span class="line">mysql&gt; show variables like &#x27;slow_query_log&#x27;;</span><br><span class="line">+----------------+-------+</span><br><span class="line">| Variable_name  | Value |</span><br><span class="line">+----------------+-------+</span><br><span class="line">| slow_query_log | OFF   |  -------&gt;可以看到默认开关是关闭的</span><br><span class="line">+----------------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">#可以在/etc/my.cnf中配置一下信息</span><br><span class="line">#开启Mysql慢查询日志开关</span><br><span class="line">slow_query_log=1</span><br><span class="line">#设置慢查询日志的时间为2妙,sql语执行时间超过2秒,就会视为慢查询,记录慢查询日志</span><br><span class="line">long_query_time=2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>配置完毕后,可以通过一下命令重启Mysql服务器进行测试,查询慢日志文件中记录的信息&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;localhost-show.log</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#重启mysql服务</span><br><span class="line">  systemctl restart mysqld;</span><br><span class="line"> #进入mysql继续用命令查看当前慢日志开关</span><br><span class="line">mysql&gt; show variables like &#x27;slow_query_log&#x27;;</span><br><span class="line">+----------------+-------+</span><br><span class="line">| Variable_name  | Value |</span><br><span class="line">+----------------+-------+</span><br><span class="line">| slow_query_log | ON    | -------&gt;可以看到开关从OFF变成了ON,表示已经开启慢查询日志</span><br><span class="line">+----------------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>当慢查询日志开启后,慢查询日志的位置在&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;的目录下,文件名教localhost-slow.log</strong></p>
+<p><strong>注意:但是只用慢查询日志的话,只能锁定一些自己定义的慢查询时间(设定的预设时间),来查到查询慢的sql语句,比较笼统,如果有的sql语句在1.98s或者1.99s其实也是属于慢查询,但是因为配置的原因并不会记录到慢查询日志中去,所以这个时候就要用到profiling工具来辅助sql调优</strong></p>
+</blockquote>
+</li>
+<li><p>Profile详情</p>
+<blockquote>
+<p>show profiles 能够在做SQL优化的时候帮助我们了解时间都耗费到哪里去了.通过have_profiling参数,能够看到Mysql是否支持</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#profile操作</span><br><span class="line">mysql&gt; SELECT @@have_profiling;</span><br><span class="line">+------------------+</span><br><span class="line">| @@have_profiling |</span><br><span class="line">+------------------+</span><br><span class="line">| YES              |    ---------&gt;可以看到当前数据库支持profile</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>支持是支持,但是还要检查一下profiling是否是开启状态,<strong>默认是关闭的</strong>,可以通过session&#x2F;global级别开启profiling:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#查看是否开启了profiling开关</span><br><span class="line">mysql&gt; select @@profiling;</span><br><span class="line">+-------------+</span><br><span class="line">| @@profiling |</span><br><span class="line">+-------------+</span><br><span class="line">|           0 |     ------&gt;可以看到默认是关闭的</span><br><span class="line">+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#设置profiling的开关</span><br><span class="line">mysql&gt; set profiling = 1;   ---------&gt;设置开关为1,就是打开</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select @@profiling;</span><br><span class="line">+-------------+</span><br><span class="line">| @@profiling |</span><br><span class="line">+-------------+</span><br><span class="line">|           1 |     ---------------&gt;再次查看发现,profiling开关已经被开启了</span><br><span class="line">+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p> 这个时候就可以通过一下语句来查询,每个查询的sql语句的详细执行情况了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">#查看每一条sql的耗时的基本情况</span><br><span class="line">mysql&gt; show profiles;   </span><br><span class="line">+----------+------------+--------------------+</span><br><span class="line">| Query_ID | Duration   | Query              |</span><br><span class="line">+----------+------------+--------------------+</span><br><span class="line">|        1 | 0.00013000 | select @@profiling |</span><br><span class="line">|        2 | 0.00011800 | SELECT DATABASE()  |</span><br><span class="line">|        3 | 0.00166125 | show databases     |</span><br><span class="line">|        4 | 0.00015150 | show tables        |</span><br><span class="line">|        5 | 0.00024825 | show tables        |</span><br><span class="line">|        6 | 0.00024200 | select * from user |</span><br><span class="line">|        7 | 0.00013325 | select * from DISH |</span><br><span class="line">|        8 | 0.00027600 | select * from dish |</span><br><span class="line">+----------+------------+--------------------+</span><br><span class="line">8 rows in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#查看指定的query_id的SQL语句各个阶段的耗时情况</span><br><span class="line"> mysql&gt; show profile for query 3;   -------&gt;根据从show profiles中查询的基本情况的query_id来查看该语句各个阶段的耗时详情</span><br><span class="line">+----------------------+----------+</span><br><span class="line">| Status               | Duration |</span><br><span class="line">+----------------------+----------+</span><br><span class="line">| starting             | 0.000031 |</span><br><span class="line">| checking permissions | 0.000010 |</span><br><span class="line">| Opening tables       | 0.000028 |</span><br><span class="line">| init                 | 0.000006 |</span><br><span class="line">| System lock          | 0.000004 |</span><br><span class="line">| optimizing           | 0.000003 |</span><br><span class="line">| statistics           | 0.000009 |</span><br><span class="line">| preparing            | 0.000007 |</span><br><span class="line">| executing            | 0.001503 |    ----------&gt;可以发现在执行的时候耗时最长</span><br><span class="line">| Sending data         | 0.000019 |</span><br><span class="line">| end                  | 0.000003 |</span><br><span class="line">| query end            | 0.000004 |</span><br><span class="line">| closing tables       | 0.000003 |</span><br><span class="line">| removing tmp table   | 0.000005 |</span><br><span class="line">| closing tables       | 0.000003 |</span><br><span class="line">| freeing items        | 0.000013 |</span><br><span class="line">| cleaning up          | 0.000012 |</span><br><span class="line">+----------------------+----------+</span><br><span class="line">17 rows in set, 1 warning (0.00 sec)</span><br><span class="line">#还可以在show profile for query语句中的profile后面加上cup关键字 ,就可以查询到cup的耗时情况</span><br><span class="line">mysql&gt; show profile cpu  for query 3;</span><br><span class="line">+----------------------+----------+----------+------------+</span><br><span class="line">| Status               | Duration | CPU_user | CPU_system |   ---------&gt;可以看到比上面的结果多了一个CPU_user的的字段信息</span><br><span class="line">+----------------------+----------+----------+------------+</span><br><span class="line">| starting             | 0.000031 | 0.000013 |   0.000015 |</span><br><span class="line">| checking permissions | 0.000010 | 0.000005 |   0.000005 |</span><br><span class="line">| Opening tables       | 0.000028 | 0.000013 |   0.000015 |</span><br><span class="line">| init                 | 0.000006 | 0.000002 |   0.000003 |</span><br><span class="line">| System lock          | 0.000004 | 0.000002 |   0.000002 |</span><br><span class="line">| optimizing           | 0.000003 | 0.000001 |   0.000002 |</span><br><span class="line">| statistics           | 0.000009 | 0.000005 |   0.000005 |</span><br><span class="line">| preparing            | 0.000007 | 0.000003 |   0.000003 |</span><br><span class="line">| executing            | 0.001503 | 0.000000 |   0.000286 |</span><br><span class="line">| Sending data         | 0.000019 | 0.000000 |   0.000015 |</span><br><span class="line">| end                  | 0.000003 | 0.000000 |   0.000003 |</span><br><span class="line">| query end            | 0.000004 | 0.000000 |   0.000004 |</span><br><span class="line">| closing tables       | 0.000003 | 0.000000 |   0.000003 |</span><br><span class="line">| removing tmp table   | 0.000005 | 0.000000 |   0.000005 |</span><br><span class="line">| closing tables       | 0.000003 | 0.000000 |   0.000003 |</span><br><span class="line">| freeing items        | 0.000013 | 0.000000 |   0.000012 |</span><br><span class="line">| cleaning up          | 0.000012 | 0.000000 |   0.000012 |</span><br><span class="line">+----------------------+----------+----------+------------+</span><br><span class="line">17 rows in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p>explain执行计划:</p>
+<p>可以模拟 优化器 执行SQL查询语句，并不会去真正的执行这条SQL，从而知道 MySQL 是如何处理你的SQL语句的。可用来分析你的查询语句或是表结构的性能瓶颈。<strong>从而评判sql语句的执行性能</strong></p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#使用explain模拟优化器</span><br><span class="line">mysql&gt; explain select * from dish; </span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   26 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>expalin执行计划各个字段的含义:</p>
+<p><strong>id:</strong></p>
+<p>select查询的序列号,表示查询中执行select子句或者是操作表的顺序(id相同,执行顺序从上到下:id不同,值越大,越先执行)</p>
+<p><strong>select_type:</strong></p>
+<p>表示SELECT的类型,常见的取值有SIMPLE(简单表,即不实用表连接或者子查询),PRIMARY(主查询),PRIMARY(主查询,即外层的查询),UNION(UNION中搞得第二个或者后面的查询语句),SUBQUERY(SELECT&#x2F;WHERE之后包含了子查询)等</p>
+<p><strong>type:</strong></p>
+<p>表示连接类型,性能由好到差的连接类型为NULL,system,const,eq_ref,ref,range,index,all.</p>
+<p><strong>possible_key:</strong></p>
+<p>显示可能应用在这张表上的索引,一个或者多个</p>
+<p><strong>key</strong></p>
+<p>实际使用的索引,如果为null,则没有使用索引.</p>
+<p><strong>key_len</strong></p>
+<p>表示索引中使用的字节数,该值为索引字段最大可能长度,并非实际使用长度,在不损失精确性的前提下,长度越长越好.</p>
+<p><strong>rows</strong></p>
+<p>MYSQL认为必须要执行查询的行数,在Innodb引擎的表中,是一个估计值,可能并不总是准确的.</p>
+<p><strong>filtered</strong></p>
+<p>表示返回结果的行数占需读取行数的百分比,filtered的值越大越好</p>
+<p><strong>Extra</strong></p>
+<p>该语句没有查询出来的字段,会在额外字段中展示</p>
+<p>using index condition  回表查询</p>
+<p>using index 索引覆盖</p>
+<p>using where 全表扫描</p>
+<p>需重点关注以下字段信息:</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uo0um1j20uv046t9s.jpg" alt="image-20220510144105150"></p>
+</blockquote>
+</li>
+</ul>
+<h2 id="索引的使用"><a href="#索引的使用" class="headerlink" title="索引的使用"></a>索引的使用</h2><ul>
+<li><p>验证索引效率</p>
+<p>在不用默认主键的聚合索引通过普通字段查询数据时,1000万条数据需要耗时20多s</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uq1th2j21420a6ad4.jpg" alt="image-20220510145621792"></p>
+</li>
+</ul>
+<p>​    这个时候我们针对刚刚的字段来创建对应的索引,构造该字段的B+Tree索引数据结构(为1000万条的数据构造数据结构是非常耗时的经过1min11s的时间终于构建成功)</p>
+<p>​        <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uqwe9ej20b201ut8q.jpg" alt="image-20220510145924020"></p>
+<p>此时查询一下当前表的索引,发现刚刚创建的索引已经构建成功<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ut08o0j212p088abo.jpg" alt="image-20220510150140764"></p>
+<p>这个时候我们再次查询一下刚刚的sql语句</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uvpvx4j20er0bgq41.jpg" alt="image-20220510150423765"></p>
+<p><strong>可以看到再次执行时,只用了0.01s的时间,这就是索引对于查询效率的提升</strong></p>
+<h1 id="无效索引"><a href="#无效索引" class="headerlink" title="无效索引"></a>无效索引</h1><ul>
+<li>没有遵守最左前缀法则</li>
+</ul>
+<p>如果索引了多列(联合索引),要遵守最左前缀法则.最左前缀法则指的是查询从索引的最左列开始,并且不跳过索引中的列,如果跳跃某一列,索引将部分失效(后面的字段索引失效) —-&gt;必须包含最左边的列,不然会失效,导致全表扫描</p>
+<ul>
+<li>范围查询</li>
+</ul>
+<p>联合索引中,出现范围查询(&gt;,&lt;),范围查询右侧的列索引会失效(<strong>但是&lt;&#x3D;,&gt;&#x3D;索引会生效</strong>)</p>
+<ul>
+<li>索引列运算</li>
+</ul>
+<p>不要在索引列上进行运算操作,索引将失效</p>
+<ul>
+<li>字符串不加引号</li>
+</ul>
+<p>字符串类型字段使用时,不加引号,会发生隐式转换,索引将失效</p>
+<ul>
+<li>模糊查询</li>
+</ul>
+<p>如果仅仅是尾部模糊匹配,索引不会失效.如果是头部模糊匹配,索引失效.(例如: ‘xx%’可以  ‘%xx’不可以)</p>
+<ul>
+<li>or连接条件</li>
+</ul>
+<p>用or分割开的条件,如果or前的条件中的列有索引,而后面的列没有索引,那么涉及的索引都不会被用到,索引失效(只有两侧都有索引的时候,索引才会剩生效)—–&gt;解决方法,只需要在没有索引的一方建立索引即可 </p>
+<h1 id="select-联合索引-or关键字遇到的问题—-不走索引查询-最左原则失效问题"><a href="#select-联合索引-or关键字遇到的问题—-不走索引查询-最左原则失效问题" class="headerlink" title="select * +联合索引+or关键字遇到的问题—-不走索引查询+最左原则失效问题?"></a>select * +联合索引+or关键字遇到的问题—-不走索引查询+最左原则失效问题?</h1><p><strong>有个问题,select * 的时候用 or 且满足左右两边都是索引的情况下按道理来说可以用到索引但是如果是联合索引,则不会走索引查询,而是全表扫描,如果是两边都是单个索引就会合并索引走二级索引+回表查询,如果所有字段都有索引,那么就会索引覆盖,直接走二级索引,符合索引覆盖</strong></p>
+<ul>
+<li><strong>数据分布影响</strong> —–重点</li>
+</ul>
+<p>如果MYSQL评估使用索引比全表更慢,则不使用索引.(比如查询一个比最小数据大的所有数据,因此本来就是要走全表扫描的,索引还不如直接走全表扫描来的快,也就不会走索引)</p>
+<ul>
+<li><strong>关于字段是否有null</strong> —重点</li>
+</ul>
+<p><strong>在where后面进行null值判断,导致索引失效的原因并不是null本身,而是mysql根据数据分布来自动判断是否用索引,比如一个字段里绝大多数都是null,这个时候你查询字段里为null的值,mysql会认为全表扫描比索引来的更快,所以不会使用索引,如果一个字段里的null是极少数的,那么当你查询字段里为null的值的数据的时候,mysql会判断全表扫描的性能要低于索引查询,这个时候就会使用索引!</strong></p>
+<p>因为在判断时候,联合索引必须要有最左前缀,如果用or,就不能保证有最左前缀,所以直接全表扫描!</p>
+<h1 id="SQL提示"><a href="#SQL提示" class="headerlink" title="SQL提示"></a>SQL提示</h1><p>SQL提示,是优化数据库的一个重要手段,简单来说,就是在SQL语句中加入一些认为的提示来达到优化操作的目的.</p>
+<p>当单列索引存在与联合索引中的时候,Mysql会自动选择一个效率高的索引,如果想要使用其他索引的话,那就需要在sql语句中指定要用的索引,sql语句如下:</p>
+<p><strong>use index(索引名)—–&gt;建议(MySQL不一定执行,会自动判断)</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#默认情况下</span><br><span class="line">mysql&gt; explain select * from dish where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys                          | key           | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name,idx_dish_name_price_code | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#给mysql建议使用索引情况下----&gt;mysql会自动判断,如果建议的索引效率低,则不会执行建议的索引</span><br><span class="line">mysql&gt; explain select * from dish use   index(idx_dish_name_price_code) where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>ignore index(索引名)——&gt;表示忽略某个索引,也就是不用的索引</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#忽略联合索引索引,会执行另外的索引</span><br><span class="line">mysql&gt; explain select * from dish ignore  index(idx_dish_name_price_code) where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>force index(索引名)——&gt;强制Mysql执行某个索引</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#强制使用联合索引</span><br><span class="line">mysql&gt; explain select * from dish force  index(idx_dish_name_price_code) where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h1 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h1><p>尽量使用覆盖索引(查询使用了索引,并且需要返回的列,在索引中已经全部能够找到),减少select * .</p>
+<p>覆盖索引的白话:就是要查询的字段都是设置了索引,建议直接覆盖所索引,就不需要回表查询了!</p>
+<p>如果要查询的字段中包含没有索引的字段,那么会在二级索引找到有索引字段的值后拿到挂在叶子节点底下的主键值获取者约束唯一字段的值去聚集函数中进行回表查询,如下图所示:</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v1fz2cj20wx0f60vb.jpg" alt="image-20220510171143926"></p>
+<p>解决方案:就是将没有加入索引的字段也加上索引,实现索引覆盖效果,效率提高,尽量不用select * 不然大概率都会进行回表查询,性能就会下降</p>
+<h1 id="前缀索引"><a href="#前缀索引" class="headerlink" title="前缀索引"></a>前缀索引</h1><p>当字段类型为字符串(varcahr,text等)时,有时候需要索引很长的字符串,这会让索引变得很大,查询时,浪费大量的磁盘IO,影响查询效率.此时可以只将字符串的一部分前缀,建立索引,这样可以大大节约索引空间,从而提高索引效率</p>
+<p>语法:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#创建前缀索引</span><br><span class="line">create index idx_xxxx on table_name(colum(n));</span><br></pre></td></tr></table></figure>
+
+<p>前缀长度:<br>可以根据索引的有选择性来决定,而选择性是指不重复的索引值(基数)和数据表的记录总数的比值,索引选择性越高则查询效率越高,唯一索引的选择性是1,这是最好的索引选择性,性能也是最好的. </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#查询email中不为空的数据</span><br><span class="line">select count( email)/count(*) from tb_user;</span><br><span class="line">#查询email中不重复的数据</span><br><span class="line">select count(distinct email) from tb_user;</span><br><span class="line">#查询emai中不重复数据的选择性 /不重复数据/总条目数</span><br><span class="line">select count(distinct email)/count(*) from tb_user;</span><br><span class="line">#查询emai中不重复数据的选择性 /不重复数据/总条目数的前5个字符(降低索引的体积)</span><br><span class="line">select count(distinct substring(email,1,5))/count(*) from tb_user;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v3t7zuj20xu0fjwh6.jpg" alt="image-20220510212318350"></p>
+<h1 id="单列索引与联合索引"><a href="#单列索引与联合索引" class="headerlink" title="单列索引与联合索引"></a>单列索引与联合索引</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v95x4hj20wb0e4dij.jpg" alt="image-20220510220527020"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v9t2zpj20xb0f2q50.jpg" alt="image-20220510220551724"></p>
+<h1 id="索引设计原则"><a href="#索引设计原则" class="headerlink" title="索引设计原则"></a>索引设计原则</h1><p>1.针对数据量大,且查询比较频繁的表建立索引</p>
+<p>2.针对常作为查询条件(where),排序(order by),分组(group by)操作的字段建立索引</p>
+<p>3.尽量选择区分度高的列作为索引,尽量建立唯一索引,区分度越高,使用的效率就越高.</p>
+<p>4.如果是字符串类型的字段,字段的长度较长,可以针对于字段的特点,建立前缀索引</p>
+<p>5.尽量使用联合索引,减少单例索引,查询时,联合索引很多时候可以覆盖索引,节省存储空间,避免回表,提高查询效率.</p>
+<p>6.要控制索引的数量,索引并不是多多益善,索引越多,维护索引结构的代价就越大,会影响增删改的效率</p>
+<p>7.如果索引列不能存储NULL值,请再创建表使用NOT NULL约束它.当优化器知道每列是否包含NULL值时,可以更好的确定那个索引最有效的用于查询.</p>
+<h1 id="索引总结"><a href="#索引总结" class="headerlink" title="索引总结"></a>索引总结</h1><p>1.索引概述</p>
+<blockquote>
+<p>索引是高效获取数据的数据结构,它是有序的</p>
+</blockquote>
+<p>2.索引结构</p>
+<blockquote>
+<p>B+Tree:所有的数据都会出现在叶子节点,而且叶子节点形成了一个双向链表</p>
+<p>Hash:检索性能高,直接算出哈希值定位到检索数据,如果存在哈希碰撞,则会形成链表,在寻着链表找对应的值,检索性能比较高,但是缺点就是只能进行等值(精确)匹配,不支持范围查询,和索引的排序—-&gt;(memory引擎使用)</p>
+</blockquote>
+<p>3.索引分类</p>
+<blockquote>
+<p>主键索引,唯一索引,常规索引,全文索引</p>
+<p>在innodb引擎中,根据索引的存储结构分为两类:聚集索引,二级索引</p>
+<p>聚集索引:必须存在,且只能有一个,最大特点就是这个B+Tree叶子节点的数据是这一行的数据,默认主键索引就是聚集索引,没有主键会选择第一个唯一索引作为聚集索引</p>
+<p>二级索引:B+Tree叶子节点的底下挂的是主键</p>
+</blockquote>
+<p>4.索引语法</p>
+<blockquote>
+<p>create [unique] index xxx on xxx(xxx);</p>
+<p>Show index from xxxx;</p>
+<p>Drop index xxx on xxx;</p>
+</blockquote>
+<p>5.SQL性能分析</p>
+<blockquote>
+<p>执行频次,慢查询日志,profile,explain</p>
+</blockquote>
+<p>6.索引使用</p>
+<blockquote>
+<p> 联合索引:必须严格遵守最左前缀法则</p>
+<p>索引失效</p>
+<p>SQL提示</p>
+<p>覆盖索引</p>
+<p>前缀索引</p>
+<p>单例&#x2F;联合索引</p>
+</blockquote>
 
                 
             </div>
@@ -1099,10 +1414,10 @@ character_set_server=utf8
 <p>DTO含义:指浏览器提交参数给服务器,服务器用来封装对应参数的对象</p>
 <p>VO含义:指服务器响应给浏览器的数据,将数据封装后传递给浏览器</p>
 <h1 id="使用过滤器的时候-WebFilter注意事项"><a href="#使用过滤器的时候-WebFilter注意事项" class="headerlink" title="使用过滤器的时候@WebFilter注意事项"></a>使用过滤器的时候@WebFilter注意事项</h1><p>因为@WebFilter是Servlet管理,所以需要在引导类加上@ServletComponentScan,扫描到@WebFilter才能生效</p>
-<h2 id="common-Fileupload—–-gt-MultipartFile-file"><a href="#common-Fileupload—–-gt-MultipartFile-file" class="headerlink" title="common-Fileupload—–&gt;MultipartFile file"></a>common-Fileupload—–&gt;MultipartFile file</h2><p>![image-20220430084336123](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220430084336123.png)</p>
+<h2 id="common-Fileupload—–-gt-MultipartFile-file"><a href="#common-Fileupload—–-gt-MultipartFile-file" class="headerlink" title="common-Fileupload—–&gt;MultipartFile file"></a>common-Fileupload—–&gt;MultipartFile file</h2><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ndr842j215o07mwgf.jpg" alt="image-20220430084336123"></p>
 <h1 id="Transaction可能事务失效的地方"><a href="#Transaction可能事务失效的地方" class="headerlink" title="@Transaction可能事务失效的地方"></a>@Transaction可能事务失效的地方</h1><p>项目采用了Mybatis-plus,mapper和service都各自实现和继承了mybatis-lpus提供的的接口,所以在项目中的Service层可以直接用this调用父类serviceImpl的方法,这样可能导致被this所调用的方法事务失效,因为this直接调父类的方法,没有被代理对象所代理,但是加上@Transaction注解的方法,必须要代理对象调用时,才能实现事务保护</p>
 <p>解决方案:自己注入自己@Autowired—&gt;xxxservice,但是需要解决循环依赖问题.</p>
-<h1 id="做项目中加上ToDo-表示项目未完成"><a href="#做项目中加上ToDo-表示项目未完成" class="headerlink" title="做项目中加上ToDo,表示项目未完成"></a>做项目中加上ToDo,表示项目未完成</h1><p>![image-20220430110948139](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220430110948139.png)</p>
+<h1 id="做项目中加上ToDo-表示项目未完成"><a href="#做项目中加上ToDo-表示项目未完成" class="headerlink" title="做项目中加上ToDo,表示项目未完成"></a>做项目中加上ToDo,表示项目未完成</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5nfdafdj20cw07ugma.jpg" alt="image-20220430110948139"></p>
 <h1 id="pojo四大特征"><a href="#pojo四大特征" class="headerlink" title="pojo四大特征"></a>pojo四大特征</h1><p>无参构造方法,get方法,set方法,实现serializable接口序列化</p>
 
                 

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>Mysql的Sql优化 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        Mysql的Sql优化
+    </div>
+    <p class="sub">May 13 2022</p>
+    <div class="post-content">
+        <h1 id="插入数据优化"><a href="#插入数据优化" class="headerlink" title="插入数据优化"></a>插入数据优化</h1><ul>
+<li><p>insert优化</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5gdckvkj20ep0bzq3q.jpg" alt="image-20220513213453462"></p>
+</li>
+</ul>
+<p>经量减少网络之间的I&#x2F;O传输,可以提高性能</p>
+<ul>
+<li>大批量插入数据</li>
+</ul>
+<p>如果需要一次性大批量插入数据,使用insert语句插入性能较低,此时可以使用MYSQL数据库提供的load指令进行插入.操作如下;</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5g91h2dj20vn06ftar.jpg" alt="image-20220513213651727"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#客户端连接服务器时,加上参数 --local-infile</span><br><span class="line">mysql --local-infile -u root -p</span><br><span class="line">#设置全局参数local_infile为1.开启从本地加载文件导入数据的开关(默认关闭的)</span><br><span class="line">set global local_infile = 1;</span><br><span class="line"></span><br><span class="line">mysql&gt; select @@local_infile</span><br><span class="line">    -&gt; ;</span><br><span class="line">+----------------+</span><br><span class="line">| @@local_infile |</span><br><span class="line">+----------------+</span><br><span class="line">|              1 |     -------------&gt;设置为1</span><br><span class="line">+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line">#执行load指令将准备好的数据,加载到表就诶够中</span><br><span class="line">load data local infeil &#x27;/root/sql.log&#x27; into table &#x27;tb_user&#x27; fields terminated by &#x27;,&#x27; lines terminated by &#x27;\n&#x27;;</span><br><span class="line">					       #文件位置                     到那张表           字段用什么分隔              每一行用什么分隔</span><br></pre></td></tr></table></figure>
+
+<p><strong>主键顺序插入性能高于乱序插入</strong></p>
+<h1 id="主键优化"><a href="#主键优化" class="headerlink" title="主键优化"></a>主键优化</h1><h3 id="数据组织方式"><a href="#数据组织方式" class="headerlink" title="数据组织方式"></a>数据组织方式</h3><p>​    在InnoDB存储引擎中,表数据都是根据主键顺序存放的,这种存储方式的表称为<strong>索引组织表</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5g5lvquj20tg0ca75y.jpg" alt="image-20220516093022006"></p>
+<h3 id="页分裂"><a href="#页分裂" class="headerlink" title="页分裂"></a>页分裂</h3><p>页可以为空,可以填充一半,也可以填充100%.每个页包含了2-N行数据(如果一行数据过多,会行溢出),根据主键排列</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fy2n63j20wj0580tf.jpg" alt="image-20220516093248234"></p>
+<p>如果主键不是顺序插入,那么新插入过来的数据,会找出比自己小一级的那个页,截取50%的内容</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fva5qcj20uj0af0tf.jpg" alt="image-20220516093713899"></p>
+<p>并开辟一个新的页空间,然后和截取的那一部分一同存入新的页空间中,最后被截取的那部分页再重新指向那段新的页空间.</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fstyg2j20w808v757.jpg" alt="image-20220516093818505"></p>
+<h3 id="页合并"><a href="#页合并" class="headerlink" title="页合并"></a>页合并</h3><p>当删除一行记录时,实际上记录并没有被屋里删除,只是记录被标记为删除,并且它的空间变得允许其他记录声明使用.</p>
+<p>当页中删除的记录达到了MERGE_THRESHOLD(默认为页的50%),InnoDB会开始寻找靠近的页(前或后)看看是否可以合并,以优化空间使用.</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fo5ng1j20w10333z9.jpg" alt="image-20220516094302614"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fmeqh8j20ww058dgi.jpg" alt="image-20220516094319791"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5fhtxesj20xs09gmyn.jpg" alt="image-20220516094410407"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#添加索引的时候设置(默认百分之50)</span><br><span class="line">create index ix_person_birthday on tempdb.person(birthday) comment &#x27;MERGE_THRESHOLD=48&#x27;</span><br><span class="line"></span><br><span class="line">#可以从information_schema中查询索引页的合并阀值</span><br><span class="line">select * from INNODB_INDEXES where name in (&#x27;ix_person_name&#x27;,&#x27;ix_person_birthday&#x27;) ;</span><br><span class="line">+----------+--------------------+----------+------+----------+---------+-------+-----------------+</span><br><span class="line">| INDEX_ID | NAME               | TABLE_ID | TYPE | N_FIELDS | PAGE_NO | SPACE | MERGE_THRESHOLD |</span><br><span class="line">+----------+--------------------+----------+------+----------+---------+-------+-----------------+</span><br><span class="line">|      147 | ix_person_name     |     1059 |    0 |        2 |       5 |     2 |              45 |</span><br><span class="line">|      148 | ix_person_birthday |     1059 |    0 |        2 |       6 |     2 |              48 |</span><br><span class="line">+----------+--------------------+----------+------+----------+---------+-------+-----------------+</span><br><span class="line">2 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<h1 id="主键的设计原则"><a href="#主键的设计原则" class="headerlink" title="主键的设计原则"></a>主键的设计原则</h1><p>1.满足业务需求的情况下,尽量降低主键的长度,主键长度过长,当二级索引较多时,会占用大量的磁盘空间,而且在搜索的时候会耗费大量的磁盘IO,所以要尽量降低主键的长度</p>
+<p>2.插入数据时,尽量选择顺序插入,选择使用AUTO_INCREMENT自增主键,如果不是顺序插入,可能会出现页分裂现象</p>
+<p>3.尽量不要用UUID做主键或者其他自然主键,如身份证号,因为这些数据都是无序的,就会导致页分裂,数据过长,检索时间增加,也会增加磁盘IO</p>
+<p>4.在业务操作时,避免对主键的修改,应为修改主键也会改变对应的索引结构,代价很大</p>
+<h1 id="mysql8-0新特性——-gt-order-by优化"><a href="#mysql8-0新特性——-gt-order-by优化" class="headerlink" title="mysql8.0新特性——-&gt;order by优化"></a>mysql8.0新特性——-&gt;order by优化</h1><p>1.Using filesort:通过表的索引或全表扫描,读取满足条件的数据行,然后再排序缓冲区sort buffer中完成排序操作,所有不是通过索引直接返回结果的排序都叫FileSort排序</p>
+<p>2,Using index:通过有序索引顺序扫描直接返回的有序数据,这种情况下即为Using index,不需要额外排序,操作小效率高</p>
+<h3 id="新特性一-Backward-index-scan关键字"><a href="#新特性一-Backward-index-scan关键字" class="headerlink" title="新特性一:Backward  index scan关键字"></a>新特性一:Backward  <em>index</em> <em>scan</em>关键字</h3><p>当我们创建联合索引进行<strong>升序查询</strong>时,通过explain查看执行计划可以发现EXtra是<strong>Using index</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by phone asc ,id_number  asc;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>当我们创建联合索引进行<strong>升序查询</strong>时,通过explain查看执行计划可以发现EXtra是<strong><em>Backward</em> <em>index</em> <em>scan</em>,Using index</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by phone asc ,id_number  asc;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Backward index scan,Using index |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>在8.0中,对于反向扫描,有一个专门的词进行描述“<em><strong>Backward* <em>index</em> *scan</strong></em>“反向索引扫描,5.7版本没有</p>
+<h3 id="新特性二-支持反向索引"><a href="#新特性二-支持反向索引" class="headerlink" title="新特性二:支持反向索引"></a>新特性二:支持反向索引</h3><p>当我们向通过一个字段升序ASC,一个字段降序DESC,或者反之,需要通过创建索引的时候指定,不然会出现全表扫描Using filesort关键字</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by phone asc  ,id_number desc;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra                       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#按照上面需求创建降序联合索引</span><br><span class="line">create index  idx_phone_id_numbe on employee(phone asc,id_number desc); #-------&gt; 指定那个字段降序 </span><br><span class="line">#再次查询索引信息发现Collation字段A代表ASC,D代表DESC </span><br><span class="line">mysql&gt; show index from employee;</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| employee |          0 | PRIMARY              |                   1 | id         		 | A         |          15 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            1 | phone      		 | A         |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            2 | id_number       | D        |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+-</span><br></pre></td></tr></table></figure>
+
+<p>在<strong>Mysql5.7</strong>中支持此语法,但是设置降序索引时,还是创建的升序,并没有改变</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create index  idx_phone_id_numbe on employee(phone asc,id_number desc)</span><br><span class="line">mysql&gt; show index from employee;</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| employee |          0 | PRIMARY              |                   1 | id         		 | A         |          15 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            1 | phone      		 | A         |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">| employee |          1 | idx_phone_id_number  |            2 | id_number       | A        |           5 |     NULL | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">+----------+------------+----------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+-</span><br></pre></td></tr></table></figure>
+
+<p>图解:</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5f3m94kj20wv074gms.jpg" alt="image-20220516105542348"></p>
+<h3 id="ORDER-BY注意事项"><a href="#ORDER-BY注意事项" class="headerlink" title="ORDER BY注意事项"></a>ORDER BY注意事项</h3><p><strong>事项一</strong>:根据排序字段建立合适的索引,多字段排序时,<strong>应当遵循最左前缀法则</strong>,不然虽然会走索引但是会出现<strong>Using filesort</strong></p>
+<p>降低了查询效率.<strong>(前提是索引覆盖)</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select phone,id_number from employee order by id_number,phone ;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key                 | key_len | ref  | rows | filtered | Extra                       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | NULL          | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------------+---------+------+------+----------+-----------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>事项二</strong>:如果没有遵循最左前缀也没有达到索引覆盖条件,则会全表扫描,<strong>索引尽量要索引覆盖</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from employee order by id_number,phone ;</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra          |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   15 |   100.00 | Using filesort |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>事项三</strong>:多字段排序时,一个升序一个降序,此时需要注意联合索引在创建时的规则(ASC&#x2F;DESC)</p>
+<p><strong>事项四</strong>:如果不可避免的出现filesort,大数据量排序时,<strong>可以适当增大排序缓冲区大小sort_buffer_size(默认256k)</strong>,如果在排序时,占满了256k的排序缓冲区,则会涉及到磁盘文件当中进行排序,会降低性能,可以适量增大</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#默认排序缓冲区大小sort_buffer_size为256k</span><br><span class="line">mysql&gt; show variables like &#x27;sort_buffer_size&#x27;;</span><br><span class="line">+------------------+--------+</span><br><span class="line">| Variable_name    | Value  |</span><br><span class="line">+------------------+--------+</span><br><span class="line">| sort_buffer_size | 262144 |</span><br><span class="line">+------------------+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="GROUP-BY-优化"><a href="#GROUP-BY-优化" class="headerlink" title="GROUP BY 优化"></a>GROUP BY 优化</h1><p>1,在分组时,也可以通过索引来提高效率,如果没有索引则会出现 <strong>Using temporary</strong>临时表关键字,效率低下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select name,count(*) from employee group by name;</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+---------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                           |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+---------------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   15 |   100.00 | Using temporary; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+---------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>2.分组操作时,索引的使用也是满足最左前缀法则的</p>
+<p>情况一:索引没有满足最左前缀,但满足索引覆盖(Using index; Using temporary; Using filesort)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; explain select  id_number,count(*) from employee group by id_number;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys       | key                 | key_len | ref  | rows | filtered | Extra                                        |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | idx_phone_id_number | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index; Using temporary; Using filesort |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>情况二:索引满足最左前缀,也满足索引覆盖(Using index )</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select  phone,count(*) from employee group by phone;</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys       | key                 | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | employee | NULL       | index | idx_phone_id_number | idx_phone_id_number | 93      | NULL |   15 |   100.00 | Using index |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------------+---------------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="LIMIT优化"><a href="#LIMIT优化" class="headerlink" title="LIMIT优化"></a>LIMIT优化</h1><p>一个常见有非常头疼的问题就是limit 200000,10 ,此时mysql排序前200000,10 记录,仅仅返回200000,200010的记录,其他记录丢弃,查询排序的代价非常大</p>
+<p>优化思路:一般分页查询时,通过创建覆盖所以,能够比较好的提高性能,可以通过覆盖索引加子查询形式优化.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from tb_sku t,(select id from tb_sku order by id limit 200000,10)  a  where t.id = a.id;</span><br></pre></td></tr></table></figure>
+
+<p>mysql官方给出的优化方案</p>
+<h1 id="Count优化"><a href="#Count优化" class="headerlink" title="Count优化"></a>Count优化</h1><h3 id="COUNT的几种用法"><a href="#COUNT的几种用法" class="headerlink" title="COUNT的几种用法"></a>COUNT的几种用法</h3><p>![image-20220516113046371](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220516113046371.png)</p>
+<h1 id="update优化-InnoDB中索引-行锁-表锁的关系"><a href="#update优化-InnoDB中索引-行锁-表锁的关系" class="headerlink" title="update优化(InnoDB中索引-行锁-表锁的关系)"></a>update优化(InnoDB中索引-行锁-表锁的关系)</h1><h3 id="正常情况"><a href="#正常情况" class="headerlink" title="正常情况"></a>正常情况</h3><p>Mysql中的InnoDB引擎<strong>默认是行级锁</strong>,当一个客户端通过主键id修改一个条数据时,这条数据会被锁上,另一个客户端通过<strong>同一个ID修改</strong>这个被锁住的数据时,就会堵塞**(如果是不同id则不会阻塞)**</p>
+<p>客户端A:条件相同</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ewvch5j20jj078q43.jpg" alt="image-20220516114611297"></p>
+<p>客户端B:条件相同</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ei8t8gj20l108j40e.jpg" alt="image-20220516114824459"></p>
+<p>等待一段时间后会抛出:ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction(等待超时)</p>
+<h3 id="异常情况"><a href="#异常情况" class="headerlink" title="异常情况"></a>异常情况</h3><p>当一个客户端通过名字name修改一个条数据时,这条数据会被锁上,另一个客户端修改<strong>另一条数据</strong>通过<strong>另一个名字name修改,发现也会阻塞</strong>,这是为什么呢????</p>
+<blockquote>
+<p>因为InnoDB的行锁针对索引加锁,不是针对记录加的锁,并且改索引不能失效,否则会从行锁升级为表说</p>
+<p>也就是只要你的条件不是索引字段,那么这一次操作则会锁住整张表</p>
+</blockquote>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE%E4%BC%98%E5%8C%96"><span class="toc-text">插入数据优化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BB%E9%94%AE%E4%BC%98%E5%8C%96"><span class="toc-text">主键优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F"><span class="toc-text">数据组织方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E5%88%86%E8%A3%82"><span class="toc-text">页分裂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E5%90%88%E5%B9%B6"><span class="toc-text">页合并</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BB%E9%94%AE%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="toc-text">主键的设计原则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql8-0%E6%96%B0%E7%89%B9%E6%80%A7%E2%80%94%E2%80%94-gt-order-by%E4%BC%98%E5%8C%96"><span class="toc-text">mysql8.0新特性——-&gt;order by优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E7%89%B9%E6%80%A7%E4%B8%80-Backward-index-scan%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-text">新特性一:Backward  index scan关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E7%89%B9%E6%80%A7%E4%BA%8C-%E6%94%AF%E6%8C%81%E5%8F%8D%E5%90%91%E7%B4%A2%E5%BC%95"><span class="toc-text">新特性二:支持反向索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ORDER-BY%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">ORDER BY注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GROUP-BY-%E4%BC%98%E5%8C%96"><span class="toc-text">GROUP BY 优化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LIMIT%E4%BC%98%E5%8C%96"><span class="toc-text">LIMIT优化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Count%E4%BC%98%E5%8C%96"><span class="toc-text">Count优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#COUNT%E7%9A%84%E5%87%A0%E7%A7%8D%E7%94%A8%E6%B3%95"><span class="toc-text">COUNT的几种用法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#update%E4%BC%98%E5%8C%96-InnoDB%E4%B8%AD%E7%B4%A2%E5%BC%95-%E8%A1%8C%E9%94%81-%E8%A1%A8%E9%94%81%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">update优化(InnoDB中索引-行锁-表锁的关系)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%B8%B8%E6%83%85%E5%86%B5"><span class="toc-text">正常情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E6%83%85%E5%86%B5"><span class="toc-text">异常情况</span></a></li></ol></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+        
+            <a class="next" href="/2022/05/12/Redis%E4%BD%BF%E7%94%A8/">
+                
+                <span class="prev-text">Redis使用</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
