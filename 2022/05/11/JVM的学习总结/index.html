@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>JVM的学习总结 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        JVM的学习总结
+    </div>
+    <p class="sub">May 11 2022</p>
+    <div class="post-content">
+        <h1 id="什么是JVM"><a href="#什么是JVM" class="headerlink" title="什么是JVM?"></a>什么是JVM?</h1><ul>
+<li>定义</li>
+</ul>
+<p>​    java 程序运行环境(java二进制字节码的运行环境)</p>
+<ul>
+<li>好处</li>
+</ul>
+<p>​    一次编写,到处运行</p>
+<p>​    自动内存管理,垃圾回收功能</p>
+<p>​    数组下标越界检查</p>
+<p>​    多态</p>
+<ul>
+<li>比较</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5weo104j20mx0dx406.jpg" alt="image-20220511191019291"></p>
+<h1 id="JVM内存结构图"><a href="#JVM内存结构图" class="headerlink" title="JVM内存结构图"></a>JVM内存结构图</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5whivtvj20qs0e8ta9.jpg" alt="image-20220511192331436"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wj7543j20tl0gqgon.jpg" alt="WechatIMG244"></p>
+<h1 id="内存结构之程序计数器-寄存器"><a href="#内存结构之程序计数器-寄存器" class="headerlink" title="内存结构之程序计数器(寄存器)"></a>内存结构之程序计数器(寄存器)</h1><p>作用:</p>
+<p>​       记住下一条JVM指令的执行地址</p>
+<p>特点:</p>
+<p>​      线程私有随着线程创建而创建,随着线程销毁而销毁,每个线程都有自己的程序计数器</p>
+<p>​      是一块比较小的内存空间,不会存在内存溢出</p>
+<p>实现</p>
+<p>​       计数器在物理上是通过寄存器来实现的</p>
+<h1 id="内存结构之虚拟机栈"><a href="#内存结构之虚拟机栈" class="headerlink" title="内存结构之虚拟机栈"></a>内存结构之虚拟机栈</h1><p>线程运行时需要的内存空间,称为虚拟机栈</p>
+<p>每个栈由多个栈帧(Frame)组成,对应着每次方法调用时所占用的内存</p>
+<p>每个线程只能有一个活动栈帧,对应着当前正在执行的那个方法,也就是栈的最顶部</p>
+<p>栈帧出栈时会释放掉携带的资源</p>
+<p>问题辨析:</p>
+<p>1.垃圾回收是否涉及栈内存?</p>
+<p>​    不需要,因为方法调用产生的栈帧内存会随着方法调用的结束后弹出栈并且自动释放资源,被自动回收</p>
+<p>2.栈内存分配越大越好吗?</p>
+<p>​    并不是,每个栈内存大小初始值一般都是1024KB,除了windows系统会根据虚拟内存影响内存大小,栈内存越大</p>
+<p>线程数越少,线程数少了就会影响执行效率,一般让栈内存扩大只是为了一些方法的递归调用,不容易栈溢出.并不会因为</p>
+<p>栈内存越大,执行效率越高,反而会让线程减少,降低执行效率.(一般采用默认大小就可以了)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wmfr7xj20bu0600t2.jpg" alt="image-20220511201653094"></p>
+<p>3.方法内的局部变量是否线程安全?</p>
+<p>​    首先要看,这个变量是对外共享的,还是对每个线程私有的,比如两个线程同时调用一个方法,方法中的局部变量是static修饰的,那么这个变量是共享的,因为静态变量只加载一次存在于静态区域,线程也就自然不安全,如果这个变量是个普通的局部变量,那么不会有线程安全问题,因为每个线程调用方法时都会生成对应线程的的栈帧.</p>
+<p>​      <strong>如果方法内部局部变量没有逃离方法的作用访问,他是线程安全的</strong></p>
+<p>​      <strong>如果局部变量引用了对象,并逃离了方法的作用范围,需要考虑线程安全问题</strong></p>
+<h1 id="栈内存溢出"><a href="#栈内存溢出" class="headerlink" title="栈内存溢出"></a>栈内存溢出</h1><p>1.栈帧过多导致栈内存溢出</p>
+<p>2.栈帧过大导致栈内存溢出</p>
+<h1 id="线程运行诊断"><a href="#线程运行诊断" class="headerlink" title="线程运行诊断"></a>线程运行诊断</h1><h3 id="案例1-cpu占用过多"><a href="#案例1-cpu占用过多" class="headerlink" title="案例1:cpu占用过多"></a>案例1:cpu占用过多</h3><p>定位</p>
+<p>1.用top定位那个进程对cpu的占用过高</p>
+<p>2.通过Linux命令查看是哪条线程引起的cup占用过高</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#查看进程对cup占用情况-------&gt;只能定位进程,不能定位线程</span><br><span class="line">zhangminghao@zhangminghaodeMacBook-Pro ~ % top</span><br><span class="line">PID    COMMAND      %CPU TIME     #TH   #WQ   #PORT MEM    PURG   CMPRS  PGRP</span><br><span class="line">1704   FinalShell            63.3 02:14:05       150      0       1030  1364M       0B     360M   1704</span><br><span class="line">368    WindowServer     35.1 73:51.63        21        5       2665+ 379M-  43M+     57M       368</span><br><span class="line">1687   iTerm2                 30.8 04:04.45 8      5       314     54M    3536K     6608K       1687</span><br><span class="line"></span><br><span class="line">#查看线程对cup的占用情况</span><br><span class="line">#H:进程里的线程数</span><br><span class="line">#eo:需要展示的字段</span><br><span class="line">zhangminghao@zhangminghaodeMacBook-Pro ~ %  ps H -eo pid,tid,%cpu | grep 进程id    </span><br><span class="line"></span><br><span class="line">#利用jdk提供的工具命令,可以根据线程id找到有问题的线程,进一步定位到问题代码的源码行号</span><br><span class="line">zhangminghao@zhangminghaodeMacBook-Pro ~ % jstack 进程id   </span><br></pre></td></tr></table></figure>
+
+<p><strong>通过进程id的16进制来找出对应的线程,知道了是那个那个程序运行出了问题</strong></p>
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wpm1lsj210b0ipn1g.jpg" alt="image-20220512203716530" style="zoom: 50%;" />
+
+<p><strong>通过信息找到java代码中的行号,检查到cpu占用过高的原因</strong></p>
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wr4cotj20c2076t96.jpg" alt="image-20220512203955346"  />
+
+
+
+<h3 id="案例2-运行很长时间没有结果"><a href="#案例2-运行很长时间没有结果" class="headerlink" title="案例2:运行很长时间没有结果"></a>案例2:运行很长时间没有结果</h3><p> 1,通过jstack 进程id命令查看线程执行信息</p>
+<p>2.观察最后的输出结果(发现死锁问题)</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ws4yldj20t30g9dit.jpg" alt="image-20220512210643175"></p>
+<h1 id="本地方法栈Native-Method-Stack"><a href="#本地方法栈Native-Method-Stack" class="headerlink" title="本地方法栈Native Method Stack"></a>本地方法栈Native Method Stack</h1><h3 id="什么是本地方法"><a href="#什么是本地方法" class="headerlink" title="什么是本地方法"></a>什么是本地方法</h3><p>​    本地方法Native Method ,指的是那些不是JAVA代码编写的方法</p>
+<h3 id="本地方法的作用"><a href="#本地方法的作用" class="headerlink" title="本地方法的作用"></a>本地方法的作用</h3><p>​    JAVA代码是受限制的,有时候不能直接跟底层操作系统打交道,需要调用一些 用C或者C++编写的本地方法来间接调用执行.</p>
+<h1 id="Heap堆"><a href="#Heap堆" class="headerlink" title="Heap堆"></a>Heap堆</h1><h3 id="什么是堆"><a href="#什么是堆" class="headerlink" title="什么是堆"></a>什么是堆</h3><p>​    通过new关键字,创建的对象都会使用堆内存,堆内存默认大小是4个G </p>
+<h3 id="堆的特点"><a href="#堆的特点" class="headerlink" title="堆的特点"></a>堆的特点</h3><p>​    它是线程共享的,堆中对象都需要考虑线程安全问题</p>
+<p>​    有垃圾回收机制</p>
+<h3 id="堆内存的溢出问题"><a href="#堆内存的溢出问题" class="headerlink" title="堆内存的溢出问题"></a>堆内存的溢出问题</h3><p>​    java.lang.OutofMemoryError:Java heap space</p>
+<h1 id="堆内存溢出的原因"><a href="#堆内存溢出的原因" class="headerlink" title="堆内存溢出的原因"></a>堆内存溢出的原因</h1><p>堆内存不是有垃圾回收机制吗,为什么还会有内存溢出的问题呢,原因是,堆内存的垃圾回收机制是在对象应用完毕后,才会自动回收,如果一个对象一直被引用,而且内存越来越大,就会导致堆内存溢出问题发发生,如以下代码:    </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            List&lt;String&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();-----------一直在做死循环做添加操作,且是引用中状态,导致堆不能垃圾回收</span><br><span class="line">            <span class="type">String</span> <span class="variable">a</span> <span class="operator">=</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">            <span class="keyword">while</span>(<span class="literal">true</span>)&#123;---------</span><br><span class="line">                list.add(a);</span><br><span class="line">                a = a+a;</span><br><span class="line">                i++;</span><br><span class="line">                System.out.println(i);-----------&gt;最终输出<span class="number">26</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(i);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">#异常信息</span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">	at java.util.Arrays.copyOf(Arrays.java:<span class="number">3332</span>)</span><br><span class="line">	at java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:<span class="number">124</span>)</span><br><span class="line">	at java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:<span class="number">448</span>)</span><br><span class="line">	at java.lang.StringBuilder.append(StringBuilder.java:<span class="number">136</span>)</span><br><span class="line">	at com.itheima.test.Test.main(Test.java:<span class="number">19</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>堆内存默认为4G,通过设置堆内存空间为8m,发现在i值到达17的时候就内存溢出了,所以可以通过这种方式,尽早的暴露出内存溢出的问题:</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wvth3wj218o0u0tej.jpg" alt="image-20220513203904487"></p>
+<h1 id="堆的内存诊断jmap"><a href="#堆的内存诊断jmap" class="headerlink" title="堆的内存诊断jmap"></a>堆的内存诊断jmap</h1><h3 id="1-jps工具"><a href="#1-jps工具" class="headerlink" title="1.jps工具:"></a>1.jps工具:</h3><p>​    是 java 提供的一个用来显示当前所有 java 进程的 pid 的命令,可以查看当前系统中有那些JAVA进程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zhangminghao<span class="meta">@localhost</span> java-Spring % jps </span><br><span class="line"><span class="number">1488</span> </span><br><span class="line"><span class="number">1956</span> Jps</span><br><span class="line"><span class="number">1684</span> Launcher</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-jmap工具"><a href="#2-jmap工具" class="headerlink" title="2.jmap工具"></a>2.jmap工具</h3><p>​        jmap（Java Virtual Machine Memory Map）是JDK提供的一个可以生成Java虚拟机的堆转储快照dump文件的命令行工具。除此以外，jmap命令还可以查看finalize执行队列、Java堆和方法区的详细信息，比如空间使用率、当前使用的什么垃圾回收器、分代情况等等</p>
+<p>​     查看堆内存占用情况heao进程id——&gt;&gt;jmap -heap 进程id</p>
+<h3 id="3-jconsole工具"><a href="#3-jconsole工具" class="headerlink" title="3,jconsole工具"></a>3,jconsole工具</h3><p>​     图形界面的,多功能的检测工具,可以连续检测</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zhangminghao<span class="meta">@localhost</span> java-Spring % jconsole</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ww8dmgj20qf0713zs.jpg" alt="image-20220513210926906"></p>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJVM"><span class="toc-text">什么是JVM?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="toc-text">JVM内存结构图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E4%B9%8B%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-text">内存结构之程序计数器(寄存器)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E4%B9%8B%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="toc-text">内存结构之虚拟机栈</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A0%88%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA"><span class="toc-text">栈内存溢出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E8%BF%90%E8%A1%8C%E8%AF%8A%E6%96%AD"><span class="toc-text">线程运行诊断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B1-cpu%E5%8D%A0%E7%94%A8%E8%BF%87%E5%A4%9A"><span class="toc-text">案例1:cpu占用过多</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B2-%E8%BF%90%E8%A1%8C%E5%BE%88%E9%95%BF%E6%97%B6%E9%97%B4%E6%B2%A1%E6%9C%89%E7%BB%93%E6%9E%9C"><span class="toc-text">案例2:运行很长时间没有结果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88Native-Method-Stack"><span class="toc-text">本地方法栈Native Method Stack</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95"><span class="toc-text">什么是本地方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">本地方法的作用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Heap%E5%A0%86"><span class="toc-text">Heap堆</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%A0%86"><span class="toc-text">什么是堆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">堆的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E6%BA%A2%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-text">堆内存的溢出问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-text">堆内存溢出的原因</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A0%86%E7%9A%84%E5%86%85%E5%AD%98%E8%AF%8A%E6%96%ADjmap"><span class="toc-text">堆的内存诊断jmap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-jps%E5%B7%A5%E5%85%B7"><span class="toc-text">1.jps工具:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-jmap%E5%B7%A5%E5%85%B7"><span class="toc-text">2.jmap工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-jconsole%E5%B7%A5%E5%85%B7"><span class="toc-text">3,jconsole工具</span></a></li></ol></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2022/05/11/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8CShardingJDBC/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">数据库主从复制</span>
+            </a>
+        
+        
+            <a class="next" href="/2022/05/10/Mysql%E7%B4%A2%E5%BC%95-%E6%A0%B8%E5%BF%83/">
+                
+                <span class="prev-text">Mysql索引(核心)</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>

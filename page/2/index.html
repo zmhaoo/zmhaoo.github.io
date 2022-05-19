@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+    <div class="posts-wrapper">
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/05/08/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">HashMap源码解析</a>
+            </div>
+            <p class="sub">May 08 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="TreeifyBin"><a href="#TreeifyBin" class="headerlink" title="TreeifyBin"></a>TreeifyBin</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">treeifyBin</span><span class="params">(Node&lt;K, V&gt;[] tab, <span class="type">int</span> hash)</span> &#123;</span><br><span class="line">        <span class="comment">//n 数组的长度，index 数组位置</span></span><br><span class="line">        <span class="type">int</span> n, index;</span><br><span class="line">        Node&lt;K, V&gt; e;</span><br><span class="line">        <span class="keyword">if</span> (tab == <span class="literal">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY) &#123;</span><br><span class="line">            <span class="comment">//如果当前数组为空，或者当前数组容量小于最小树化容量</span></span><br><span class="line">            <span class="comment">//直接扩容不进行树化</span></span><br><span class="line">            resize();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((e = tab[index = (n - <span class="number">1</span>) &amp; hash]) != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">//当当前找的节点e不为空</span></span><br><span class="line">            <span class="comment">//hd红黑树链表头，红黑树链表尾（红黑树中不仅有维护其所有节点的红黑树结构，还有所有节点的链表结构）</span></span><br><span class="line">            <span class="comment">//所以先将目前节点按链表排列好，在进行红黑树化</span></span><br><span class="line">            TreeNode&lt;K, V&gt; hd = <span class="literal">null</span>, tl = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">//遍历列表</span></span><br><span class="line">            <span class="keyword">do</span> &#123;</span><br><span class="line">                <span class="comment">//将当前e节点装化为TreeNode</span></span><br><span class="line">                TreeNode&lt;K, V&gt; p = replacementTreeNode(e, <span class="literal">null</span>);</span><br><span class="line">                <span class="comment">//如果tl不存在</span></span><br><span class="line">                <span class="keyword">if</span> (tl == <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="comment">//则p为hd</span></span><br><span class="line">                    hd = p;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">//若存在则p的前节点指向tl</span></span><br><span class="line">                    p.prev = tl;</span><br><span class="line">                    <span class="comment">//tl的后节点指向p</span></span><br><span class="line">                    tl.next = p;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//最后将tl指向p</span></span><br><span class="line">                tl = p;</span><br><span class="line">            &#125; <span class="keyword">while</span> ((e = e.next) != <span class="literal">null</span>);</span><br><span class="line">            <span class="keyword">if</span> ((tab[index] = hd) != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="comment">//将hd放在数组上，且hd存在，将链表进行红黑树化</span></span><br><span class="line">                hd.treeify(tab);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Treeify"><a href="#Treeify" class="headerlink" title="Treeify"></a>Treeify</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">treeify</span><span class="params">(Node&lt;K, V&gt;[] tab)</span> &#123;</span><br><span class="line">            TreeNode&lt;K, V&gt; root = <span class="literal">null</span>;</span><br><span class="line">            <span class="keyword">for</span> (TreeNode&lt;K, V&gt; x = <span class="built_in">this</span>, next; x != <span class="literal">null</span>; x = next) &#123;</span><br><span class="line">                <span class="comment">//根据链表进行遍历</span></span><br><span class="line">                next = (TreeNode&lt;K, V&gt;) x.next;</span><br><span class="line">                x.left = x.right = <span class="literal">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (root == <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="comment">//如果根节点还没设置则当前节点设置为根节点root</span></span><br><span class="line">                    x.parent = <span class="literal">null</span>;</span><br><span class="line">                    <span class="comment">//根节点一定是黑色的</span></span><br><span class="line">                    x.red = <span class="literal">false</span>;</span><br><span class="line">                    root = x;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">//获取当前循环节点的key和哈希值</span></span><br><span class="line">                    <span class="type">K</span> <span class="variable">k</span> <span class="operator">=</span> x.key;</span><br><span class="line">                    <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> x.hash;</span><br><span class="line">                    Class&lt;?&gt; kc = <span class="literal">null</span>;</span><br><span class="line">                    <span class="comment">//每次都从根节点开始循环</span></span><br><span class="line">                    TreeNode&lt;K, V&gt; p = root;</span><br><span class="line">                    <span class="keyword">for</span> (; ; ) &#123;</span><br><span class="line">                        <span class="comment">//遍历当前红黑树</span></span><br><span class="line">                        <span class="type">int</span> dir;</span><br><span class="line">                        <span class="comment">//获得p的hash值和key</span></span><br><span class="line">                        <span class="type">int</span> <span class="variable">ph</span> <span class="operator">=</span> p.hash;</span><br><span class="line">                        <span class="type">K</span> <span class="variable">pk</span> <span class="operator">=</span> p.key;</span><br><span class="line">                        <span class="comment">//比较hash值，然后根据比较值dir决定插入左边还是右边</span></span><br><span class="line">                        <span class="keyword">if</span> (ph &gt; h) &#123;</span><br><span class="line">                            dir = -<span class="number">1</span>;</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ph &lt; h) &#123;</span><br><span class="line">                            dir = <span class="number">1</span>;</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((kc == <span class="literal">null</span> &amp;&amp; (kc = comparableClassFor(k)) == <span class="literal">null</span>) ||</span><br><span class="line">                                (dir = compareComparables(kc, k, pk)) == <span class="number">0</span>) &#123;</span><br><span class="line">                            <span class="comment">//k不是不是课比较类或者比较结果为0，使用tieBreakOrder方法比较</span></span><br><span class="line">                            dir = tieBreakOrder(k, pk);</span><br><span class="line">                        &#125;</span><br><span class="line">                        TreeNode&lt;K, V&gt; xp = p;</span><br><span class="line">                        p = (dir &lt;= <span class="number">0</span>) ? p.left : p.right;</span><br><span class="line">                        <span class="comment">//仅当当前要插入的位置上没有节点时才进行插入，否则继续向下遍历</span></span><br><span class="line">                        <span class="keyword">if</span> (p == <span class="literal">null</span>) &#123;</span><br><span class="line">                            <span class="comment">//设置父节点</span></span><br><span class="line">                            x.parent = xp;</span><br><span class="line">                            <span class="comment">//根据dir值设置为父节点的左右子节点</span></span><br><span class="line">                            <span class="keyword">if</span> (dir &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                                xp.left = x;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                xp.right = x;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//插入成功后平衡红黑树</span></span><br><span class="line">                            root = balanceInsertion(root, x);</span><br><span class="line">                            <span class="comment">//跳出当前循环</span></span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//确保当前的root是直接落在table数组上的</span></span><br><span class="line">            moveRootToFront(tab, root);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/26/%E9%A1%B9%E7%9B%AE%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">外卖项目遇到的问题总结</a>
+            </div>
+            <p class="sub">Apr 26 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="浏览器返回页面与数据库id不一致-js与雪花算法的精度丢失问题"><a href="#浏览器返回页面与数据库id不一致-js与雪花算法的精度丢失问题" class="headerlink" title="浏览器返回页面与数据库id不一致(js与雪花算法的精度丢失问题)"></a>浏览器返回页面与数据库id不一致(js与雪花算法的精度丢失问题)</h1><p>通过观察控制台输出的SQL发现页面传递过来的员工id的值和数据库中的id值不一致，这是怎么回事呢？<br>分页查询时服务端响应给页面的数据中id的值为**19位数字(mybatisplus提供的雪花算法)**，类型为long<img src="https://s1.ax1x.com/2022/04/27/LbRRr6.png" alt="LbRRr6.png"></p>
+<p>页面中<strong>js处理long型数字只能精确到前16位</strong>，所以最终通过ajax请求提交给服务端的时候id变为1391586184024604700</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LbWSiQ.png" alt="LbWSiQ.png"></p>
+<p>前面我们已经发现了问题的原因，<strong>即js对long型数据进行处理时丢失精度</strong>，导致提交的id和数据库中的id不一致。</p>
+<p>如何解决这个问题？<br>我们可以在服务端给页面响应json数据时进行处理，将long型数据统一转为String字符串，效果如下：</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LbRvdS.png" alt="LbRvdS.png">具体实现步骤：<br>①提供对象转换器JacksonObjectMapper，基于Jackson进行Java对象到json数据的转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.itheima.common;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.DeserializationFeature;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.<span class="keyword">module</span>.SimpleModule;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.ser.std.ToStringSerializer;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;</span><br><span class="line"><span class="keyword">import</span> java.math.BigInteger;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDate;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalTime;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 对象映射器:基于jackson将Java对象转为json，或者将json转为Java对象</span></span><br><span class="line"><span class="comment"> * 将JSON解析为Java对象的过程称为 [从JSON反序列化Java对象]</span></span><br><span class="line"><span class="comment"> * 从Java对象生成JSON的过程称为 [序列化Java对象到JSON]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JacksonObjectMapper</span> <span class="keyword">extends</span> <span class="title class_">ObjectMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">DEFAULT_DATE_FORMAT</span> <span class="operator">=</span> <span class="string">&quot;yyyy-MM-dd&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">DEFAULT_DATE_TIME_FORMAT</span> <span class="operator">=</span> <span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">DEFAULT_TIME_FORMAT</span> <span class="operator">=</span> <span class="string">&quot;HH:mm:ss&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">JacksonObjectMapper</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">        <span class="comment">//收到未知属性时不报异常</span></span><br><span class="line">        <span class="built_in">this</span>.configure(FAIL_ON_UNKNOWN_PROPERTIES, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//反序列化时，属性不存在的兼容处理</span></span><br><span class="line">        <span class="built_in">this</span>.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="type">SimpleModule</span> <span class="variable">simpleModule</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleModule</span>()</span><br><span class="line">                .addDeserializer(LocalDateTime.class, <span class="keyword">new</span> <span class="title class_">LocalDateTimeDeserializer</span>(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))</span><br><span class="line">                .addDeserializer(LocalDate.class, <span class="keyword">new</span> <span class="title class_">LocalDateDeserializer</span>(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))</span><br><span class="line">                .addDeserializer(LocalTime.class, <span class="keyword">new</span> <span class="title class_">LocalTimeDeserializer</span>(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))</span><br><span class="line"></span><br><span class="line">                .addSerializer(BigInteger.class, ToStringSerializer.instance)</span><br><span class="line">                .addSerializer(Long.class, ToStringSerializer.instance)</span><br><span class="line">                .addSerializer(LocalDateTime.class, <span class="keyword">new</span> <span class="title class_">LocalDateTimeSerializer</span>(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))</span><br><span class="line">                .addSerializer(LocalDate.class, <span class="keyword">new</span> <span class="title class_">LocalDateSerializer</span>(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))</span><br><span class="line">                .addSerializer(LocalTime.class, <span class="keyword">new</span> <span class="title class_">LocalTimeSerializer</span>(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//注册功能模块 例如，可以添加自定义序列化器和反序列化器</span></span><br><span class="line">        <span class="built_in">this</span>.registerModule(simpleModule);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>②在WebMvcConfig配置类中扩展Spring mvc的消息转换器，在此消息转换器中使用提供的对象转换器进行Java对象到json数据的转换(重写WebMvcConfigurationSupport里的 extendMessageConverters方法)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">extendMessageConverters</span><span class="params">(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters)</span> &#123;</span><br><span class="line">        <span class="type">MappingJackson2HttpMessageConverter</span> <span class="variable">mappingJackson2HttpMessageConverter</span> <span class="operator">=</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">MappingJackson2HttpMessageConverter</span>();</span><br><span class="line"></span><br><span class="line">        mappingJackson2HttpMessageConverter.setObjectMapper(<span class="keyword">new</span> <span class="title class_">JacksonObjectMapper</span>());</span><br><span class="line"></span><br><span class="line">        converters.add(<span class="number">0</span>,mappingJackson2HttpMessageConverter);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>③该自定义的对象转换器, 主要指定了, 在进行json数据序列化及反序列化时, LocalDateTime、LocalDate、LocalTime的处理方式, 以及BigInteger及Long类型数据，直接转换为字符串。</p>
+<p><strong>总结:因为数据库id都是采用mybatis-plus提供的雪花算法赋值,所以id值都是19位,然而将数据提供给前端页面时,js解析ID数据时,最多只能解析16位及以内的数据,所以导致了精度丢失,也就会发生页面存储数据的id与数据库的id不一致,所以当我们想通过从页面获取id对数据库中的数据做一些操作的时候就会出现问题.</strong></p>
+<p>思路:①因为问题出现在精度丢失,那么我们可以考虑把id转换成字符串类型让页面接受.</p>
+<p>​        ②我们可不可以将pojo类的id设为String,数据库id设置为varchar类型呢?</p>
+<p>​        ③可以,但是不建议,因为在做业务操作的时候根据id查询的参数都是Integer类型,所以没有必要牵一发而动全身</p>
+<p>​        ④那么就找出问题的原因,很明显原因出在返回值,在springboot框架中,我们在controller层返回给页面的数据都是springmvc框架帮我们自动封装成json数据,而spring默认处理json数据的对象,SpringMVC的消息转换器,默认会帮我们转换参数类型.</p>
+<p>​        ⑤所以我们需要将springmvc中的消息转换器进行扩展,也就是上述提供的自定义JacksonObjectMapper类,通过自定义设定–&gt;当遇到Long类型数据是,自动转为换为字符串返回给页面存储.</p>
+<p>​        ⑥这样就可以避免js在接受数据时精度丢失了.</p>
+<h1 id="MD5加密"><a href="#MD5加密" class="headerlink" title="MD5加密"></a>MD5加密</h1><p>MD5加密:</p>
+<p>可以使用apache的commons-codec工具类或者Spring提供的DigestUtils工具类,导不同的包就行了(工具包名字一样)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.util.DigestUtils;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhangminghao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2022/4/26 8:19 下午</span></span><br><span class="line"><span class="comment"> * 最难不过坚持👊🏻</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> org.apache.commons.codec.digest.DigestUtils.md5Hex(<span class="string">&quot;123456&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;apache----&gt;&quot;</span>+s1);</span><br><span class="line">        <span class="comment">//输出:apache----&gt;e10adc3949ba59abbe56e057f20f883e</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">s2</span> <span class="operator">=</span> DigestUtils.md5DigestAsHex(<span class="string">&quot;123456&quot;</span>.getBytes());</span><br><span class="line">        System.out.println(<span class="string">&quot;spring----&gt;&quot;</span>+s2);</span><br><span class="line">        <span class="comment">//输出:spring----&gt;e10adc3949ba59abbe56e057f20f883e</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>区别:apache的commons-codec的优势,拥有大部分的加密方式,而spring只有md5加密</p>
+<p>①apache的commons-codec:</p>
+<p>Commons codec，是项目中用来处理常用的编码方法的工具类包，例如DES、SHA1、MD5、Base64，URL，Soundx等等。不仅是编码，也可用于解码</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqC4Pg.png" alt="LqC4Pg.png"></p>
+<p>②spring的DigestUtils:</p>
+<p>MD5加密</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqCfIS.png" alt="LqCfIS.png"></p>
+<h1 id="MD5和Base64加密方式-扩充上面知识点"><a href="#MD5和Base64加密方式-扩充上面知识点" class="headerlink" title="MD5和Base64加密方式,扩充上面知识点"></a>MD5和Base64加密方式,扩充上面知识点</h1><p>1.MD5散列算法</p>
+<p>词汇解释：<br>MD5消息摘要算法（英语：MD5 Message-Digest Algorithm），一种被广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。MD5由美国密码学家罗纳德·李维斯特（Ronald Linn Rivest）设计，于1992年公开，用以取代MD4算法(MD5不可逆)</p>
+<p>2.Base64</p>
+<p>是网络上最常见的用于传输8Bit字节码的编码方式之一，Base64就是一种基于64个可打印字符来表示二进制数据的方法。可查看RFC2045～RFC2049，上面有MIME的详细规范(Base64 的加密算法是可逆的)</p>
+<h1 id="用户退出销毁session"><a href="#用户退出销毁session" class="headerlink" title="用户退出销毁session"></a>用户退出销毁session</h1><p><img src="https://s1.ax1x.com/2022/04/27/LqCRVf.png" alt="LqCRVf.png"></p>
+<h1 id="AntPathMatcher基本使用"><a href="#AntPathMatcher基本使用" class="headerlink" title="AntPathMatcher基本使用"></a>AntPathMatcher基本使用</h1><p>首先，AntPathMatcher是什么？有什么能力？<br>AntPathMather是Spring提供的用于对资源路径进行解析或者对url的字符串做匹配用的。无论是资源路径还是url字符串都是采用的是Ant格式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个不用拦截的数组</span></span><br><span class="line">        String[] urls = &#123;</span><br><span class="line">                <span class="string">&quot;/backend/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/front/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/employee/login&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/employee/logout&quot;</span></span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//获取url路径</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">uri</span> <span class="operator">=</span> request.getRequestURI();</span><br><span class="line">        <span class="comment">//判断是否有非拦截路径</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> checkFilter(urls, uri); <span class="comment">//调用下面方法,匹配非拦截路径</span></span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="comment">//有就放行</span></span><br><span class="line">            filterChain.doFilter(request,response);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">checkFilter</span><span class="params">( String[] urls,String uri)</span>&#123;</span><br><span class="line">        <span class="type">AntPathMatcher</span> <span class="variable">antPathMatcher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AntPathMatcher</span>();</span><br><span class="line">        <span class="keyword">for</span> (String url : urls) &#123;</span><br><span class="line">            <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> antPathMatcher.match(url, uri);</span><br><span class="line">            <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Mybatis-plus中使用自动填充的坑"><a href="#Mybatis-plus中使用自动填充的坑" class="headerlink" title="Mybatis-plus中使用自动填充的坑"></a>Mybatis-plus中使用自动填充的坑</h1><p>当我想在项目中使用MyBatis-plus中的自动填充功能用来自动填充数据的修改和创建时间时,发现数据在创建时可以自动注入,修改时不可以,这是为什么呢?</p>
+<p>先来看看代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyMetaObjectHandler</span> <span class="keyword">implements</span> <span class="title class_">MetaObjectHandler</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insertFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;start insert fill ....&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.strictInsertFill(metaObject, <span class="string">&quot;createTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br><span class="line">        <span class="built_in">this</span>.strictInsertFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;start update fill ....&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.strictUpdateFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>新增数据</strong>时的请求数据和自动执行的sql语句:</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqCWa8.png" alt="LqCWa8.png"></p>
+<p><strong>修改数据</strong>时的请求数据和自动执行的sql语句:</p>
+<p>修改数据分为2步:</p>
+<p>①当我们点击编辑按钮的时候通过页面通过向服务器发送待编辑的id,让服务器通过id查找数据再回显到页面表单中<img src="https://s1.ax1x.com/2022/04/27/LqPGFS.png" alt="LqPGFS.png"></p>
+<p>②修改完数据后,将数据提交给服务器,让服务端修改数据</p>
+<p><img src="https://s1.ax1x.com/2022/04/27/LqP1df.png" alt="LqP1df.png"></p>
+<p>发现:</p>
+<p>①<strong>在上面的整体流程中我们发现</strong>,在执行新增数据的时候,createTime和updateTime都实现了mysq-plus提供的自动注入功能,但是在修改时,数据对应的修改时间却没有发生变化</p>
+<p>②<strong>从请求方式发现</strong>,新增的时候,createTime和updateTime我们是没有给值的,所以传到服务器的时候,这两个值都是以null的形式传过去的,但是在修改的时候,是通过id查找数据回显到页面表单的,当我们修改基本数据后,该数据createTime和updateTime在修改前就已经被自动填充了,所以不是null</p>
+<p>③<strong>通过SQL语句发现</strong>,当页面表单的createTime和updateTime为NULL的时候,在执行sql的时候会自动填充,反之,当页面表单的数据createTime和updateTime不为NULL的时候,服务器执行sql的时候则不会自动填充覆盖原有的值,而是将原有的值纹丝不动的设置到数据中,也就没有发生改变.</p>
+<p>原因:</p>
+<p>因为Mybatis-plus中的的自动填充功能的strictInsertFill和strictUpdateFill默认是被自动填充的值为NULL则自动填充,不为NULL则不自动填充</p>
+<p>解决方式:<br>①在填充前判断metaObject中有没有需要自动填充的值,如果有则设置为null</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">     <span class="type">Object</span> <span class="variable">updateTime</span> <span class="operator">=</span> metaObject.getValue(<span class="string">&quot;updateTime&quot;</span>);</span><br><span class="line">     <span class="keyword">if</span>(metaObject.hasSetter(<span class="string">&quot;updateTime&quot;</span>))&#123;</span><br><span class="line">         metaObject.setValue(<span class="string">&quot;updateTime&quot;</span>,<span class="literal">null</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="built_in">this</span>.strictUpdateFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class);</span><br></pre></td></tr></table></figure>
+
+<p>②使用setFieldValByName直接设置updateTime的值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;start update fill ....&quot;</span>);</span><br><span class="line">    <span class="built_in">this</span>.setFieldValByName(<span class="string">&quot;updateTime&quot;</span>,LocalDateTime.now(),metaObject);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="POJO-DTO-VO之间的区别"><a href="#POJO-DTO-VO之间的区别" class="headerlink" title="POJO,DTO,VO之间的区别"></a>POJO,DTO,VO之间的区别</h1><p>POJO含义:与数据库的表一一对应,用来封装从数据库查询的数据,不同的公司要求的名字不一样,比如还有po,entity,domain,model,javabean,bean,但是表达的含义都是一样的.</p>
+<p>DTO含义:指浏览器提交参数给服务器,服务器用来封装对应参数的对象</p>
+<p>VO含义:指服务器响应给浏览器的数据,将数据封装后传递给浏览器</p>
+<h1 id="使用过滤器的时候-WebFilter注意事项"><a href="#使用过滤器的时候-WebFilter注意事项" class="headerlink" title="使用过滤器的时候@WebFilter注意事项"></a>使用过滤器的时候@WebFilter注意事项</h1><p>因为@WebFilter是Servlet管理,所以需要在引导类加上@ServletComponentScan,扫描到@WebFilter才能生效</p>
+<h2 id="common-Fileupload—–-gt-MultipartFile-file"><a href="#common-Fileupload—–-gt-MultipartFile-file" class="headerlink" title="common-Fileupload—–&gt;MultipartFile file"></a>common-Fileupload—–&gt;MultipartFile file</h2><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ndr842j215o07mwgf.jpg" alt="image-20220430084336123"></p>
+<h1 id="Transaction可能事务失效的地方"><a href="#Transaction可能事务失效的地方" class="headerlink" title="@Transaction可能事务失效的地方"></a>@Transaction可能事务失效的地方</h1><p>项目采用了Mybatis-plus,mapper和service都各自实现和继承了mybatis-lpus提供的的接口,所以在项目中的Service层可以直接用this调用父类serviceImpl的方法,这样可能导致被this所调用的方法事务失效,因为this直接调父类的方法,没有被代理对象所代理,但是加上@Transaction注解的方法,必须要代理对象调用时,才能实现事务保护</p>
+<p>解决方案:自己注入自己@Autowired—&gt;xxxservice,但是需要解决循环依赖问题.</p>
+<h1 id="做项目中加上ToDo-表示项目未完成"><a href="#做项目中加上ToDo-表示项目未完成" class="headerlink" title="做项目中加上ToDo,表示项目未完成"></a>做项目中加上ToDo,表示项目未完成</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5nfdafdj20cw07ugma.jpg" alt="image-20220430110948139"></p>
+<h1 id="pojo四大特征"><a href="#pojo四大特征" class="headerlink" title="pojo四大特征"></a>pojo四大特征</h1><p>无参构造方法,get方法,set方法,实现serializable接口序列化</p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/24/SpringMvc/">SpringMVC使用</a>
+            </div>
+            <p class="sub">Apr 24 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="1-什么是Mvc"><a href="#1-什么是Mvc" class="headerlink" title="1.什么是Mvc"></a>1.什么是Mvc</h1><p>①Mvc是一种软件架构的思想,将软件按照模型,视图,控制器来划分</p>
+<blockquote>
+<p>M:Model,模型层,指工程中的JavaBean,作用是数据处理</p>
+<p>V:View,视图层,指工程中的html或jsp等页面,作用是与用户进行交互,展示数据</p>
+<p>C:Controller,控制层,指工程中的servlet,作用是接受请求和响应浏览器</p>
+</blockquote>
+<p>②JavaBean分为两类:</p>
+<ul>
+<li>一类称为实体类Bean:专门存储业务数据的,如Student,User等</li>
+<li>一类称为业务处理Bean:指Service或Dao对象,专门用于处理业务逻辑和数据访问.</li>
+</ul>
+<p>③Mvc的工作流程:</p>
+<ul>
+<li>用户通过视图层发送请求到服务器,在服务器中请求被Controller接受,Controller调用相应的Model层处理请求,处理完毕将结果返回到Controller,Controller再根据请求处理的结果找到相应的View视图,渲染数据后最终响应给浏览器</li>
+</ul>
+<h1 id="2-什么是SpringMvc"><a href="#2-什么是SpringMvc" class="headerlink" title="2.什么是SpringMvc"></a>2.什么是SpringMvc</h1><ul>
+<li><p>SpringMvc是Spring的一个后续产品,是Spring的一个子项目,是基于Servlet的</p>
+</li>
+<li><p>SpringMvc就是Spring的Mvc模块的内容,他是Spring为表述层开发提供的一整套完整的解决方案</p>
+</li>
+<li><p>在SpringMcv所封装的带有功能的Servlet,把处理请求的功能都进行了封装</p>
+</li>
+<li><p>我们只需要使用SpringMvc提供的实现功能的代码,就可以完成请求的处理了</p>
+</li>
+<li><p>前台页面发送请求到服务器中,服务器来使用Servlet来接受请求处理请求,  需要根据请求地址找到相应的Servlet,其中Servlet的service(生命周期的方法之一)方法就是处理请求和响应的方法</p>
+</li>
+</ul>
+<p><strong>注:三层架构为表述层(前台页面+后台Servlte)+业务逻辑层+数据访问层</strong></p>
+<h1 id="3-springMvc的特点"><a href="#3-springMvc的特点" class="headerlink" title="3.springMvc的特点"></a>3.springMvc的特点</h1><p>①为什么有Servlet不用,要使用SpringMvc?</p>
+<blockquote>
+<p>SpringMvc就是一个Servlet,封装Servlet后就有了一个功能非常强大的前端控制器DispatcherServlet,原来页面发送来的请求,需要我们自己写Servlet来处理,然而使用SpringMvc后就通过SpringMvc来进行统一处理,SpringMvc会对接受请求做出响应的很多的过程进行封装,比如用原生Servlet获取请求参数,比如往域对象放值的时候,比如页面跳转和重定向的时候,那么这个时候DispatcherServle会对这些操作进行统一处理</p>
+</blockquote>
+<p>②特点总结:</p>
+<ul>
+<li><strong>spring家族原生产品</strong>,与IOC容器等基础设施无缝对接</li>
+<li><strong>基于原生的Servlet</strong>,通过了功能强大的<strong>前端控制器DispatcherServlet</strong>,对请求响应进行统一处理</li>
+<li>表述层各细分领域需要解决的问题<strong>全方位覆盖</strong>,提供<strong>全面解决方案</strong></li>
+<li><strong>代码清新简介</strong>,大幅度提升开发效率</li>
+<li>内部组件化程度高,可插拔式组件<strong>即插即用</strong>,想要什么功能配置相应组件即可</li>
+<li><strong>性能卓越</strong>,尤其是和现代大型吗,超大型互联网项目需求</li>
+</ul>
+<h1 id="4-web-xml是什么"><a href="#4-web-xml是什么" class="headerlink" title="4.web.xml是什么?"></a>4.web.xml是什么?</h1><ul>
+<li>web.xml是我们web工程的一个<strong>入口配置文件</strong>,在文件里我们可以注册Servlet可以注册Filter过滤器,监听器等..</li>
+</ul>
+<h2 id="5-为什么要在web-xml文件里面注册Servlet"><a href="#5-为什么要在web-xml文件里面注册Servlet" class="headerlink" title="5.为什么要在web.xml文件里面注册Servlet?"></a>5.为什么要在web.xml文件里面注册Servlet?</h2><ul>
+<li>web.xml配置文件是web工程的一个入口文件,<strong>因为浏览器不能去直接访问一个类</strong>,所以要在web.xml文件里面来跟Servlet注册一个匹配路径,才能让浏览器去访问到Servlet,每当我们访问的路径符合目前所设置的匹配路径的时候,那么这个时候当前的请求就会让Servlet来接受参数并处理</li>
+</ul>
+<h1 id="6-为什么在web-xml中注册DispatcherServlet的而不是Servlet"><a href="#6-为什么在web-xml中注册DispatcherServlet的而不是Servlet" class="headerlink" title="6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?"></a>6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?</h1><ul>
+<li>因为DispatcherServlet中封装了Servlet,配置SpringMVC的前端控制器DispatcherServlet可以对浏览器发送的请求进行统一处理,极大的简化了我们的表述层的代码!</li>
+</ul>
+<h1 id="7-为什么在web-xml中注册DispatcherServlet的匹配路径是-x2F-而不是-x2F"><a href="#7-为什么在web-xml中注册DispatcherServlet的匹配路径是-x2F-而不是-x2F" class="headerlink" title="7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?"></a>7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?</h1><ul>
+<li>因为&#x2F;所配置的请求可以是&#x2F;login或.html或.js或.css方式的请求路径,但是&#x2F;不能匹配.jsp请求路径的请求</li>
+</ul>
+<h2 id="8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件"><a href="#8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件" class="headerlink" title="8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?"></a>8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?</h2><ul>
+<li>因为<strong>JSP文件</strong>的本质就是一个<strong>Servlet文件</strong>,它是需要<strong>服务器指定的Servlet来进行特殊处理</strong>的,所以.jsp文件不需要DispatcherServlet来处理,如果路径能够匹配.jsp文件的话,那么这个.jsp文件的请求也会被当前的SpringMVC来进行处理,那SpringMVC会把当前这个.jps的请求当做一个<strong>普通的请求来处理</strong>,而不会找到相对于的jsp页面,所以要用&#x2F;来排除.jsp页面的请求路径给排除掉,然后<strong>其他的请求</strong>都要交给我们的<strong>前端控制器DispatcherServlet来进行处理</strong></li>
+</ul>
+<h1 id="9-x2F-代表什么"><a href="#9-x2F-代表什么" class="headerlink" title="9.&#x2F;*代表什么?"></a>9.&#x2F;*代表什么?</h1><ul>
+<li>&#x2F;*代表所有请求路径,包括.jsp页面的请求,一般适用于注册Filter过滤器的匹配路径</li>
+</ul>
+<h1 id="10-框架是什么"><a href="#10-框架是什么" class="headerlink" title="10.框架是什么?"></a>10.框架是什么?</h1><ul>
+<li>配置文件+jar包</li>
+</ul>
+<h1 id="11-SpringMVC配置方式①-默认配置方式"><a href="#11-SpringMVC配置方式①-默认配置方式" class="headerlink" title="11.SpringMVC配置方式①:默认配置方式"></a>11.SpringMVC配置方式①:默认配置方式</h1><p>此配置作用下,SpringMVC的配置文件<strong>默认文件位于WEB-INF</strong>下,<strong>默认名称为<servlet-name>-servlet.xml</strong>,例如:一下配置所对应SpringMVC的配置文件位于WEB-INF下,文件名为springMVC-servlet.xml</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置ServletMapping映射路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        设置springMvc的核心控制器所能处理的请求的请求路径</span></span><br><span class="line"><span class="comment">        /所配置的请求可以是/login或.html或.js或.css方式的请求路径</span></span><br><span class="line"><span class="comment">        ,但是/不能匹配.jsp请求路径的请求</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>注:此配置方式不好,我们学习了maven工程后,配置文件应该统一放在resource资源路径下面,因为WEB-INF下只放页面和静态资源</strong></p>
+<h1 id="12-SpringMVC配置方式②-扩展配置方式"><a href="#12-SpringMVC配置方式②-扩展配置方式" class="headerlink" title="12.SpringMVC配置方式②:扩展配置方式"></a>12.SpringMVC配置方式②:扩展配置方式</h1><ul>
+<li>可以通过init-param初始化参数标签设置SpringMVC配置文件的位置和名称:</li>
+</ul>
+<blockquote>
+<p> 初始化时设置参数,将DispatcherServlet的父类FrameworkServlet中的**contextConfigLocation(上下文配置路径)**参数路径设置为自定义路径(classpath:文件名.xml) —–&gt;classpath对应的类路径也就是java包和resource包</p>
+</blockquote>
+<ul>
+<li>可以通过load-on-startup标签设置SpringMVC前端控制器DispatcherServlet的初始化时间:</li>
+</ul>
+<blockquote>
+<p> 因为DispatcherServlet就是一个Servlet,所以声明周期和Servlet是一样的,默认都是在第一次访问的时候进行初始化,但是DispatcherServlet封装了对请求过程所有的处理,所以初始化中要执行很多的内容,如果把众多的处理内容放在第一次访问的时候初始化,就会严重的影响第一次访问的速度</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--配置SpringMVC配置文件的位置和名称--&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--初始化时设置参数,将DispatcherServlet的父类DispatcherServlet</span></span><br><span class="line"><span class="comment">        的contextConfigLocation参数路径设置为自定义路径--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--上下文配置路径--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:springMVC.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--将前端控制器DispatcherServlet的初始化时间提前到服务器启动时</span></span><br><span class="line"><span class="comment">            因为DispatcherServlet封装了对请求过程所有的处理,所以初始化中要执行很多的内容</span></span><br><span class="line"><span class="comment">            如果把众多的内容放在第一次访问的时候初始化,就会严重的影响第一次访问的速度</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置ServletMapping映射路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>SpringMVC<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        设置springMvc的核心控制器所能处理的请求的请求路径</span></span><br><span class="line"><span class="comment">        /所配置的请求可以是/login或.html或.js或.css方式的请求路径</span></span><br><span class="line"><span class="comment">        ,但是/不能匹配.jsp请求路径的请求</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="文件上传三要素"><a href="#文件上传三要素" class="headerlink" title="文件上传三要素"></a>文件上传三要素</h1><p>![image-20220429090202460](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220429090202460.png)</p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/22/springboot%E9%AB%98%E7%BA%A7/">springboot高级</a>
+            </div>
+            <p class="sub">Apr 22 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="SpringBoot最重要的两个功能"><a href="#SpringBoot最重要的两个功能" class="headerlink" title="SpringBoot最重要的两个功能"></a>SpringBoot最重要的两个功能</h1><p>1.版本锁定(mybatis为什么没有锁定,因为mybatis开发的比较晚)</p>
+<p>2.自动装配</p>
+<h1 id="SpringBoot默认静态资源的存放目录是什么"><a href="#SpringBoot默认静态资源的存放目录是什么" class="headerlink" title="@SpringBoot默认静态资源的存放目录是什么?"></a>@SpringBoot默认静态资源的存放目录是什么?</h1><ul>
+<li>从以下图片可以得知SpringBoot默认静态资源的存放目录为:classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</li>
+</ul>
+<p>①当启动引导类时,引导类会自动装配,加载spring.factories文件</p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILA3Q.png" alt="LILA3Q.png"></p>
+<p>②在文件里读取到WebMvcAutoConfiguration时</p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILnH0.png" alt="LILnH0.png"></p>
+<p>③会通过@ConditionalOnMissingBean(WebMvcConfigurationSupport.class)来判断容器里是否有WebMvcConfigurationSupport这个类</p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILQ4U.png" alt="LILQ4U.png"></p>
+<p>④如果没有WebMvcConfigurationSupport,那么会创建WebMvcAutoConfiguration,并且在构造方法执行时将找到resourceProperties并赋值</p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LIL1CF.png" alt="LIL1CF.png"></p>
+<p>⑤通过this.resourceProperties.getStaticLocations调用方法,得到类中的默认资源常量添加到资源路径中</p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILgbt.png" alt="LILgbt.png"></p>
+<p>⑥通过Resources类中可以看到资源常量是一个字符串数组存储,最终赋值给staticLocations的变量,并且通过get方法可以获取到</p>
+<p><img src="https://s1.ax1x.com/2022/04/25/LILWUf.png" alt="LILWUf.png"></p>
+<p><strong>总结:所以当我们没有通过继承WebMvcConfigurationSupport的方式来配置自定义静态资源访问路径时,默认访问路径为classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</strong></p>
+<h1 id="WebMvcConfigurationSupport和WebMvcConfiguration什么关系"><a href="#WebMvcConfigurationSupport和WebMvcConfiguration什么关系" class="headerlink" title="WebMvcConfigurationSupport和WebMvcConfiguration什么关系?"></a>WebMvcConfigurationSupport和WebMvcConfiguration什么关系?</h1><p>查看源码注释上查到的解释是，在spring中配置WebMvc时有两种方法，<br>1.继承WebMvcConfigurationSupport或者子类DelegatingWebMVcconfiguration，重写里面相应的方法<br>2.继承WebMvcConfigurer的子抽象类WebMvcConfigurerAdapter(已经过时了)，也是重写里面相应的方法，但是需要在配置类上添加@EnableWebMvc注解。那这两个类直接是什么关系呢？</p>
+<p>3.实现WebMvcConfigurer(因为2已经过时了)，也是重写里面相应的方法，但是需要在配置类上添加@EnableWebMvc注解。</p>
+<p>  细心的开发者会发现，WebMvcConfigurationSupport中那些子类可以重写的空方法在WebMvcConfigurer都有，这说明WebMvcConfigurer只是WebMvcConfigurationSupport的一个扩展类，它并没有扩展新功能，只是为让用户更方便安全的添加自定义配置，为什么说是安全呢？<br>因为如果直接继承WebMvcConfigurationSupport，那么用户可以重写默认的配置，如果对原理不是很清楚地开发者不小心重写了默认的配置，springmvc可能相关功能就无法生效，是一种不安全的行为。但如果是继承WebMvcConfigurerAdapter，那么开发者是在默认配置的基础上添加自定义配置，相对来说更安全一些，只不过要多加一个@EnableWebMvc注解。从这个角度来说，最佳实践还是继承WebMvcConfigurerAdapter</p>
+<p><strong>为什么WebMvcConfigurer实现要加@EnableWebMvc?</strong></p>
+<blockquote>
+<p>@EnableWebMvc注解类上导入了DelegatingWebMvcConfiguration类，该类是WebMvcConfigurationSupport的子类，该类除了实例化WebMvcConfigurationSupport实例以外，另一个作用就是收集BeanFactory中所有WebMvcConfigurer的实现，汇集到WebMvcConfigurerComposite中，在WebMvcConfigurationSupport实例化过程中会分别调用这些实现，将相应的实例传入这些实现中，供开发者在此基础上添加自定义的配置。这也就是在WebMvcConfigurerAdapter子类上要加@EnableWebMvc的原因，因为要先实例化WebMvcConfigurationSupport。*</p>
+</blockquote>
+<p><strong>为什么可以存在多个WebMvcConfigurer的实现?</strong></p>
+<blockquote>
+<p> 一般来讲一个应用中一个WebMvcConfigurer的已经足够，设计成收集多个是不是有些多余？从springboot的autoconfigure机制来看并不多余，反而更灵活，比如我要写一个mybatis的AutoConfiguration和JPA的AutoConfiguration，我就可以在不同的AutoConfiguration里面定义一个WebMvcConfigurer的实现，里面只配置与mybatis或JPA相关的配置，这样需要那个启用那个，不需要人工通过注释代码来转换mybatis和JPA，注意：在springboot下自定义的WebMvcConfigurer实现配置类上是不需要添加@EnableWebMvc的，因为springboot已经实例化了WebMvcConfigurationSupport，如果添加了该注解，默认的WebMvcConfigurationSupport配置类是不会生效的，也就是以用户定义的为主，一般建议还是不覆盖默认的好。</p>
+</blockquote>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/21/spring%E7%9A%84%E7%BB%86%E8%8A%82%E6%95%B4%E7%90%86/">spring的细节整理</a>
+            </div>
+            <p class="sub">Apr 21 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="spring中-Resource和-Autowired的区别"><a href="#spring中-Resource和-Autowired的区别" class="headerlink" title="spring中@Resource和@Autowired的区别"></a>spring中@Resource和@Autowired的区别</h1><blockquote>
+<p>spring中，@Resource和@Autowired都是做bean的注入时使用。使用过程中，有时候@Resource 和 @Autowired可以替换使用；有时，则不可以。<br>    下面，根据自己的学习，整理下这两个注解使用中的共同点和不同点，及用法上的不同。<br>     共同点<br>     @Resource和@Autowired都可以作为注入属性的修饰，在接口仅有单一实现类时，两个注解的修饰效果相同，可以互相替换，不影响使用。<br>    不同点<br>@Resource是Java自己的注解，@Resource有两个属性是比较重要的，分是name和type；Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。<br>@Autowired是spring的注解，是spring2.5版本引入的，Autowired只根据type进行注入，不会去匹配name。如果涉及到type无法辨别注入对象时，那需要依赖@Qualifier或@Primary注解一起来修饰。</p>
+</blockquote>
+<h1 id="BeanFactory和FactoryBean的区别"><a href="#BeanFactory和FactoryBean的区别" class="headerlink" title="BeanFactory和FactoryBean的区别"></a>BeanFactory和FactoryBean的区别</h1><p><strong>BeanFactory是个Factory，也就是IOC容器或对象工厂，FactoryBean是个Bean。在Spring中，所有的Bean都是由BeanFactory(也就是IOC容器)来进行管理的。但对FactoryBean而言，这个Bean不是简单的Bean，而是一个能生产或者修饰对象生成的工厂Bean,它的实现与设计模式中的工厂模式和修饰器模式类似</strong></p>
+<blockquote>
+<p>1.BeanFactory</p>
+<p>BeanFactory定义了IOC容器的最基本形式，并提供了IOC容器应遵守的的最基本的接口，也就是Spring IOC所遵守的最底层和最基本的编程规范。在Spring代码中，BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，都是附加了某种功能的实现。</p>
+<p>2.FactoryBean</p>
+<p>一般情况下，Spring通过反射机制利用<bean>的class属性指定实现类实例化Bean，在某些情况下，实例化Bean过程比较复杂，如果按照传统的方式，则需要在<bean>中提供大量的配置信息。配置方式的灵活性是受限的，这时采用编码的方式可能会得到一个简单的方案。Spring为此提供了一个org.springframework.bean.factory.FactoryBean的工厂类接口，用户可以通过实现该接口定制实例化Bean的逻辑。<br>FactoryBean接口对于Spring框架来说占用重要的地位，Spring自身就提供了70多个FactoryBean的实现。它们隐藏了实例化一些复杂Bean的细节，给上层应用带来了便利。从Spring3.0开始，FactoryBean开始支持泛型，即接口声明改为FactoryBean<T>的形式</p>
+</blockquote>
+<h1 id="什么是JDBCTemplate"><a href="#什么是JDBCTemplate" class="headerlink" title="什么是JDBCTemplate?"></a>什么是JDBCTemplate?</h1><p><strong>spring框架对JDBC进行封装,使用JDBCTemplate方便实现对数据库操作</strong></p>
+<h1 id="spring事务管理API"><a href="#spring事务管理API" class="headerlink" title="spring事务管理API"></a>spring事务管理API</h1><p><strong>spring提供一个PlatformTransactionManager接口,代表事务管理器,这个接口针对不同操作数据库的框架提供不同的实现类</strong></p>
+<p>[<img src="https://s1.ax1x.com/2022/04/21/LgAMz4.md.png" alt="LgAMz4.md.png"></p>
+<p>如:DataSourceTransactionManager针对的是整合的是mybatis框架和JDBCTemplate(jdbc模板)</p>
+<p>​    HibernateTransactionManager针对的是Hibernate框架等等…</p>
+<h1 id="Transaction中的六大属性之pripagation-事务的传播行为"><a href="#Transaction中的六大属性之pripagation-事务的传播行为" class="headerlink" title="@Transaction中的六大属性之pripagation:事务的传播行为"></a>@Transaction中的六大属性之pripagation:事务的传播行为</h1><p>1)多事务方法直接进行调用,这个过程中事务是如何进行管理的</p>
+<p>2)一共七个参数,主要记住Requireds和Required_New这两个</p>
+<p><strong>详见spring总结章</strong></p>
+<h1 id="Transaction中的六大属性之ioslation-事务的隔离级别"><a href="#Transaction中的六大属性之ioslation-事务的隔离级别" class="headerlink" title="@Transaction中的六大属性之ioslation:事务的隔离级别"></a>@Transaction中的六大属性之ioslation:事务的隔离级别</h1><p>1)事务特性有隔离性,多事务操作之间不会产生影响.不考虑隔离性产生很多问题</p>
+<p>2)有三个读问题:<strong>脏读—-不可重复读—-幻(虚)读</strong></p>
+<ul>
+<li><p>脏读:一个未提交事务读取到另一个未提交事务的数据</p>
+</li>
+<li><p>不可重复读:一个为提交事务读取到另一个提交事务修改数据(mysql隔离级别默认可重复读)</p>
+</li>
+<li><p>幻读: 一个未提交事务读取到另一个提交事务添加数据</p>
+<p>解决方案:  通过设置事务隔离级别,解决读问题.(1,4基本不用)</p>
+<p>[<img src="https://s1.ax1x.com/2022/04/21/LgAKWF.md.png" alt="LgAKWF.md.png"></p>
+</li>
+</ul>
+<h1 id="Transaction中的六大属性之timeout-事务的超时时间"><a href="#Transaction中的六大属性之timeout-事务的超时时间" class="headerlink" title="@Transaction中的六大属性之timeout:事务的超时时间"></a>@Transaction中的六大属性之timeout:事务的超时时间</h1><p>1)事务需要在一定时间内进行提交,如果不提交则进行回滚</p>
+<p>2)默认值是-1,设置时间以秒为单位进行计算(-1代表不限超时时间)</p>
+<h1 id="Transaction中的六大属性之readOnly-是否只读"><a href="#Transaction中的六大属性之readOnly-是否只读" class="headerlink" title="@Transaction中的六大属性之readOnly:是否只读"></a>@Transaction中的六大属性之readOnly:是否只读</h1><p>1)读:查询操作,写:添加修改删除操作</p>
+<p>2)readOnly默认值是false,表示可以进行查询,可以添加修改删除操作</p>
+<p>3)设置readOnly值是true,设置成true之后,只能查询</p>
+<h1 id="Transaction中的六大属性之rollbackFor和noRollbackfor-回滚和不回滚"><a href="#Transaction中的六大属性之rollbackFor和noRollbackfor-回滚和不回滚" class="headerlink" title="@Transaction中的六大属性之rollbackFor和noRollbackfor:回滚和不回滚"></a>@Transaction中的六大属性之rollbackFor和noRollbackfor:回滚和不回滚</h1><p>1)设置查询那些异常进行事务回滚</p>
+<p>2)@Transaction默认只对RuntimeException进行回滚,如果是编译时期异常则需要手动设置</p>
+<p><strong>注:不要手动抓异常(dont try catch!!!!)不然会回滚失效,详见spring总结的文章!</strong></p>
+<h1 id="过滤器Filter和拦截器Interceptor的区别"><a href="#过滤器Filter和拦截器Interceptor的区别" class="headerlink" title="过滤器Filter和拦截器Interceptor的区别"></a>过滤器Filter和拦截器Interceptor的区别</h1><ul>
+<li><p>接口方面的区别</p>
+<blockquote>
+<p>过滤器实现的是Filter接口,拦截器实现的是HandlerInterceptor接口</p>
+<p>Filter—–&gt;Servlet提供             HandlerInterceptor——&gt;spring提供    </p>
+</blockquote>
+</li>
+<li><p>方法层面的区别</p>
+</li>
+<li><blockquote>
+<p>过滤器的前后过滤是在doFilter方法内完成的</p>
+<p>拦截器提供三个方法preHandle,postHandle,afterCompletion</p>
+</blockquote>
+</li>
+<li><p>放行的区别</p>
+</li>
+<li><blockquote>
+<p>过滤器调用filterChain.doFilter的时候放行</p>
+<p>拦截器需要在preHandler中返回true表示放行,false表示不放行</p>
+</blockquote>
+</li>
+<li><p>被管理方式的区别</p>
+<blockquote>
+<p>过滤器是tomcat创建管理</p>
+<p>拦截器是spring创建管理的</p>
+<p><strong>注意:如果用springboot,那么都是spring管理,应为tomcat已经被内置了,主导权在spring</strong></p>
+</blockquote>
+</li>
+<li><p>管理范围的区别(仅限于使用springboot之前)</p>
+<blockquote>
+<p>过滤器范围大,拦截器范围小,但是在springboot中是一样大,因为所有的bean都是spring管理</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="ApplicationContext是什么"><a href="#ApplicationContext是什么" class="headerlink" title="ApplicationContext是什么"></a>ApplicationContext是什么</h1><p>如果说BeanFactory是Spring的心脏，那么ApplicationContext就是完整的身躯了。</p>
+<p>ApplicationContext由BeanFactory派生而来，提供了更多面向实际应用的功能。</p>
+<p>Context我们通常解释为上下文环境，用“容器”来表述它更容易理解一些，ApplicationContext则是“应用的容器”</p>
+<h1 id="各种依赖"><a href="#各种依赖" class="headerlink" title="各种依赖"></a>各种依赖</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--validation校验框架起步依赖--&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;!--lombok--&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;lombok&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;!--加入运维工具依赖--&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">  </span><br><span class="line">   &lt;!--pagehelper--&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;com.github.pagehelper&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;pagehelper-spring-boot-starter&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;<span class="number">1.3</span><span class="number">.0</span>&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;!--切点表达式--&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.aspectj&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;!--jackson--&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="application-yml配置文件"><a href="#application-yml配置文件" class="headerlink" title="application.yml配置文件"></a>application.yml配置文件</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置端口号</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置数据源</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/brand_demo?serverTimezone=Asia/Shanghai</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="number">123456</span></span><br><span class="line">  <span class="attr">main:</span></span><br><span class="line">    <span class="attr">allow-circular-references:</span> <span class="literal">true</span> <span class="comment"># 运行set方式循环依赖</span></span><br><span class="line">   <span class="attr">sql:</span> <span class="comment">#sql语句初始化,用于测试的时候</span></span><br><span class="line">    <span class="attr">init:</span></span><br><span class="line">      <span class="attr">mode:</span> <span class="string">always</span></span><br><span class="line">      <span class="attr">schema-locations:</span> <span class="string">classpath:scheme.sql</span> <span class="comment">#如果名称是shcema.sql就不用配置</span></span><br><span class="line"></span><br><span class="line">      <span class="attr">data-locations:</span> <span class="string">classpath:data.sql</span> <span class="comment">#如果名称是data.sql就不用配置</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># mybatis配置</span></span><br><span class="line"><span class="comment"># 开启驼峰命名</span></span><br><span class="line"><span class="attr">mybatis:</span></span><br><span class="line">  <span class="attr">configuration:</span></span><br><span class="line">    <span class="attr">map-underscore-to-camel-case:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置springboot日志级别，输出运行过程中的SQL语句</span></span><br><span class="line"><span class="attr">logging:</span></span><br><span class="line">  <span class="attr">level:</span></span><br><span class="line">    <span class="attr">com.itheima.mapper:</span> <span class="string">debug</span></span><br><span class="line">    <span class="attr">org.springframework.jdbc.support.JdbcTransactionManager:</span> <span class="string">debug</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#分页合理化</span></span><br><span class="line"><span class="attr">pagehelper:</span></span><br><span class="line">  <span class="attr">reasonable:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoint:</span></span><br><span class="line">    <span class="attr">health:</span></span><br><span class="line">      <span class="attr">show-details:</span> <span class="string">always</span></span><br><span class="line"> </span><br><span class="line"> <span class="comment">#设置mybatis的驼峰命名自动映射</span></span><br><span class="line"><span class="attr">mybatis:</span></span><br><span class="line">  <span class="attr">configuration:</span></span><br><span class="line">    <span class="attr">map-underscore-to-camel-case:</span> <span class="literal">true</span>      </span><br><span class="line">    </span><br><span class="line"> <span class="comment">#设置mybatis-plus全局配置   </span></span><br><span class="line"><span class="attr">mybatis-plus:</span></span><br><span class="line">  <span class="attr">global-config:</span></span><br><span class="line">    <span class="attr">db-config:</span></span><br><span class="line">      <span class="attr">table-prefix:</span> <span class="string">tb_</span>  <span class="comment">#设置表名前缀为tb_</span></span><br><span class="line">      <span class="attr">id-type:</span> <span class="string">auto</span>  <span class="comment">#设置主键按自动增长赋值(默认为雪花算法,适合分布式数据库项目)</span></span><br><span class="line">  <span class="attr">configuration:</span></span><br><span class="line">    <span class="attr">log-impl:</span> <span class="string">org.apache.ibatis.logging.stdout.StdOutImpl</span>     <span class="comment">#log显示sql语句</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h1><p>CAS  比较并设置   version</p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/15/%E5%85%B3%E4%BA%8E%E5%AD%A6%E4%B9%A0Spring%E7%9A%84%E6%80%BB%E7%BB%93%E5%92%8C%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/">Spring的总结和一些问题</a>
+            </div>
+            <p class="sub">Apr 15 2022</p>
+            <div class="post-content">
+                
+                    <h2 id="Spring解耦"><a href="#Spring解耦" class="headerlink" title="Spring解耦"></a>Spring解耦</h2><p>Spring的一大作用就是能够降低代码耦合,让程序的扩展性更好.</p>
+<h1 id="Spring的注解"><a href="#Spring的注解" class="headerlink" title="Spring的注解"></a>Spring的注解</h1><blockquote>
+<ul>
+<li><p>将自定义Bean交给Spring管理可以使用哪些注解？</p>
+<p>@component  作用:把标注此注解的类交给Spring容器来创建对象</p>
+<p>@Controller    作用:把标注此注解的类交给Spring容器来创建对象(用在controller层)</p>
+<p>@Service         作用:把标注此注解的类交给Spring容器来创建对象(用在service层)</p>
+<p>@Repository    作用:把标注此注解的类交给Spring容器来创建对象（都是由Spring内置的mybatis来创建所以基本不用）(用在dao层)</p>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Bean的范围</li>
+</ul>
+</blockquote>
+<blockquote>
+<p> @Scope</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><p>@Autowired和@Value注解有什么区别？</p>
+<p>@Autowired    作用:从Spring容器中,根据成员变量类型找一个对象,然后赋值给该成员变量,可以使用在成员变量、成员set方法、构造方法参数上</p>
+<p>@Value只能使用在成员变量，还可以结合EL表达式获取配置文件中的属性参数</p>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><p>用什么注解定义切面类？Spring通知有几种？</p>
+<p>@Aspect                 作用:注解用来定义切面类</p>
+<p>@Around                作用:环绕通知</p>
+<p>@Before                  作用:前置通知，在目标方法执行前执行</p>
+<p>@AfterReturning      作用:后置通知，在目标方法执行后，且没有异常时才执行</p>
+<p>@AfterThrowing      作用:异常通知，在目标方法执行后，且出现异常时才执行</p>
+<p>@After                     作用:最终通知，在目标方法执行后，且无论是否出现异常都执行</p>
+</li>
+</ul>
+</blockquote>
+<h1 id="AOP常用术语"><a href="#AOP常用术语" class="headerlink" title="AOP常用术语"></a>AOP常用术语</h1><p>1)切面:就是那些重复的,公共的,通用的功能称为切面,例如:日志,事务,权限</p>
+<p>2)连接点:就是目标方法,因为在目标方法中要实现目标方法的功能和切面功能</p>
+<p>3)切入点(Pointcut):来指定切入的位置,多个连接点构成切入点,切入点可以是一个目标方法,可以是一个类中所有方法,可以是某个包下的所有类中的方法.</p>
+<p>4)目标对象:操作谁,谁就是目标对象.</p>
+<p>5)通知(Advice):来指定切入的时机,是在目标方法执行前还是执行后还是出错时,还是环绕目标方法切入切面功能.</p>
+<h1 id="什么是AspectJ框架"><a href="#什么是AspectJ框架" class="headerlink" title="什么是AspectJ框架"></a>什么是AspectJ框架</h1><p>1.Spring框架一般都是基于AspectJ实现Aop操作</p>
+<p>2AspectJ不是spring组成部分,独立AOP框架,一般吧AspectJ和Spring框架一起使用,进行aop操作.</p>
+<p>3.AspectJ是一个优秀的面向切面的框架,它扩展了JAVA语言,提供了强大的切面实现.它因为是基于java语言开发的,所以无缝扩展.</p>
+<h1 id="AspectJ常见通知类型"><a href="#AspectJ常见通知类型" class="headerlink" title="AspectJ常见通知类型"></a>AspectJ常见通知类型</h1><ul>
+<li>AspectJ中常用的通知有四种类型:</li>
+</ul>
+<p>1)前置通知@Before</p>
+<p>2)后置通知@AfterReturning</p>
+<p>3)异常通知@AfterThrowing</p>
+<p>4)环绕通知@Around</p>
+<p>5)最终通知@After</p>
+<p>6)定义切入点@Pointcut(了解) </p>
+<h1 id="AspectJ-的切入点表达式（掌握）"><a href="#AspectJ-的切入点表达式（掌握）" class="headerlink" title="AspectJ 的切入点表达式（掌握）"></a>AspectJ 的切入点表达式（掌握）</h1><p>规范的公式：<br>execution(访问权限 方法返回值 方法声明（参数〉异常类型）<br>简化后的公式：<br>execution(方法返回值 方法声明（参数））<br>用到的符号：</p>
+<p>*代码任意个任意的字符(通配符）<br>..如果出现在方法的参数中,则代表任意参数<br>如果出现在路径中,则代表本路径及其所有的子路径</p>
+<h1 id="Bean的作用域-scope"><a href="#Bean的作用域-scope" class="headerlink" title="Bean的作用域(scope)"></a>Bean的作用域(scope)</h1><p>在类上使用@scope注解定义Bean的作用域,Spring支持五种作用域,后三种在web环境才生效.</p>
+<ul>
+<li><blockquote>
+<p>@scope(“singleton”) - 容器内同 id 的 bean 只有一个实例（默认） </p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>@scope(“prototype”) - 每次使用该 bean 时会创建新的实例</p>
+</blockquote>
+</li>
+<li><p>@scope(“request”) - 在 web 环境中，每个请求范围内会创建新的实例</p>
+</li>
+<li><p>@scope(“session”) - 在 web 环境中，每个会话范围内会创建新的实例</p>
+</li>
+<li><p>@scope(“application”)- 在 web 环境中，每个应用范围内会创建新的实例</p>
+<ul>
+<li>注:singleton和prototype区别</li>
+</ul>
+<p>第一 ,singleton单实例,protptype多实例</p>
+<p>第二,设置scope值是singleton时候,加载spring配置文件时就会创建单实例对象</p>
+<p>​        设置scpe值是prototype时候,不是在加载spring配置文件的时候创建对象,</p>
+<p>在调用getBean方法时候创建多实例对象</p>
+</li>
+</ul>
+<h1 id="Bean的生命周期"><a href="#Bean的生命周期" class="headerlink" title="Bean的生命周期"></a>Bean的生命周期</h1><blockquote>
+<p> 1.生命周期</p>
+<p>​    从对象创建到对象销毁的过程</p>
+<p>2.bean生命周期的七步</p>
+<p>​    1).通过构造器创建bean实例(无参数构造)</p>
+<p>​    2).为bean的属性设置值和对其他bean引用(调用set方法)</p>
+<p>​    2.1)把bean实例传递bean后置处理器的方法postProcessBeforeInitialization</p>
+<p>​    3).调用bean的初始化的方法(需要进行配置初始化的方法)</p>
+<p>​     3.1)把bean实例传递bean后置处理器的方法postProcessAfterInitialization</p>
+<p>​    4).bean可以使用了(对象获取到了)<br>​    5).当容器关闭的时候,调用bean的销毁的方法(需要进行配置销毁方法)</p>
+<p>3.后置处理器如何创建</p>
+<p>   创建类,实现接口beanpostProcessor,创建后置处理器</p>
+</blockquote>
+<ul>
+<li>标注了&#x3D;&#x3D;<strong>@PostConstruct</strong>&#x3D;&#x3D;的方法是初始化方法,会&#x3D;&#x3D;<strong>在bean实例被创建之后</strong>&#x3D;&#x3D;调用.</li>
+<li>标注了**@PreDestroy** 的方法是销毁方法,**&#x3D;&#x3D;singleton范围的bean&#x3D;&#x3D;**的销毁方法会在Spring&#x3D;&#x3D;在容器关闭前被调用&#x3D;&#x3D;.</li>
+<li>延迟初始化<ul>
+<li>默认情况下singleton范围的bean是容器创建时就会&#x3D;&#x3D;<strong>创建</strong>&#x3D;&#x3D;</li>
+<li>如果希望&#x3D;&#x3D;<strong>用到时才创建</strong>&#x3D;&#x3D;,可以使用 &#x3D;&#x3D;<strong>@Lazy</strong>&#x3D;&#x3D; 注解标注在类上来延迟创建(懒汉单例)</li>
+</ul>
+</li>
+</ul>
+<h1 id="扩展-返回数据库自增长键值注解"><a href="#扩展-返回数据库自增长键值注解" class="headerlink" title="扩展:返回数据库自增长键值注解"></a>扩展:返回数据库自增长键值注解</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Options(useGeneratedKeys = true,keyProperty = &quot;id&quot;)</span>  需要数据库自增长的键值</span><br></pre></td></tr></table></figure>
+
+<h1 id="扩展-初始化库"><a href="#扩展-初始化库" class="headerlink" title="扩展:初始化库"></a>扩展:初始化库</h1><p>把DDL和DML的sql分别存储于resources下的schema.sql和data.sql这两个文件中,然后在application.properties中配置</p>
+<blockquote>
+<p>spring.sql.init.mode&#x3D;always</p>
+<p>spring.sql.init.mode&#x3D;UTF-8 </p>
+</blockquote>
+<h2 id="Spring中编译异常导致事务回滚失效问题"><a href="#Spring中编译异常导致事务回滚失效问题" class="headerlink" title="Spring中编译异常导致事务回滚失效问题"></a>Spring中编译异常导致事务回滚失效问题</h2><p>为什么当我们用@Transactional注解来进行事务的管理的时候,如果出现编译时异常,发现事务还是提交了,没有回滚?</p>
+<ul>
+<li><p>原因:</p>
+<p>–&gt; spring默认只有抛出运行时异常(即RuntimException及子类)或Error及子类时,才回回滚事务</p>
+<p>–&gt; 如果抛出的是其他编译时期异常,则仍会提交事务</p>
+<blockquote>
+<p>解决方法:配置@Transaction(rollbackFor &#x3D; xxxException.class)</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="Spring捕捉异常导致的回滚失效问题"><a href="#Spring捕捉异常导致的回滚失效问题" class="headerlink" title="Spring捕捉异常导致的回滚失效问题"></a>Spring捕捉异常导致的回滚失效问题</h1><ul>
+<li><p>原因:</p>
+<p>–&gt;事务提交,回滚,都是代理对象调用事务通知来完成的,如果代理对象不知道出现了异常,也就没有机会执行回滚操作</p>
+<p>–&gt;自己try-catch异常,意味着代理对象认为[没有发生异常],因此也会提交事务</p>
+<blockquote>
+<p>解决方法:业务方法内不要捕获异常,或者将捕获的异常重新抛出</p>
+</blockquote>
+<h1 id="Transactional-Propagation-事务的传播行为"><a href="#Transactional-Propagation-事务的传播行为" class="headerlink" title="@Transactional(Propagation)事务的传播行为"></a>@Transactional(Propagation)事务的传播行为</h1><ul>
+<li>当我们使用@Transactional开启事务的时候,如果事务内部需要调用另一个事务,那么他们用的是同一个事务吗?</li>
+</ul>
+<blockquote>
+<p>如果没有设置参数,则默认是使用同一个事务,则一次事务创建(create new transaction),一次事务提交(commit)</p>
+<ul>
+<li>默认参数为:</li>
+</ul>
+<p>@Transactional(propagation &#x3D; propagation.REQUIRED)   有则加入,无则创建</p>
+<ul>
+<li>如果无论如何都想开启新事务,这是用以下参数:</li>
+</ul>
+<p>@Transactional(propagation &#x3D; propagation.REQUIRES_NEW) 总是需要一个新事物 </p>
+</blockquote>
+<h1 id="Transactional事务传播行为失效"><a href="#Transactional事务传播行为失效" class="headerlink" title="@Transactional事务传播行为失效"></a>@Transactional事务传播行为失效</h1><blockquote>
+<p>事务传播行为失效是为在同一个类中,一个事务方法调另一个事务方法,此时被调用的方法实际上是this执行的,不是spring注入的代理对象,@Transactional底层是由spring创建的代理对象调用的AOP通知执行的事务逻辑,如果是this.方法名就不是代理对象调用了,而是被代理对象自己调用自己方法,所以被调用@Transaction事务注解也就不会生效了.</p>
+</blockquote>
+<blockquote>
+<p>解决方法:底层原因跟循环依赖一样,只需要在配置文件配置:main.allow.circular&#x3D;reference&#x3D;true即可</p>
+<p>注意:spring2.6.0之前的版本不需要配置,有spring自动处理</p>
+</blockquote>
+<h1 id="循环依赖问题"><a href="#循环依赖问题" class="headerlink" title="循环依赖问题"></a>循环依赖问题</h1><blockquote>
+<p>Spring2.6.0之前的版本会自动解决</p>
+</blockquote>
+<blockquote>
+<p>spring2.6.0及后版本需要在配置文件开启:main.allow.circular&#x3D;reference&#x3D;true</p>
+</blockquote>
+<h1 id="原子性与锁失效"><a href="#原子性与锁失效" class="headerlink" title="原子性与锁失效"></a>原子性与锁失效</h1><p>当我们开启一个事务的时候,这个时候如果有多个用户想通过事务来操作数据库,我们的数据库不上锁是非常危险的,会产生线程安全问题,这个时候我们应该想到上锁,但是上锁就能解决问题吗?</p>
+<blockquote>
+<p>答案是不一定,这个得取决于锁的位置,如果上锁的位置在@Transactional下的方法声明上,那么此锁会失效,应为我们在使用@Transactional创建事务的时候是通过通知+切点+通知的方式来实现的,如果在方法声明上上锁的话,那么有可能当一个客户端走完这个方法的时候,这个锁会打开,然后在提交事务之前(也就是后置通知执行前)有可能会让另一个用户进入到方法内部再次执行一遍事务流程,然后两个客户端同时提交,这个时候就会产生线程安全问题,也就是并发修改异常的现象,那么我们应该如何解决锁失效的问题呢?</p>
+<ul>
+<li><p>方式一:可以将锁上在整个事务代码的外面,也就是当serveci层的方法内部调用的时候,将整个调用过程前面上锁,就可以将,事务代码和业务代码一起包含在内了.</p>
+</li>
+<li><p>方式二:可以在sql查询语句后面加一个for update(排他锁)语句,加上了此语句之后,只要当前客户端不提交事务,其他客户端就无法访问当前客户端正在操作的信息,会锁在原地等待当前用户提交事务后才能进行下一步操作,这个锁也叫做悲观锁.</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h1 id="什么是IOC？什么是DI？"><a href="#什么是IOC？什么是DI？" class="headerlink" title="什么是IOC？什么是DI？"></a>什么是IOC？什么是DI？</h1><blockquote>
+<p>IOC：控制反转，将Bean对象的创建权交给Spring，而后从Spring容器中获取Bean对象来使用</p>
+</blockquote>
+<blockquote>
+<p> DI：依赖注入，给Bean的属性赋值</p>
+</blockquote>
+<h1 id="请指定什么是通知、连接点、切点、切面？"><a href="#请指定什么是通知、连接点、切点、切面？" class="headerlink" title="请指定什么是通知、连接点、切点、切面？"></a>请指定什么是通知、连接点、切点、切面？</h1><blockquote>
+<p> 通知：抽取的相同业务逻辑的代码，用来增强目标方法</p>
+<p>连接点：目标对象的所有方法均为连接点</p>
+<p>切点：目标对象需要增强的方法为切点</p>
+<p>切面：通知加切点</p>
+</blockquote>
+<h1 id="Spring整合MyBatis流程是什么？"><a href="#Spring整合MyBatis流程是什么？" class="headerlink" title="Spring整合MyBatis流程是什么？"></a>Spring整合MyBatis流程是什么？</h1><blockquote>
+<p>第一步：创建SpringBoot工具，pom.xml文件中添加依赖</p>
+</blockquote>
+<blockquote>
+<p>第二部：在application…配置文件中配置连接参数</p>
+</blockquote>
+<blockquote>
+<p>第三部：定义Mapper接口，在接口上使用@Mapper注解</p>
+</blockquote>
+<h1 id="配置类读取数据错误问题"><a href="#配置类读取数据错误问题" class="headerlink" title="配置类读取数据错误问题"></a>配置类读取数据错误问题</h1><p>当我们用@Configration定义配置类时,有时候从配置文件读取的数据与我们设置的数据不不符是为什么呢?</p>
+<p>因为spring底层默认先读取系统配置文件,如果你定义的配置名与系统环境变量一样,那么有可能会读取到系统的内容..</p>
+<h1 id="什么时候会通知失效"><a href="#什么时候会通知失效" class="headerlink" title="什么时候会通知失效"></a>什么时候会通知失效</h1><p>没有经过代理调用方法就会失效,使用@autowired注入一个代理对象来调用就可以了(循环依赖)</p>
+<h1 id="接口WebMvcConfigurer的作用及常用的2个方法"><a href="#接口WebMvcConfigurer的作用及常用的2个方法" class="headerlink" title="接口WebMvcConfigurer的作用及常用的2个方法"></a>接口WebMvcConfigurer的作用及常用的2个方法</h1><ul>
+<li><p>WebMvcConfigurer配置类其实是Spring内部的一种配置方式，采用JavaBean的形式来代替传统的xml配置文件形式进行针对框架个性化定制，可以自定义一些Handler，Interceptor，ViewResolver，MessageConverter</p>
+<blockquote>
+<p>1.1 addInterceptors：拦截器</p>
+<p>addInterceptor：需要一个实现HandlerInterceptor接口的拦截器实例<br>addPathPatterns：用于设置拦截器的过滤路径规则；addPathPatterns(“&#x2F;**”)对所有请求都拦截<br>excludePathPatterns：用于设置不需要拦截的过滤规则<br>拦截器主要用途：进行用户登录状态的拦截，日志的拦截等</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.addInterceptors(registry);</span><br><span class="line">    registry.addInterceptor(<span class="keyword">new</span> <span class="title class_">TestInterceptor</span>()).addPathPatterns(<span class="string">&quot;/**&quot;</span>).excludePathPatterns(<span class="string">&quot;/emp/toLogin&quot;</span>,<span class="string">&quot;/emp/login&quot;</span>,<span class="string">&quot;/js/**&quot;</span>,<span class="string">&quot;/css/**&quot;</span>,<span class="string">&quot;/images/**&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>2.3 addResourceHandlers：静态资源</p>
+<p>比如，我们想自定义静态资源映射目录的话，只需重写addResourceHandlers方法即可。<br>注：如果继承WebMvcConfigurationSupport类实现配置时必须要重写该方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyWebMvcConfigurerAdapter</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置静态访问资源</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> registry</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> &#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/my/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/my/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>addResoureHandler：指的是对外暴露的访问路径<br>addResourceLocations：指的是内部文件放置的目录</p>
+</blockquote>
+</li>
+</ul>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/04/%E7%BD%91%E9%A1%B5%E5%92%8CTomcat%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B9%B1%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/">浏览器和Tomcat服务器之间字符集乱码的问题怎么解决?</a>
+            </div>
+            <p class="sub">Apr 04 2022</p>
+            <div class="post-content">
+                
+                    <p>首先说明一下:</p>
+<p>网页的编码和解码默认都是字符集采用的是-&gt; GBK</p>
+<p>Tomcat的编码和解码默认都是使用采用-&gt; ISO-8859-1</p>
+<p>  但是当我们采用html编写网页时,为了展示中文数据,一般会先将网页的编码格式设置为UTF-8,这个时候网页的编码格式就是UTF-8了.</p>
+<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQ9yR"><img src="https://s1.ax1x.com/2022/04/04/qqQ9yR.png" alt="qqQ9yR.png" border="0" /></a></p>
+<p>  这个时候当我们使用Tomcat的Request接受中文数据的时候,因为浏览器采用UTF-8编码,然而tomcat才用的是ISO-8859-1解码,字符集不一致,所以会导致乱码问题.</p>
+<p>解决方式分两种情况:GET请求和POST请求(GET请求请求参数在请求行,POST请求请求参数在请求体,所以方法不同)</p>
+<h2 id="Request请求参数参数中文乱码处理-gt-POST请求"><a href="#Request请求参数参数中文乱码处理-gt-POST请求" class="headerlink" title="Request请求参数参数中文乱码处理-&gt;POST请求:"></a>Request请求参数参数中文乱码处理-&gt;POST请求:</h2><p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQtpQ"><img src="https://s1.ax1x.com/2022/04/04/qqQtpQ.png" alt="qqQtpQ.png" border="0" /></a></p>
+<p>解决方案:</p>
+<p>设置输入流编码:UTF-8</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.setCharacterEncoding(<span class="string">&quot;UTF-8&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="Request请求参数参数中文乱码处理-gt-GET请求"><a href="#Request请求参数参数中文乱码处理-gt-GET请求" class="headerlink" title="Request请求参数参数中文乱码处理-&gt;GET请求:"></a>Request请求参数参数中文乱码处理-&gt;GET请求:</h1><p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQ2c9"><img src="https://s1.ax1x.com/2022/04/04/qqQ2c9.png" alt="qqQ2c9.png" border="0" /></a></p>
+<p>ps.如果使用的是Tomcat8以及以后的版本,GET请求中文不会出现乱码问题</p>
+<p>解决办法1：针对使用tomcat7及以前版本的tomcat</p>
+<p>对乱码的字符先使用ISO-8859-1编码，再按照UTF-8解码即可恢复原始数据。可使用jdk提供的URLEncoder、URLDecoder或者String类完成</p>
+<p>编码(URLEncoder):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String s=URLEncoder.encode(username, <span class="string">&quot;ISO-8859-1&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>解码(URLDecoder):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=URLDecoder.decode(s, <span class="string">&quot;utf-8&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>编码(String):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">byte</span>[] bytes=username.getBytes (<span class="string">&quot;ISO-8859-1&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>解码(String):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=<span class="keyword">new</span> <span class="title class_">String</span>(bytes,<span class="string">&quot;UTF-8&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>解决办法2：配置方式解决tomcat7 GET请求中文乱码问题【推荐使用】</p>
+<p>maven tomcat7 插件配置:</p>
+<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQH9e"><img src="https://s1.ax1x.com/2022/04/04/qqQH9e.png" alt="qqQH9e.png" border="0" style="zoom: 50%;" /></a></p>
+<p>本地 tomcat7 配置: conf&#x2F;server.xml</p>
+<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQLjA"><img src="https://s1.ax1x.com/2022/04/04/qqQLjA.png" alt="qqQLjA.png" border="0" style="zoom: 50%;" /></a></p>
+<h1 id="Response响应数据中文乱码处理"><a href="#Response响应数据中文乱码处理" class="headerlink" title="Response响应数据中文乱码处理:"></a>Response响应数据中文乱码处理:</h1><p>​    当我们试图使用Response直接对浏览器响应中文数据时,为什么会产生乱码问题?</p>
+<p>​    因为此时Tomcat服务器的Response对象的默认编码是ISO-8859-1,而浏览器的解码方式仍然是GBK,所以当我们将中文数据响应到页面上时其实是,Response对中文数据用了ISO-8859-1的字符集编码,而响应到浏览器那边,浏览器确是用的GBK来解码,字符集不一致,所以导致乱码</p>
+<p>​    那么我们能不能像处理Request那样的方式来处理Response响应乱码的问题呢?</p>
+<p>​    其实是可以的,我们可以通过设置Response的响应输出流的编码为GBK,与浏览器字符集保持一致就可以了,方式如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.setCharacterEncoding(<span class="string">&quot;GBK&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>​    但是此方法并不推荐,因为我们在处理请求参数时用的是UTF-8,为了保持请求和响应一致,我们应该也同样设置响应输出流的字符集为UTF-8,但是当我们设置了Response的输出流字符集为UTF-8时,与浏览器的GBK解码方式又再一次对应不上了,那么我们有没有办法能够在设置Response字符集的时候同时告诉浏览器使用同样的字符集解码吗?答案是有的,设置响应头参数即可,解决方式如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.setContentType(<span class="string">&quot;text/html;charset=utf-8&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qqQzAf"><img src="https://s1.ax1x.com/2022/04/04/qqQzAf.png" alt="qqQzAf.png" border="0" style="zoom: 67%;" /></a></p>
+<p>此时,我们的服务器和浏览器之间不管是请求还是响应都是以UTF-8的方式处理了,完美解决了乱码的问题!</p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/03/Mybatis%E4%B8%AD%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%A4%9A%E5%AF%B9%E4%B8%80%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2%E7%9A%84?/">Mybatis中是如何实现多对一分步查询的?</a>
+            </div>
+            <p class="sub">Apr 03 2022</p>
+            <div class="post-content">
+                
+                    <p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qHYoKH"><img src="https://s1.ax1x.com/2022/04/03/qHYoKH.png" alt="qHYoKH.png" border="0" /></a></p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/03/%E8%BF%99%E6%98%AF%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">这是我的第一篇博客</a>
+            </div>
+            <p class="sub">Apr 03 2022</p>
+            <div class="post-content">
+                
+                    <p>记录一下:</p>
+<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/qHd7NR"><img src="https://s1.ax1x.com/2022/04/03/qHd7NR.png" alt="qHd7NR.png" border="0" /></a> </p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/04/03/hello-world/">Hello World</a>
+            </div>
+            <p class="sub">Apr 03 2022</p>
+            <div class="post-content">
+                
+                    <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+                
+            </div>
+        </article>
+    
+</div>
+<div class="side-bar">
+
+
+    <div class="avator" id="avator">
+    <div class="title">
+        <a href="#" class="text-underline">这是爷</a>
+    </div>
+        <img src="WechatIMG68.jpeg" class="ava-img">
+        <h3 class="author">张鸣昊</h3>
+        <div class="icon-list">
+        <a href="yourweibo"><i class="iconfont icon-weibo icon-item"></i></a>
+        <a href="mailto:youremail"><i class="iconfont icon-email icon-item"></i></a>
+        <a href="yourgithub"><i class="iconfont icon-github icon-item"></i></a>
+        <a href="yourlinkedin"><i class="iconfont icon-linkedin icon-item"></i></a>
+        </div>
+    <div class="tags">
+    <h3 class="tags-title">Tags</h3>
+    <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quiet/" rel="tag">Quiet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%BB%E9%A2%98/" rel="tag">主题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81%E4%B8%BB%E9%A2%98/" rel="tag">静态主题</a><span class="tag-list-count">1</span></li></ul>
+</div>
+    </div>
+</div>
+
+
+</section>
+
+    <nav class="page-nav">
+    
+        <a class="prev" href="/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text">Prev</span>
+        </a>
+    
+    
+        <a class="next" href="/page/3/">
+            <span class="next-text">Next</span>
+            <i class="iconfont icon-right"></i>
+        </a>
+    
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>

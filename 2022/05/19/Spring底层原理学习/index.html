@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>Spring底层原理学习 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        Spring底层原理学习
+    </div>
+    <p class="sub">May 19 2022</p>
+    <div class="post-content">
+        <h1 id="Spring中的单例bean"><a href="#Spring中的单例bean" class="headerlink" title="Spring中的单例bean"></a>Spring中的单例bean</h1><p>spring中的单例bean根所谓的单例模式并不完全一样,Spring的单例bean的实现是基于单例池</p>
+<p>单例池其实就是一个Map集合,key存储的是单例对象的名字,value存储的是名字对应的对象,也就是类型</p>
+<p>所以使用@autowire注解来进行依赖注入的时候,是先通过类型来找,如果有多个,在通过名字来找,先bytype在byname</p>
+<p>单例bean其实指的是,一个名字对应一个对象,当我们通过getbean来获取spring容器中的bean的时候,通过名字来获取的默认都是单例的,singleton模式,如果设置了多例模式,那么创建的bean不会存储在单例池,每次get直接获取新的对象</p>
+<h1 id="Spring创建bean使用的什么构造方法"><a href="#Spring创建bean使用的什么构造方法" class="headerlink" title="Spring创建bean使用的什么构造方法"></a>Spring创建bean使用的什么构造方法</h1><p>Spring创建Bean的时候,默认使用无参构造创建bean**(默认)**</p>
+<p>如果没有无参构造,只有一个有参构造,则会通过有参构造中参数的类型去spring容器找对象进行注入,然后再通过有参构造进行实例化bean对象,此时还没有对构造属性赋值**(推断构造方法)**</p>
+<p>如果在没有无参构造方法的情况下,有多个有参构造而且没有指定使用哪一个构造方法,则会报错**(推断构造方法)**</p>
+<h1 id="Aop代理对象"><a href="#Aop代理对象" class="headerlink" title="Aop代理对象"></a>Aop代理对象</h1><p>Spring中Bean 的生命周期在初始化后,会去判断有没有进行aop切面的操作,如果有,则对这个对象创建一个代理对象,如果这个对象有实现接口,则默认使用jdk代理对象,如果没有则创建这个对象的子类,实现CGlib动态代理</p>
+<p>代理对象有个target属性,这个属性就是被代理对象的实例化对象,直接在代理对象中通过target对象来调用方法,实现aop的效果</p>
+<h1 id="Autowire依赖注入ByType的详细流程"><a href="#Autowire依赖注入ByType的详细流程" class="headerlink" title="@Autowire依赖注入ByType的详细流程"></a>@Autowire依赖注入ByType的详细流程</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2dlr91pgsj20ne0y3k0k.jpg" alt="image-20220519123007306"></p>
+<h1 id="Resource依赖注入ByName的详细流程"><a href="#Resource依赖注入ByName的详细流程" class="headerlink" title="@Resource依赖注入ByName的详细流程"></a>@Resource依赖注入ByName的详细流程</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2dp747b0fj20i40m9dhz.jpg" alt="image-20220519142911972"></p>
+<p>@Resource的作用相当于@Autowired，只不过@Autowired按byType自动注入，而@Resource默认按 byName自动注入罢了。@Resource有两个属性是比较重要的，分是name和type，Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
+<p>　　@Resource装配顺序</p>
+<p>  　　1. 如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常<br>  　　2. 如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常<br>  　　3. 如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常<br>  　　4. 如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配</p>
+<h1 id="Spring启动流程详细图解"><a href="#Spring启动流程详细图解" class="headerlink" title="Spring启动流程详细图解"></a>Spring启动流程详细图解</h1><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2dpcbv448j20w90u0gpl.jpg" alt="Spring启动流程详解" style="zoom:150%;" />
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8Bbean"><span class="toc-text">Spring中的单例bean</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring%E5%88%9B%E5%BB%BAbean%E4%BD%BF%E7%94%A8%E7%9A%84%E4%BB%80%E4%B9%88%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="toc-text">Spring创建bean使用的什么构造方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Aop%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1"><span class="toc-text">Aop代理对象</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Autowire%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5ByType%E7%9A%84%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-text">@Autowire依赖注入ByType的详细流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Resource%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5ByName%E7%9A%84%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-text">@Resource依赖注入ByName的详细流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E8%AF%A6%E7%BB%86%E5%9B%BE%E8%A7%A3"><span class="toc-text">Spring启动流程详细图解</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+        
+            <a class="next" href="/2022/05/16/Mysql%E9%94%81%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
+                
+                <span class="prev-text">Mysql锁的学习总结</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
