@@ -4,10 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Spring底层原理学习, Zmhaoo&#39;s Blog">
-    <meta name="description" content="Spring中的单例beanspring中的单例bean根所谓的单例模式并不一样,Spring的单例bean的实现是基于单例池
-单例池其实就是一个Map集合,key存储的是单例对象的名字,value存储的是名字对应的对象,也就是类型
-所以使">
+    <meta name="keywords" content="Nacos注册中心的使用, Zmhaoo&#39;s Blog">
+    <meta name="description" content="1.Nacos注册中心国内公司一般都推崇阿里巴巴的技术，比如注册中心，SpringCloudAlibaba也推出了一个名为Nacos的注册中心。
+15.1.认识和安装NacosNacos是阿里巴巴的产品，现在是SpringCloud中的一个">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -21,7 +20,7 @@
 
     
 
-    <title>Spring底层原理学习 | Zmhaoo&#39;s Blog</title>
+    <title>Nacos注册中心的使用 | Zmhaoo&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -311,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Spring底层原理学习</h1>
+                    <h1 class="description center-align post-title">Nacos注册中心的使用</h1>
                 </div>
             </div>
         </div>
@@ -444,7 +443,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-05-19
+                    2022-05-23
                 </div>
                 
 
@@ -468,21 +467,182 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Spring中的单例bean"><a href="#Spring中的单例bean" class="headerlink" title="Spring中的单例bean"></a>Spring中的单例bean</h1><p>spring中的单例bean根所谓的单例模式并不一样,Spring的单例bean的实现是基于单例池</p>
-<p>单例池其实就是一个Map集合,key存储的是单例对象的名字,value存储的是名字对应的对象,也就是类型</p>
-<p>所以使用@autowire注解来进行依赖注入的时候,是先通过类型来找,如果有多个,在通过名字来找,先bytype在byname</p>
-<p>单例bean其实指的是,一个名字对应一个对象,当我们通过getbean来获取spring容器中的bean的时候,通过名字来获取的默认都是单例的,singleton模式,如果设置了多例模式,那么创建的bean不会存储在单例池,每次get直接获取新的对象</p>
-<h1 id="Spring创建bean使用的什么构造方法"><a href="#Spring创建bean使用的什么构造方法" class="headerlink" title="Spring创建bean使用的什么构造方法"></a>Spring创建bean使用的什么构造方法</h1><p>Spring创建Bean的时候,默认使用无参构造创建bean**(默认)**</p>
-<p>如果没有无参构造,只有一个有参构造,则会通过有参构造中参数的类型去spring容器找对象进行注入,然后再通过有参构造进行实例化bean对象,此时还没有对构造属性赋值**(推断构造方法)**</p>
-<p>如果在没有无参构造方法的情况下,有多个有参构造而且没有指定使用哪一个构造方法,则会报错**(推断构造方法)**</p>
-<h1 id="Aop代理对象"><a href="#Aop代理对象" class="headerlink" title="Aop代理对象"></a>Aop代理对象</h1><p>Spring中Bean 的生命周期在初始化后,会去判断有没有进行aop切面的操作,如果有,则对这个对象创建一个代理对象,如果这个对象有实现接口,则默认使用jdk代理对象,如果没有则创建这个对象的子类,实现CGlib动态代理</p>
-<p>代理对象有个target属性,这个属性就是被代理对象的实例化对象,直接在代理对象中通过target对象来调用方法,实现aop的效果</p>
-<h1 id="Autowire依赖注入ByType的详细流程"><a href="#Autowire依赖注入ByType的详细流程" class="headerlink" title="@Autowire依赖注入ByType的详细流程"></a>@Autowire依赖注入ByType的详细流程</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2dlr91pgsj20ne0y3k0k.jpg" alt="image-20220519123007306"></p>
-<h1 id="Resource依赖注入ByName的详细流程"><a href="#Resource依赖注入ByName的详细流程" class="headerlink" title="@Resource依赖注入ByName的详细流程"></a>@Resource依赖注入ByName的详细流程</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2dp747b0fj20i40m9dhz.jpg" alt="image-20220519142911972"></p>
-<p>@Resource的作用相当于@Autowired，只不过@Autowired按byType自动注入，而@Resource默认按 byName自动注入罢了。@Resource有两个属性是比较重要的，分是name和type，Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
-<p>　　@Resource装配顺序</p>
-<p>  　　1. 如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常<br>    　　2. 如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常<br>      　　3. 如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常<br>        　　4. 如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配</p>
-<h1 id="Spring启动流程详细图解"><a href="#Spring启动流程详细图解" class="headerlink" title="Spring启动流程详细图解"></a>Spring启动流程详细图解</h1><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2dpcbv448j20w90u0gpl.jpg" alt="Spring启动流程详解" style="zoom:150%;" />
+                <h1 id="1-Nacos注册中心"><a href="#1-Nacos注册中心" class="headerlink" title="1.Nacos注册中心"></a>1.Nacos注册中心</h1><p>国内公司一般都推崇阿里巴巴的技术，比如注册中心，SpringCloudAlibaba也推出了一个名为Nacos的注册中心。</p>
+<h2 id="15-1-认识和安装Nacos"><a href="#15-1-认识和安装Nacos" class="headerlink" title="15.1.认识和安装Nacos"></a>15.1.认识和安装Nacos</h2><p><a target="_blank" rel="noopener" href="https://nacos.io/">Nacos</a>是阿里巴巴的产品，现在是<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-cloud">SpringCloud</a>中的一个组件。相比<a target="_blank" rel="noopener" href="https://github.com/Netflix/eureka">Eureka</a>功能更加丰富，在国内受欢迎程度较高。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzmnfpej20th0bxwfp.jpg" alt="image-20210713230444308"></p>
+<p>安装方式可以参考课前资料《Nacos安装指南.md》</p>
+<h2 id="1-2-服务注册到nacos"><a href="#1-2-服务注册到nacos" class="headerlink" title="1.2.服务注册到nacos"></a>1.2.服务注册到nacos</h2><p>Nacos是SpringCloudAlibaba的组件，而SpringCloudAlibaba也遵循SpringCloud中定义的服务注册、服务发现规范。因此使用Nacos和使用Eureka对于微服务来说，并没有太大区别。</p>
+<p>主要差异在于：</p>
+<ul>
+<li>依赖不同</li>
+<li>服务地址不同</li>
+</ul>
+<h3 id="1）引入依赖"><a href="#1）引入依赖" class="headerlink" title="1）引入依赖"></a>1）引入依赖</h3><p>在cloud-demo父工程的pom文件中的<code>&lt;dependencyManagement&gt;</code>中引入SpringCloudAlibaba的依赖：</p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.alibaba.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-alibaba-dependencies<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.2.6.RELEASE<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>type</span><span class="token punctuation">></span></span>pom<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>type</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>import<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后在user-service和order-service中的pom文件中引入nacos-discovery依赖：</p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.alibaba.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-alibaba-nacos-discovery<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>&#x3D;&#x3D;<strong>注意</strong>：不要忘了注释掉eureka的依赖。&#x3D;&#x3D;</p>
+<h3 id="2）配置nacos地址"><a href="#2）配置nacos地址" class="headerlink" title="2）配置nacos地址"></a>2）配置nacos地址</h3><p>在user-service和order-service的application.yml中添加nacos地址：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nacos</span><span class="token punctuation">:</span>
+      <span class="token key atrule">server-addr</span><span class="token punctuation">:</span> localhost<span class="token punctuation">:</span><span class="token number">8848</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<blockquote>
+<p><strong>注意</strong>：不要忘了注释掉eureka的地址</p>
+</blockquote>
+<h3 id="3）重启"><a href="#3）重启" class="headerlink" title="3）重启"></a>3）重启</h3><p>重启微服务后，登录nacos管理页面，可以看到微服务信息：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzoja9bj20ng08274z.jpg" alt="image-20210713231439607"></p>
+<h2 id="1-3-服务分级存储模型"><a href="#1-3-服务分级存储模型" class="headerlink" title="1.3.服务分级存储模型"></a>1.3.服务分级存储模型</h2><p>一个<strong>服务</strong>可以有多个<strong>实例</strong>，例如我们的user-service，可以有:</p>
+<ul>
+<li>127.0.0.1:8081</li>
+<li>127.0.0.1:8082</li>
+<li>127.0.0.1:8083</li>
+</ul>
+<p>假如这些实例分布于全国各地的不同机房，例如：</p>
+<ul>
+<li>127.0.0.1:8081，在上海机房</li>
+<li>127.0.0.1:8082，在上海机房</li>
+<li>127.0.0.1:8083，在杭州机房</li>
+</ul>
+<p>Nacos就将同一机房内的实例 划分为一个<strong>集群</strong>。</p>
+<p>也就是说，user-service是服务，一个服务可以包含多个集群，如杭州、上海，每个集群下可以有多个实例，形成分级模型，如图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzktxvlj21760le76o.jpg" alt="image-20210713232522531"></p>
+<p>微服务互相访问时，应该尽可能访问同集群实例，因为本地访问速度更快。当本集群内不可用时，才访问其它集群。例如：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzkal82j210k0ci3zn.jpg" alt="image-20210713232658928"></p>
+<p>杭州机房内的order-service应该优先访问同机房的user-service。</p>
+<h3 id="1-3-1-给user-service配置集群"><a href="#1-3-1-给user-service配置集群" class="headerlink" title="1.3.1.给user-service配置集群"></a>1.3.1.给user-service配置集群</h3><p>修改user-service的application.yml文件，添加集群配置：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nacos</span><span class="token punctuation">:</span>
+      <span class="token key atrule">server-addr</span><span class="token punctuation">:</span> localhost<span class="token punctuation">:</span><span class="token number">8848</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">cluster-name</span><span class="token punctuation">:</span> HZ <span class="token comment"># 集群名称</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>重启两个user-service实例后，我们可以在nacos控制台看到下面结果：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzib2inj20sz0743z0.jpg" alt="image-20210713232916215"></p>
+<p>我们再次复制一个user-service启动配置，添加属性：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">-Dserver.port&#x3D;8083 -Dspring.cloud.nacos.discovery.cluster-name&#x3D;SH<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>配置如图所示：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzpxfmxj20tn0odgoq.jpg" alt="image-20210713233528982"></p>
+<p>启动UserApplication3后再次查看nacos控制台：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzqv68aj20z00k676x.jpg" alt="image-20210713233727923"></p>
+<h3 id="1-3-2-同集群优先的负载均衡"><a href="#1-3-2-同集群优先的负载均衡" class="headerlink" title="1.3.2.同集群优先的负载均衡"></a>1.3.2.同集群优先的负载均衡</h3><p>默认的<code>ZoneAvoidanceRule</code>并不能实现根据同集群优先来实现负载均衡。</p>
+<p>因此Nacos中提供了一个<code>NacosRule</code>的实现，可以优先从同集群中挑选实例。</p>
+<p>1）给order-service配置集群信息</p>
+<p>修改order-service的application.yml文件，添加集群配置：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">spring:
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        cluster-name: HZ # 集群名称<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>2）修改负载均衡规则</p>
+<p>修改order-service的application.yml文件，修改负载均衡规则：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">userservice</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ribbon</span><span class="token punctuation">:</span>
+    <span class="token key atrule">NFLoadBalancerRuleClassName</span><span class="token punctuation">:</span> com.alibaba.cloud.nacos.ribbon.NacosRule <span class="token comment"># 负载均衡规则 </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="1-4-权重配置"><a href="#1-4-权重配置" class="headerlink" title="1.4.权重配置"></a>1.4.权重配置</h2><p>实际部署中会出现这样的场景：</p>
+<p>服务器设备性能有差异，部分实例所在机器性能较好，另一些较差，我们希望性能好的机器承担更多的用户请求。</p>
+<p>但默认情况下NacosRule是同集群内随机挑选，不会考虑机器的性能问题。</p>
+<p>因此，Nacos提供了权重配置来控制访问频率，权重越大则访问频率越高。</p>
+<p>在nacos控制台，找到user-service的实例列表，点击编辑，即可修改权重：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzm71elj20y509xwfq.jpg" alt="image-20210713235133225"></p>
+<p>在弹出的编辑窗口，修改权重：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzrbtl7j20kt0hr0td.jpg" alt="image-20210713235235219"></p>
+<blockquote>
+<p><strong>注意</strong>：如果权重修改为0，则该实例永远不会被访问</p>
+</blockquote>
+<h2 id="1-5-环境隔离"><a href="#1-5-环境隔离" class="headerlink" title="1.5.环境隔离"></a>1.5.环境隔离</h2><p>Nacos提供了namespace来实现环境隔离功能。</p>
+<ul>
+<li>nacos中可以有多个namespace</li>
+<li>namespace下可以有group、service等</li>
+<li>不同namespace之间相互隔离，例如不同namespace的服务互相不可见</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzp0fiaj20tn0i2dh7.jpg" alt="image-20210714000101516"></p>
+<h3 id="1-5-1-创建namespace"><a href="#1-5-1-创建namespace" class="headerlink" title="1.5.1.创建namespace"></a>1.5.1.创建namespace</h3><p>默认情况下，所有service、data、group都在同一个namespace，名为public：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inznua1kj20fg0c5q3d.jpg" alt="image-20210714000414781"></p>
+<p>我们可以点击页面新增按钮，添加一个namespace：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzjdaqej20k40c7t9e.jpg" alt="image-20210714000440143"></p>
+<p>然后，填写表单：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzrspxsj20k30c1t9h.jpg" alt="image-20210714000505928"></p>
+<p>就能在页面看到一个新的namespace：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzn4nqkj20nk0813z5.jpg" alt="image-20210714000522913"></p>
+<h3 id="1-5-2-给微服务配置namespace"><a href="#1-5-2-给微服务配置namespace" class="headerlink" title="1.5.2.给微服务配置namespace"></a>1.5.2.给微服务配置namespace</h3><p>给微服务配置namespace只能通过修改配置来实现。</p>
+<p>例如，修改order-service的application.yml文件：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nacos</span><span class="token punctuation">:</span>
+      <span class="token key atrule">server-addr</span><span class="token punctuation">:</span> localhost<span class="token punctuation">:</span><span class="token number">8848</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">cluster-name</span><span class="token punctuation">:</span> HZ
+        <span class="token key atrule">namespace</span><span class="token punctuation">:</span> 492a7d5d<span class="token punctuation">-</span>237b<span class="token punctuation">-</span>46a1<span class="token punctuation">-</span>a99a<span class="token punctuation">-</span>fa8e98e4b0f9 <span class="token comment"># 命名空间，填ID</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>重启order-service后，访问控制台，可以看到下面的结果：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inziwhggj20fw05z0sv.jpg" alt="image-20210714000830703"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzqd7qvj20ep05ywen.jpg" alt="image-20210714000837140"></p>
+<p>此时访问order-service，因为namespace不同，会导致找不到userservice，控制台会报错：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzpgu1xj20rn045q4e.jpg" alt="image-20210714000941256"></p>
+<h2 id="1-6-Nacos与Eureka的区别"><a href="#1-6-Nacos与Eureka的区别" class="headerlink" title="1.6.Nacos与Eureka的区别"></a>1.6.Nacos与Eureka的区别</h2><p>Nacos的服务实例分为两种l类型：</p>
+<ul>
+<li><p>临时实例：如果实例宕机超过一定时间，会从服务列表剔除，默认的类型。</p>
+</li>
+<li><p>非临时实例：如果实例宕机，不会从服务列表剔除，也可以叫永久实例。</p>
+</li>
+</ul>
+<p>配置一个服务实例为永久实例：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nacos</span><span class="token punctuation">:</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">ephemeral</span><span class="token punctuation">:</span> <span class="token boolean important">false</span> <span class="token comment"># 设置为非临时实例</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+<p>Nacos和Eureka整体结构类似，服务注册、服务拉取、心跳等待，但是也存在一些差异：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inzlprprj212b0jugnb.jpg" alt="image-20210714001728017"></p>
+<ul>
+<li><p>Nacos与eureka的共同点</p>
+<ul>
+<li>都支持服务注册和服务拉取</li>
+<li>都支持服务提供者心跳方式做健康检测</li>
+</ul>
+</li>
+<li><p>Nacos与Eureka的区别</p>
+<ul>
+<li>Nacos支持服务端主动检测提供者状态：临时实例采用心跳模式，非临时实例采用主动检测模式</li>
+<li>临时实例心跳不正常会被剔除，非临时实例则不会被剔除</li>
+<li>Nacos支持服务列表变更的消息推送模式，服务列表更新更及时</li>
+<li>Nacos集群默认采用AP方式，当集群中存在非临时实例时，采用CP模式；Eureka采用AP方式</li>
+</ul>
+</li>
+</ul>
 
                 
             </div>
@@ -509,7 +669,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://zmhaoo.github.io/2022/05/19/Spring%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/">https://zmhaoo.github.io/2022/05/19/Spring%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/</a>
+                    <a href="https://zmhaoo.github.io/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/">https://zmhaoo.github.io/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -715,7 +875,7 @@
         repo: '',
         owner: '',
         admin: null,
-        id: '2022-05-19T10-47-37',
+        id: '2022-05-23T21-34-37',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -739,7 +899,7 @@
 <script src="/libs/gitment/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-    id: 'Thu May 19 2022 10:47:37 GMT+0800',
+    id: 'Mon May 23 2022 21:34:37 GMT+0800',
     owner: '',
     repo: '',
     oauth: {
@@ -764,9 +924,9 @@ gitment.render('gitment-content');
 
 <script type="text/javascript">
     disqus_config = function () {
-        this.page.url = 'https://zmhaoo.github.io/2022/05/19/Spring%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/';
-        this.page.identifier = '/2022/05/19/Spring%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/';
-        this.page.title = 'Spring底层原理学习';
+        this.page.url = 'https://zmhaoo.github.io/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/';
+        this.page.identifier = '/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/';
+        this.page.title = 'Nacos注册中心的使用';
     };
     let disqus_shortname = '';
 
@@ -820,9 +980,48 @@ gitment.render('gitment-content');
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Nacos注册中心的使用">
+                        
+                        <span class="card-title">Nacos注册中心的使用</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-23
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            张鸣昊
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2022/05/23/Eureka%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/">
                     <div class="card-image">
@@ -840,45 +1039,8 @@ gitment.render('gitment-content');
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-05-23
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            张鸣昊
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/05/16/Mysql%E9%94%81%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Mysql锁的学习总结">
-                        
-                        <span class="card-title">Mysql锁的学习总结</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-16
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-23
                             </span>
                         <span class="publish-author">
                             
