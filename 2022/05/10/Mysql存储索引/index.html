@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Mysql存储索引, Zmhaoo&#39;s Blog">
+    <meta name="keywords" content="Mysql存储引擎, Zmhaoo&#39;s Blog">
     <meta name="description" content="MYSQL体系结构:连接层最上层是一些客户端的链接服务,主要完成一些类似于链接处理,授权认证,及相关的安全方案.服务器也会安全接入的每个客户端验证它所具有的操作权限
 MYSQL体系结构:服务层第二层架构主要完成大多数的核心服务功能,如SQL">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +20,7 @@ MYSQL体系结构:服务层第二层架构主要完成大多数的核心服务�
 
     
 
-    <title>Mysql存储索引 | Zmhaoo&#39;s Blog</title>
+    <title>Mysql存储引擎 | Zmhaoo&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +310,12 @@ MYSQL体系结构:服务层第二层架构主要完成大多数的核心服务�
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Mysql存储索引</h1>
+                    <h1 class="description center-align post-title">Mysql存储引擎</h1>
                 </div>
             </div>
         </div>
@@ -485,7 +485,7 @@ MYSQL体系结构:服务层第二层架构主要完成大多数的核心服务�
 <p>InnoDB文件:</p>
 <p>xxx.ibd:xxx代表的是表名,innoDB引擎的每张表都会对应这样的一个表空间文件,存储该表的表结构(frm 8.0前  ,sdi 8.0后),数据和索引. 参数:innodb_flie_per_table如果打开,代表 每一张表都代表一个表空间</p>
 <h1 id="查看ibd文件"><a href="#查看ibd文件" class="headerlink" title="查看ibd文件"></a>查看ibd文件</h1><p>idb文件是不能直接打开的,里面记录的都是二进制数据,如果非要打开看可以使用cmd输入—–&gt;   ibd2sdi xxx.idb</p>
-<h1 id="ibd文件存储结构"><a href="#ibd文件存储结构" class="headerlink" title="ibd文件存储结构"></a>ibd文件存储结构</h1><p>![image-20220510095308222](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220510095308222.png)</p>
+<h1 id="ibd文件存储结构"><a href="#ibd文件存储结构" class="headerlink" title="ibd文件存储结构"></a>ibd文件存储结构</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq7wjv0rj20pw0ccq4e.jpg" alt="image-20220510095308222"></p>
 <h1 id="MyISAM存储引擎的特点"><a href="#MyISAM存储引擎的特点" class="headerlink" title="MyISAM存储引擎的特点"></a>MyISAM存储引擎的特点</h1><p>介绍:</p>
 <p>MyISAM是MySQL早期默认的存储引擎</p>
 <p>特点:</p>
@@ -496,8 +496,8 @@ MYSQL体系结构:服务层第二层架构主要完成大多数的核心服务�
 <p>xxx.sdi:存储表结构信息(存储的json格式数据)</p>
 <p>xxx.MYD:存储数据</p>
 <p>xxx.MYI:存储索引</p>
-<h1 id="Memory存储引擎的特点"><a href="#Memory存储引擎的特点" class="headerlink" title="Memory存储引擎的特点"></a>Memory存储引擎的特点</h1><p>![ ](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220510100043131.png)</p>
-<h1 id="三个存储引擎的区别"><a href="#三个存储引擎的区别" class="headerlink" title="三个存储引擎的区别"></a>三个存储引擎的区别</h1><p>![image-20220510100124777](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220510100124777.png)</p>
+<h1 id="Memory存储引擎的特点"><a href="#Memory存储引擎的特点" class="headerlink" title="Memory存储引擎的特点"></a>Memory存储引擎的特点</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq80a7hfj20mg089jrl.jpg" alt=" "></p>
+<h1 id="三个存储引擎的区别"><a href="#三个存储引擎的区别" class="headerlink" title="三个存储引擎的区别"></a>三个存储引擎的区别</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq7sxlvrj20ni09eaaq.jpg" alt="image-20220510100124777"></p>
 
                 
             </div>
@@ -781,7 +781,7 @@ gitment.render('gitment-content');
     disqus_config = function () {
         this.page.url = 'https://zmhaoo.github.io/2022/05/10/Mysql%E5%AD%98%E5%82%A8%E7%B4%A2%E5%BC%95/';
         this.page.identifier = '/2022/05/10/Mysql%E5%AD%98%E5%82%A8%E7%B4%A2%E5%BC%95/';
-        this.page.title = 'Mysql存储索引';
+        this.page.title = 'Mysql存储引擎';
     };
     let disqus_shortname = '';
 

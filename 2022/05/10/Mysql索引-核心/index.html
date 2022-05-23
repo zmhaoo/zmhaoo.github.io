@@ -523,13 +523,15 @@
 <p><strong>可以得出,用innodb来存储2000多万条数据,树也只有三层,大大的提高了检索效率!</strong></p>
 <h1 id="索引的语法"><a href="#索引的语法" class="headerlink" title="索引的语法"></a>索引的语法</h1><ul>
 <li><p>创建索引:<strong>构建B+Tree的数据结构,构建一次,一劳永逸,空间换时间</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* create index idx_user_name on <span class="title function_">tb_user</span><span class="params">(name)</span>;</span><br><span class="line">* create unique index idx_user_phone on <span class="title function_">tb_user</span><span class="params">(phone)</span>;</span><br><span class="line">* create index idx_user_pro_age_sta on <span class="title function_">tb_user</span><span class="params">(profession,age,status)</span>; ---&gt; 创建联合索引</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-JAVA" data-language="JAVA"><code class="language-JAVA">* create index idx_user_name on tb_user(name);
+* create unique index idx_user_phone on tb_user(phone);
+* create index idx_user_pro_age_sta on tb_user(profession,age,status); ---&gt; 创建联合索引<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p>查看索引:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show index from tb_user;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">show index from tb_user<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 </li>
 <li><p>删除索引:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop index idx_user_phone on tb_user</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-JAVA" data-language="JAVA"><code class="language-JAVA">drop index idx_user_phone on tb_user<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><strong>SQL语句的优化一般优化的是查询语句,在优化查询语句中索引占主导地位</strong></p>
 </li>
@@ -538,7 +540,7 @@
 <li><p>SQL的执行频率</p>
 <blockquote>
 <p>Mysql客户端链接成功后,通过Show[session|global] status 命令可以提供服务器状态信息,通过如下命令,可以查看当前数据库的insert,update,delete,select的访问频次</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW GLOBAL STATUS LIKE <span class="string">&#x27;COM_______&#x27;</span> -----&gt;<span class="number">7</span>个下划线代表<span class="number">7</span>个字符</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">SHOW GLOBAL STATUS LIKE 'COM_______' <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-></span><span class="token number">7</span>个下划线代表<span class="token number">7</span>个字符<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uhipaej20e109qmxx.jpg" alt="image-20220510125834554"></p>
 </blockquote>
@@ -551,10 +553,33 @@
 <li><blockquote>
 <p>  慢查询日志记录了所有执行时间超过指定参数(long_query_time,单位:妙,默认10妙)的所有sql语句的日志,我们可以通过查询慢查询日志,来定位执行效率比较低的语句,来做对应的优化处理.</p>
 <p>  Mysql的慢查询日志默认没有开启,需要在Mysql的配置文件(&#x2F;etc&#x2F;my.cnf)中配置如下信息:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#查询慢查询日志是否开启</span><br><span class="line">mysql&gt; show variables like &#x27;slow_query_log&#x27;;</span><br><span class="line">+----------------+-------+</span><br><span class="line">| Variable_name  | Value |</span><br><span class="line">+----------------+-------+</span><br><span class="line">| slow_query_log | OFF   |  -------&gt;可以看到默认开关是关闭的</span><br><span class="line">+----------------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">#可以在/etc/my.cnf中配置一下信息</span><br><span class="line">#开启Mysql慢查询日志开关</span><br><span class="line">slow_query_log=1</span><br><span class="line">#设置慢查询日志的时间为2妙,sql语执行时间超过2秒,就会视为慢查询,记录慢查询日志</span><br><span class="line">long_query_time=2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查询慢查询日志是否开启
+mysql&gt; show variables like &#39;slow_query_log&#39;;
++----------------+-------+
+| Variable_name  | Value |
++----------------+-------+
+| slow_query_log | OFF   |  -------&gt;可以看到默认开关是关闭的
++----------------+-------+
+1 row in set (0.01 sec)
+
+#可以在&#x2F;etc&#x2F;my.cnf中配置一下信息
+#开启Mysql慢查询日志开关
+slow_query_log&#x3D;1
+#设置慢查询日志的时间为2妙,sql语执行时间超过2秒,就会视为慢查询,记录慢查询日志
+long_query_time&#x3D;2
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>配置完毕后,可以通过一下命令重启Mysql服务器进行测试,查询慢日志文件中记录的信息&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;localhost-show.log</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#重启mysql服务</span><br><span class="line">  systemctl restart mysqld;</span><br><span class="line"> #进入mysql继续用命令查看当前慢日志开关</span><br><span class="line">mysql&gt; show variables like &#x27;slow_query_log&#x27;;</span><br><span class="line">+----------------+-------+</span><br><span class="line">| Variable_name  | Value |</span><br><span class="line">+----------------+-------+</span><br><span class="line">| slow_query_log | ON    | -------&gt;可以看到开关从OFF变成了ON,表示已经开启慢查询日志</span><br><span class="line">+----------------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#重启mysql服务
+  systemctl restart mysqld;
+ #进入mysql继续用命令查看当前慢日志开关
+mysql&gt; show variables like &#39;slow_query_log&#39;;
++----------------+-------+
+| Variable_name  | Value |
++----------------+-------+
+| slow_query_log | ON    | -------&gt;可以看到开关从OFF变成了ON,表示已经开启慢查询日志
++----------------+-------+
+1 row in set (0.01 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><strong>当慢查询日志开启后,慢查询日志的位置在&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;的目录下,文件名教localhost-slow.log</strong></p>
 <p><strong>注意:但是只用慢查询日志的话,只能锁定一些自己定义的慢查询时间(设定的预设时间),来查到查询慢的sql语句,比较笼统,如果有的sql语句在1.98s或者1.99s其实也是属于慢查询,但是因为配置的原因并不会记录到慢查询日志中去,所以这个时候就要用到profiling工具来辅助sql调优</strong></p>
@@ -563,19 +588,115 @@
 <li><p>Profile详情</p>
 <blockquote>
 <p>show profiles 能够在做SQL优化的时候帮助我们了解时间都耗费到哪里去了.通过have_profiling参数,能够看到Mysql是否支持</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#profile操作</span><br><span class="line">mysql&gt; SELECT @@have_profiling;</span><br><span class="line">+------------------+</span><br><span class="line">| @@have_profiling |</span><br><span class="line">+------------------+</span><br><span class="line">| YES              |    ---------&gt;可以看到当前数据库支持profile</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#profile操作
+mysql&gt; SELECT @@have_profiling;
++------------------+
+| @@have_profiling |
++------------------+
+| YES              |    ---------&gt;可以看到当前数据库支持profile
++------------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>支持是支持,但是还要检查一下profiling是否是开启状态,<strong>默认是关闭的</strong>,可以通过session&#x2F;global级别开启profiling:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#查看是否开启了profiling开关</span><br><span class="line">mysql&gt; select @@profiling;</span><br><span class="line">+-------------+</span><br><span class="line">| @@profiling |</span><br><span class="line">+-------------+</span><br><span class="line">|           0 |     ------&gt;可以看到默认是关闭的</span><br><span class="line">+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#设置profiling的开关</span><br><span class="line">mysql&gt; set profiling = 1;   ---------&gt;设置开关为1,就是打开</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select @@profiling;</span><br><span class="line">+-------------+</span><br><span class="line">| @@profiling |</span><br><span class="line">+-------------+</span><br><span class="line">|           1 |     ---------------&gt;再次查看发现,profiling开关已经被开启了</span><br><span class="line">+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查看是否开启了profiling开关
+mysql&gt; select @@profiling;
++-------------+
+| @@profiling |
++-------------+
+|           0 |     ------&gt;可以看到默认是关闭的
++-------------+
+1 row in set, 1 warning (0.00 sec)
+
+#设置profiling的开关
+mysql&gt; set profiling &#x3D; 1;   ---------&gt;设置开关为1,就是打开
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql&gt; select @@profiling;
++-------------+
+| @@profiling |
++-------------+
+|           1 |     ---------------&gt;再次查看发现,profiling开关已经被开启了
++-------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p> 这个时候就可以通过一下语句来查询,每个查询的sql语句的详细执行情况了</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">#查看每一条sql的耗时的基本情况</span><br><span class="line">mysql&gt; show profiles;   </span><br><span class="line">+----------+------------+--------------------+</span><br><span class="line">| Query_ID | Duration   | Query              |</span><br><span class="line">+----------+------------+--------------------+</span><br><span class="line">|        1 | 0.00013000 | select @@profiling |</span><br><span class="line">|        2 | 0.00011800 | SELECT DATABASE()  |</span><br><span class="line">|        3 | 0.00166125 | show databases     |</span><br><span class="line">|        4 | 0.00015150 | show tables        |</span><br><span class="line">|        5 | 0.00024825 | show tables        |</span><br><span class="line">|        6 | 0.00024200 | select * from user |</span><br><span class="line">|        7 | 0.00013325 | select * from DISH |</span><br><span class="line">|        8 | 0.00027600 | select * from dish |</span><br><span class="line">+----------+------------+--------------------+</span><br><span class="line">8 rows in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#查看指定的query_id的SQL语句各个阶段的耗时情况</span><br><span class="line"> mysql&gt; show profile for query 3;   -------&gt;根据从show profiles中查询的基本情况的query_id来查看该语句各个阶段的耗时详情</span><br><span class="line">+----------------------+----------+</span><br><span class="line">| Status               | Duration |</span><br><span class="line">+----------------------+----------+</span><br><span class="line">| starting             | 0.000031 |</span><br><span class="line">| checking permissions | 0.000010 |</span><br><span class="line">| Opening tables       | 0.000028 |</span><br><span class="line">| init                 | 0.000006 |</span><br><span class="line">| System lock          | 0.000004 |</span><br><span class="line">| optimizing           | 0.000003 |</span><br><span class="line">| statistics           | 0.000009 |</span><br><span class="line">| preparing            | 0.000007 |</span><br><span class="line">| executing            | 0.001503 |    ----------&gt;可以发现在执行的时候耗时最长</span><br><span class="line">| Sending data         | 0.000019 |</span><br><span class="line">| end                  | 0.000003 |</span><br><span class="line">| query end            | 0.000004 |</span><br><span class="line">| closing tables       | 0.000003 |</span><br><span class="line">| removing tmp table   | 0.000005 |</span><br><span class="line">| closing tables       | 0.000003 |</span><br><span class="line">| freeing items        | 0.000013 |</span><br><span class="line">| cleaning up          | 0.000012 |</span><br><span class="line">+----------------------+----------+</span><br><span class="line">17 rows in set, 1 warning (0.00 sec)</span><br><span class="line">#还可以在show profile for query语句中的profile后面加上cup关键字 ,就可以查询到cup的耗时情况</span><br><span class="line">mysql&gt; show profile cpu  for query 3;</span><br><span class="line">+----------------------+----------+----------+------------+</span><br><span class="line">| Status               | Duration | CPU_user | CPU_system |   ---------&gt;可以看到比上面的结果多了一个CPU_user的的字段信息</span><br><span class="line">+----------------------+----------+----------+------------+</span><br><span class="line">| starting             | 0.000031 | 0.000013 |   0.000015 |</span><br><span class="line">| checking permissions | 0.000010 | 0.000005 |   0.000005 |</span><br><span class="line">| Opening tables       | 0.000028 | 0.000013 |   0.000015 |</span><br><span class="line">| init                 | 0.000006 | 0.000002 |   0.000003 |</span><br><span class="line">| System lock          | 0.000004 | 0.000002 |   0.000002 |</span><br><span class="line">| optimizing           | 0.000003 | 0.000001 |   0.000002 |</span><br><span class="line">| statistics           | 0.000009 | 0.000005 |   0.000005 |</span><br><span class="line">| preparing            | 0.000007 | 0.000003 |   0.000003 |</span><br><span class="line">| executing            | 0.001503 | 0.000000 |   0.000286 |</span><br><span class="line">| Sending data         | 0.000019 | 0.000000 |   0.000015 |</span><br><span class="line">| end                  | 0.000003 | 0.000000 |   0.000003 |</span><br><span class="line">| query end            | 0.000004 | 0.000000 |   0.000004 |</span><br><span class="line">| closing tables       | 0.000003 | 0.000000 |   0.000003 |</span><br><span class="line">| removing tmp table   | 0.000005 | 0.000000 |   0.000005 |</span><br><span class="line">| closing tables       | 0.000003 | 0.000000 |   0.000003 |</span><br><span class="line">| freeing items        | 0.000013 | 0.000000 |   0.000012 |</span><br><span class="line">| cleaning up          | 0.000012 | 0.000000 |   0.000012 |</span><br><span class="line">+----------------------+----------+----------+------------+</span><br><span class="line">17 rows in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查看每一条sql的耗时的基本情况
+mysql&gt; show profiles;   
++----------+------------+--------------------+
+| Query_ID | Duration   | Query              |
++----------+------------+--------------------+
+|        1 | 0.00013000 | select @@profiling |
+|        2 | 0.00011800 | SELECT DATABASE()  |
+|        3 | 0.00166125 | show databases     |
+|        4 | 0.00015150 | show tables        |
+|        5 | 0.00024825 | show tables        |
+|        6 | 0.00024200 | select * from user |
+|        7 | 0.00013325 | select * from DISH |
+|        8 | 0.00027600 | select * from dish |
++----------+------------+--------------------+
+8 rows in set, 1 warning (0.00 sec)
+
+#查看指定的query_id的SQL语句各个阶段的耗时情况
+ mysql&gt; show profile for query 3;   -------&gt;根据从show profiles中查询的基本情况的query_id来查看该语句各个阶段的耗时详情
++----------------------+----------+
+| Status               | Duration |
++----------------------+----------+
+| starting             | 0.000031 |
+| checking permissions | 0.000010 |
+| Opening tables       | 0.000028 |
+| init                 | 0.000006 |
+| System lock          | 0.000004 |
+| optimizing           | 0.000003 |
+| statistics           | 0.000009 |
+| preparing            | 0.000007 |
+| executing            | 0.001503 |    ----------&gt;可以发现在执行的时候耗时最长
+| Sending data         | 0.000019 |
+| end                  | 0.000003 |
+| query end            | 0.000004 |
+| closing tables       | 0.000003 |
+| removing tmp table   | 0.000005 |
+| closing tables       | 0.000003 |
+| freeing items        | 0.000013 |
+| cleaning up          | 0.000012 |
++----------------------+----------+
+17 rows in set, 1 warning (0.00 sec)
+#还可以在show profile for query语句中的profile后面加上cup关键字 ,就可以查询到cup的耗时情况
+mysql&gt; show profile cpu  for query 3;
++----------------------+----------+----------+------------+
+| Status               | Duration | CPU_user | CPU_system |   ---------&gt;可以看到比上面的结果多了一个CPU_user的的字段信息
++----------------------+----------+----------+------------+
+| starting             | 0.000031 | 0.000013 |   0.000015 |
+| checking permissions | 0.000010 | 0.000005 |   0.000005 |
+| Opening tables       | 0.000028 | 0.000013 |   0.000015 |
+| init                 | 0.000006 | 0.000002 |   0.000003 |
+| System lock          | 0.000004 | 0.000002 |   0.000002 |
+| optimizing           | 0.000003 | 0.000001 |   0.000002 |
+| statistics           | 0.000009 | 0.000005 |   0.000005 |
+| preparing            | 0.000007 | 0.000003 |   0.000003 |
+| executing            | 0.001503 | 0.000000 |   0.000286 |
+| Sending data         | 0.000019 | 0.000000 |   0.000015 |
+| end                  | 0.000003 | 0.000000 |   0.000003 |
+| query end            | 0.000004 | 0.000000 |   0.000004 |
+| closing tables       | 0.000003 | 0.000000 |   0.000003 |
+| removing tmp table   | 0.000005 | 0.000000 |   0.000005 |
+| closing tables       | 0.000003 | 0.000000 |   0.000003 |
+| freeing items        | 0.000013 | 0.000000 |   0.000012 |
+| cleaning up          | 0.000012 | 0.000000 |   0.000012 |
++----------------------+----------+----------+------------+
+17 rows in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </blockquote>
 </li>
 <li><p>explain执行计划:</p>
 <p>可以模拟 优化器 执行SQL查询语句，并不会去真正的执行这条SQL，从而知道 MySQL 是如何处理你的SQL语句的。可用来分析你的查询语句或是表结构的性能瓶颈。<strong>从而评判sql语句的执行性能</strong></p>
 <blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#使用explain模拟优化器</span><br><span class="line">mysql&gt; explain select * from dish; </span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   26 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#使用explain模拟优化器
+mysql&gt; explain select * from dish; 
++----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+
+| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
++----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+
+|  1 | SIMPLE      | dish  | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   26 |   100.00 | NULL  |
++----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>expalin执行计划各个字段的含义:</p>
 <p><strong>id:</strong></p>
@@ -653,13 +774,43 @@
 <h1 id="SQL提示"><a href="#SQL提示" class="headerlink" title="SQL提示"></a>SQL提示</h1><p>SQL提示,是优化数据库的一个重要手段,简单来说,就是在SQL语句中加入一些认为的提示来达到优化操作的目的.</p>
 <p>当单列索引存在与联合索引中的时候,Mysql会自动选择一个效率高的索引,如果想要使用其他索引的话,那就需要在sql语句中指定要用的索引,sql语句如下:</p>
 <p><strong>use index(索引名)—–&gt;建议(MySQL不一定执行,会自动判断)</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#默认情况下</span><br><span class="line">mysql&gt; explain select * from dish where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys                          | key           | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name,idx_dish_name_price_code | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">#给mysql建议使用索引情况下----&gt;mysql会自动判断,如果建议的索引效率低,则不会执行建议的索引</span><br><span class="line">mysql&gt; explain select * from dish use   index(idx_dish_name_price_code) where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#默认情况下
+mysql&gt; explain select * from dish where name &#x3D; &#39;梅菜扣肉&#39;;
++----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+
+| id | select_type | table | partitions | type  | possible_keys                          | key           | key_len | ref   | rows | filtered | Extra |
++----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name,idx_dish_name_price_code | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)
+
+#给mysql建议使用索引情况下----&gt;mysql会自动判断,如果建议的索引效率低,则不会执行建议的索引
+mysql&gt; explain select * from dish use   index(idx_dish_name_price_code) where name &#x3D; &#39;梅菜扣肉&#39;;
++----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
+| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |
++----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><strong>ignore index(索引名)——&gt;表示忽略某个索引,也就是不用的索引</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#忽略联合索引索引,会执行另外的索引</span><br><span class="line">mysql&gt; explain select * from dish ignore  index(idx_dish_name_price_code) where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#忽略联合索引索引,会执行另外的索引
+mysql&gt; explain select * from dish ignore  index(idx_dish_name_price_code) where name &#x3D; &#39;梅菜扣肉&#39;;
++----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+| id | select_type | table | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |
++----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><strong>force index(索引名)——&gt;强制Mysql执行某个索引</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#强制使用联合索引</span><br><span class="line">mysql&gt; explain select * from dish force  index(idx_dish_name_price_code) where name = &#x27;梅菜扣肉&#x27;;</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#强制使用联合索引
+mysql&gt; explain select * from dish force  index(idx_dish_name_price_code) where name &#x3D; &#39;梅菜扣肉&#39;;
++----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
+| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |
++----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h1 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h1><p>尽量使用覆盖索引(查询使用了索引,并且需要返回的列,在索引中已经全部能够找到),减少select * .</p>
 <p>覆盖索引的白话:就是要查询的字段都是设置了索引,建议直接覆盖所索引,就不需要回表查询了!</p>
@@ -668,10 +819,18 @@
 <p>解决方案:就是将没有加入索引的字段也加上索引,实现索引覆盖效果,效率提高,尽量不用select * 不然大概率都会进行回表查询,性能就会下降</p>
 <h1 id="前缀索引"><a href="#前缀索引" class="headerlink" title="前缀索引"></a>前缀索引</h1><p>当字段类型为字符串(varcahr,text等)时,有时候需要索引很长的字符串,这会让索引变得很大,查询时,浪费大量的磁盘IO,影响查询效率.此时可以只将字符串的一部分前缀,建立索引,这样可以大大节约索引空间,从而提高索引效率</p>
 <p>语法:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#创建前缀索引</span><br><span class="line">create index idx_xxxx on table_name(colum(n));</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#创建前缀索引
+create index idx_xxxx on table_name(colum(n));<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p>前缀长度:<br>可以根据索引的有选择性来决定,而选择性是指不重复的索引值(基数)和数据表的记录总数的比值,索引选择性越高则查询效率越高,唯一索引的选择性是1,这是最好的索引选择性,性能也是最好的. </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#查询email中不为空的数据</span><br><span class="line">select count( email)/count(*) from tb_user;</span><br><span class="line">#查询email中不重复的数据</span><br><span class="line">select count(distinct email) from tb_user;</span><br><span class="line">#查询emai中不重复数据的选择性 /不重复数据/总条目数</span><br><span class="line">select count(distinct email)/count(*) from tb_user;</span><br><span class="line">#查询emai中不重复数据的选择性 /不重复数据/总条目数的前5个字符(降低索引的体积)</span><br><span class="line">select count(distinct substring(email,1,5))/count(*) from tb_user;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-MYSQL" data-language="MYSQL"><code class="language-MYSQL">#查询email中不为空的数据
+select count( email)&#x2F;count(*) from tb_user;
+#查询email中不重复的数据
+select count(distinct email) from tb_user;
+#查询emai中不重复数据的选择性 &#x2F;不重复数据&#x2F;总条目数
+select count(distinct email)&#x2F;count(*) from tb_user;
+#查询emai中不重复数据的选择性 &#x2F;不重复数据&#x2F;总条目数的前5个字符(降低索引的体积)
+select count(distinct substring(email,1,5))&#x2F;count(*) from tb_user;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v3t7zuj20xu0fjwh6.jpg" alt="image-20220510212318350"></p>
 <h1 id="单列索引与联合索引"><a href="#单列索引与联合索引" class="headerlink" title="单列索引与联合索引"></a>单列索引与联合索引</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v95x4hj20wb0e4dij.jpg" alt="image-20220510220527020"></p>
@@ -1100,9 +1259,9 @@ gitment.render('gitment-content');
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Mysql存储索引">
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Mysql存储引擎">
                         
-                        <span class="card-title">Mysql存储索引</span>
+                        <span class="card-title">Mysql存储引擎</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
