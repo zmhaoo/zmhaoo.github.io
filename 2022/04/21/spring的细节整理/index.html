@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>spring的细节整理 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">主页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">关于</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        spring的细节整理
+    </div>
+    <p class="sub">4月 21 2022</p>
+    <div class="post-content">
+        <h1 id="spring中-Resource和-Autowired的区别"><a href="#spring中-Resource和-Autowired的区别" class="headerlink" title="spring中@Resource和@Autowired的区别"></a>spring中@Resource和@Autowired的区别</h1><blockquote>
+<p>spring中，@Resource和@Autowired都是做bean的注入时使用。使用过程中，有时候@Resource 和 @Autowired可以替换使用；有时，则不可以。<br>    下面，根据自己的学习，整理下这两个注解使用中的共同点和不同点，及用法上的不同。<br>     共同点<br>     @Resource和@Autowired都可以作为注入属性的修饰，在接口仅有单一实现类时，两个注解的修饰效果相同，可以互相替换，不影响使用。<br>    不同点<br>@Resource是Java自己的注解，@Resource有两个属性是比较重要的，分是name和type；Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。<br>@Autowired是spring的注解，是spring2.5版本引入的，Autowired只根据type进行注入，不会去匹配name。如果涉及到type无法辨别注入对象时，那需要依赖@Qualifier或@Primary注解一起来修饰。</p>
+</blockquote>
+<h1 id="BeanFactory和FactoryBean的区别"><a href="#BeanFactory和FactoryBean的区别" class="headerlink" title="BeanFactory和FactoryBean的区别"></a>BeanFactory和FactoryBean的区别</h1><p><strong>BeanFactory是个Factory，也就是IOC容器或对象工厂，FactoryBean是个Bean。在Spring中，所有的Bean都是由BeanFactory(也就是IOC容器)来进行管理的。但对FactoryBean而言，这个Bean不是简单的Bean，而是一个能生产或者修饰对象生成的工厂Bean,它的实现与设计模式中的工厂模式和修饰器模式类似</strong></p>
+<blockquote>
+<p>1.BeanFactory</p>
+<p>BeanFactory定义了IOC容器的最基本形式，并提供了IOC容器应遵守的的最基本的接口，也就是Spring IOC所遵守的最底层和最基本的编程规范。在Spring代码中，BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，都是附加了某种功能的实现。</p>
+<p>2.FactoryBean</p>
+<p>一般情况下，Spring通过反射机制利用<bean>的class属性指定实现类实例化Bean，在某些情况下，实例化Bean过程比较复杂，如果按照传统的方式，则需要在<bean>中提供大量的配置信息。配置方式的灵活性是受限的，这时采用编码的方式可能会得到一个简单的方案。Spring为此提供了一个org.springframework.bean.factory.FactoryBean的工厂类接口，用户可以通过实现该接口定制实例化Bean的逻辑。<br>FactoryBean接口对于Spring框架来说占用重要的地位，Spring自身就提供了70多个FactoryBean的实现。它们隐藏了实例化一些复杂Bean的细节，给上层应用带来了便利。从Spring3.0开始，FactoryBean开始支持泛型，即接口声明改为FactoryBean<T>的形式</p>
+</blockquote>
+<h1 id="什么是JDBCTemplate"><a href="#什么是JDBCTemplate" class="headerlink" title="什么是JDBCTemplate?"></a>什么是JDBCTemplate?</h1><p><strong>spring框架对JDBC进行封装,使用JDBCTemplate方便实现对数据库操作</strong></p>
+<h1 id="spring事务管理API"><a href="#spring事务管理API" class="headerlink" title="spring事务管理API"></a>spring事务管理API</h1><p><strong>spring提供一个PlatformTransactionManager接口,代表事务管理器,这个接口针对不同操作数据库的框架提供不同的实现类</strong></p>
+<p>[<img src="https://s1.ax1x.com/2022/04/21/LgAMz4.md.png" alt="LgAMz4.md.png"></p>
+<p>如:DataSourceTransactionManager针对的是整合的是mybatis框架和JDBCTemplate(jdbc模板)</p>
+<p>​    HibernateTransactionManager针对的是Hibernate框架等等…</p>
+<h1 id="Transaction中的六大属性之pripagation-事务的传播行为"><a href="#Transaction中的六大属性之pripagation-事务的传播行为" class="headerlink" title="@Transaction中的六大属性之pripagation:事务的传播行为"></a>@Transaction中的六大属性之pripagation:事务的传播行为</h1><p>1)多事务方法直接进行调用,这个过程中事务是如何进行管理的</p>
+<p>2)一共七个参数,主要记住Requireds和Required_New这两个</p>
+<p><strong>详见spring总结章</strong></p>
+<h1 id="Transaction中的六大属性之ioslation-事务的隔离级别"><a href="#Transaction中的六大属性之ioslation-事务的隔离级别" class="headerlink" title="@Transaction中的六大属性之ioslation:事务的隔离级别"></a>@Transaction中的六大属性之ioslation:事务的隔离级别</h1><p>1)事务特性有隔离性,多事务操作之间不会产生影响.不考虑隔离性产生很多问题</p>
+<p>2)有三个读问题:<strong>脏读—-不可重复读—-幻(虚)读</strong></p>
+<ul>
+<li><p>脏读:一个未提交事务读取到另一个未提交事务的数据</p>
+</li>
+<li><p>不可重复读:一个为提交事务读取到另一个提交事务修改数据(mysql隔离级别默认可重复读)</p>
+</li>
+<li><p>幻读: 一个未提交事务读取到另一个提交事务添加数据</p>
+<p>解决方案:  通过设置事务隔离级别,解决读问题.(1,4基本不用)</p>
+<p>[<img src="https://s1.ax1x.com/2022/04/21/LgAKWF.md.png" alt="LgAKWF.md.png"></p>
+</li>
+</ul>
+<h1 id="Transaction中的六大属性之timeout-事务的超时时间"><a href="#Transaction中的六大属性之timeout-事务的超时时间" class="headerlink" title="@Transaction中的六大属性之timeout:事务的超时时间"></a>@Transaction中的六大属性之timeout:事务的超时时间</h1><p>1)事务需要在一定时间内进行提交,如果不提交则进行回滚</p>
+<p>2)默认值是-1,设置时间以秒为单位进行计算(-1代表不限超时时间)</p>
+<h1 id="Transaction中的六大属性之readOnly-是否只读"><a href="#Transaction中的六大属性之readOnly-是否只读" class="headerlink" title="@Transaction中的六大属性之readOnly:是否只读"></a>@Transaction中的六大属性之readOnly:是否只读</h1><p>1)读:查询操作,写:添加修改删除操作</p>
+<p>2)readOnly默认值是false,表示可以进行查询,可以添加修改删除操作</p>
+<p>3)设置readOnly值是true,设置成true之后,只能查询</p>
+<h1 id="Transaction中的六大属性之rollbackFor和noRollbackfor-回滚和不回滚"><a href="#Transaction中的六大属性之rollbackFor和noRollbackfor-回滚和不回滚" class="headerlink" title="@Transaction中的六大属性之rollbackFor和noRollbackfor:回滚和不回滚"></a>@Transaction中的六大属性之rollbackFor和noRollbackfor:回滚和不回滚</h1><p>1)设置查询那些异常进行事务回滚</p>
+<p>2)@Transaction默认只对RuntimeException进行回滚,如果是编译时期异常则需要手动设置</p>
+<p><strong>注:不要手动抓异常(dont try catch!!!!)不然会回滚失效,详见spring总结的文章!</strong></p>
+<h1 id="过滤器Filter和拦截器Interceptor的区别"><a href="#过滤器Filter和拦截器Interceptor的区别" class="headerlink" title="过滤器Filter和拦截器Interceptor的区别"></a>过滤器Filter和拦截器Interceptor的区别</h1><ul>
+<li><p>接口方面的区别</p>
+<blockquote>
+<p>过滤器实现的是Filter接口,拦截器实现的是HandlerInterceptor接口</p>
+<p>Filter—–&gt;Servlet提供             HandlerInterceptor——&gt;spring提供    </p>
+</blockquote>
+</li>
+<li><p>方法层面的区别</p>
+</li>
+<li><blockquote>
+<p>过滤器的前后过滤是在doFilter方法内完成的</p>
+<p>拦截器提供三个方法preHandle,postHandle,afterCompletion</p>
+</blockquote>
+</li>
+<li><p>放行的区别</p>
+</li>
+<li><blockquote>
+<p>过滤器调用filterChain.doFilter的时候放行</p>
+<p>拦截器需要在preHandler中返回true表示放行,false表示不放行</p>
+</blockquote>
+</li>
+<li><p>被管理方式的区别</p>
+<blockquote>
+<p>过滤器是tomcat创建管理</p>
+<p>拦截器是spring创建管理的</p>
+<p><strong>注意:如果用springboot,那么都是spring管理,应为tomcat已经被内置了,主导权在spring</strong></p>
+</blockquote>
+</li>
+<li><p>管理范围的区别(仅限于使用springboot之前)</p>
+<blockquote>
+<p>过滤器范围大,拦截器范围小,但是在springboot中是一样大,因为所有的bean都是spring管理</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="ApplicationContext是什么"><a href="#ApplicationContext是什么" class="headerlink" title="ApplicationContext是什么"></a>ApplicationContext是什么</h1><p>如果说BeanFactory是Spring的心脏，那么ApplicationContext就是完整的身躯了。</p>
+<p>ApplicationContext由BeanFactory派生而来，提供了更多面向实际应用的功能。</p>
+<p>Context我们通常解释为上下文环境，用“容器”来表述它更容易理解一些，ApplicationContext则是“应用的容器”</p>
+<h1 id="各种依赖"><a href="#各种依赖" class="headerlink" title="各种依赖"></a>各种依赖</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">&lt;</span><span class="token operator">!</span><span class="token operator">--</span>validation校验框架起步依赖<span class="token operator">--</span><span class="token operator">></span>
+        <span class="token generics"><span class="token punctuation">&lt;</span>dependency<span class="token punctuation">></span></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>groupId<span class="token punctuation">></span></span>org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token operator">&lt;</span><span class="token operator">/</span>groupId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>artifactId<span class="token punctuation">></span></span>spring<span class="token operator">-</span>boot<span class="token operator">-</span>starter<span class="token operator">-</span>validation<span class="token operator">&lt;</span><span class="token operator">/</span>artifactId<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>dependency<span class="token operator">></span>
+  
+  <span class="token operator">&lt;</span><span class="token operator">!</span><span class="token operator">--</span>lombok<span class="token operator">--</span><span class="token operator">></span>
+        <span class="token generics"><span class="token punctuation">&lt;</span>dependency<span class="token punctuation">></span></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>groupId<span class="token punctuation">></span></span>org<span class="token punctuation">.</span>projectlombok<span class="token operator">&lt;</span><span class="token operator">/</span>groupId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>artifactId<span class="token punctuation">></span></span>lombok<span class="token operator">&lt;</span><span class="token operator">/</span>artifactId<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>dependency<span class="token operator">></span>
+  
+  <span class="token operator">&lt;</span><span class="token operator">!</span><span class="token operator">--</span>加入运维工具依赖<span class="token operator">--</span><span class="token operator">></span>
+        <span class="token generics"><span class="token punctuation">&lt;</span>dependency<span class="token punctuation">></span></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>groupId<span class="token punctuation">></span></span>org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token operator">&lt;</span><span class="token operator">/</span>groupId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>artifactId<span class="token punctuation">></span></span>spring<span class="token operator">-</span>boot<span class="token operator">-</span>starter<span class="token operator">-</span>actuator<span class="token operator">&lt;</span><span class="token operator">/</span>artifactId<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>dependency<span class="token operator">></span>
+  
+   <span class="token operator">&lt;</span><span class="token operator">!</span><span class="token operator">--</span>pagehelper<span class="token operator">--</span><span class="token operator">></span>
+        <span class="token generics"><span class="token punctuation">&lt;</span>dependency<span class="token punctuation">></span></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>groupId<span class="token punctuation">></span></span>com<span class="token punctuation">.</span>github<span class="token punctuation">.</span>pagehelper<span class="token operator">&lt;</span><span class="token operator">/</span>groupId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>artifactId<span class="token punctuation">></span></span>pagehelper<span class="token operator">-</span>spring<span class="token operator">-</span>boot<span class="token operator">-</span>starter<span class="token operator">&lt;</span><span class="token operator">/</span>artifactId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>version<span class="token punctuation">></span></span><span class="token number">1.3</span><span class="token number">.0</span><span class="token operator">&lt;</span><span class="token operator">/</span>version<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>dependency<span class="token operator">></span>
+  
+  <span class="token operator">&lt;</span><span class="token operator">!</span><span class="token operator">--</span>切点表达式<span class="token operator">--</span><span class="token operator">></span>
+        <span class="token generics"><span class="token punctuation">&lt;</span>dependency<span class="token punctuation">></span></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>groupId<span class="token punctuation">></span></span>org<span class="token punctuation">.</span>aspectj<span class="token operator">&lt;</span><span class="token operator">/</span>groupId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>artifactId<span class="token punctuation">></span></span>aspectjweaver<span class="token operator">&lt;</span><span class="token operator">/</span>artifactId<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>dependency<span class="token operator">></span>
+  
+  <span class="token operator">&lt;</span><span class="token operator">!</span><span class="token operator">--</span>jackson<span class="token operator">--</span><span class="token operator">></span>
+        <span class="token generics"><span class="token punctuation">&lt;</span>dependency<span class="token punctuation">></span></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>groupId<span class="token punctuation">></span></span>com<span class="token punctuation">.</span>fasterxml<span class="token punctuation">.</span>jackson<span class="token punctuation">.</span>core<span class="token operator">&lt;</span><span class="token operator">/</span>groupId<span class="token operator">></span>
+            <span class="token generics"><span class="token punctuation">&lt;</span>artifactId<span class="token punctuation">></span></span>jackson<span class="token operator">-</span>databind<span class="token operator">&lt;</span><span class="token operator">/</span>artifactId<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>dependency<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="application-yml配置文件"><a href="#application-yml配置文件" class="headerlink" title="application.yml配置文件"></a>application.yml配置文件</h1><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#设置端口号</span>
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+
+<span class="token comment"># 配置数据源</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">datasource</span><span class="token punctuation">:</span>
+    <span class="token key atrule">driver-class-name</span><span class="token punctuation">:</span> com.mysql.cj.jdbc.Driver
+    <span class="token key atrule">url</span><span class="token punctuation">:</span> jdbc<span class="token punctuation">:</span>mysql<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>3306/brand_demo<span class="token punctuation">?</span>serverTimezone=Asia/Shanghai
+    <span class="token key atrule">username</span><span class="token punctuation">:</span> root
+    <span class="token key atrule">password</span><span class="token punctuation">:</span> <span class="token number">123456</span>
+  <span class="token key atrule">main</span><span class="token punctuation">:</span>
+    <span class="token key atrule">allow-circular-references</span><span class="token punctuation">:</span> <span class="token boolean important">true</span> <span class="token comment"># 运行set方式循环依赖</span>
+   <span class="token key atrule">sql</span><span class="token punctuation">:</span> <span class="token comment">#sql语句初始化,用于测试的时候</span>
+    <span class="token key atrule">init</span><span class="token punctuation">:</span>
+      <span class="token key atrule">mode</span><span class="token punctuation">:</span> always
+      <span class="token key atrule">schema-locations</span><span class="token punctuation">:</span> classpath<span class="token punctuation">:</span>scheme.sql <span class="token comment">#如果名称是shcema.sql就不用配置</span>
+
+      <span class="token key atrule">data-locations</span><span class="token punctuation">:</span> classpath<span class="token punctuation">:</span>data.sql <span class="token comment">#如果名称是data.sql就不用配置</span>
+
+<span class="token comment"># mybatis配置</span>
+<span class="token comment"># 开启驼峰命名</span>
+<span class="token key atrule">mybatis</span><span class="token punctuation">:</span>
+  <span class="token key atrule">configuration</span><span class="token punctuation">:</span>
+    <span class="token key atrule">map-underscore-to-camel-case</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+
+<span class="token comment">#配置springboot日志级别，输出运行过程中的SQL语句</span>
+<span class="token key atrule">logging</span><span class="token punctuation">:</span>
+  <span class="token key atrule">level</span><span class="token punctuation">:</span>
+    <span class="token key atrule">com.itheima.mapper</span><span class="token punctuation">:</span> debug
+    <span class="token key atrule">org.springframework.jdbc.support.JdbcTransactionManager</span><span class="token punctuation">:</span> debug
+
+<span class="token comment">#分页合理化</span>
+<span class="token key atrule">pagehelper</span><span class="token punctuation">:</span>
+  <span class="token key atrule">reasonable</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoint</span><span class="token punctuation">:</span>
+    <span class="token key atrule">health</span><span class="token punctuation">:</span>
+      <span class="token key atrule">show-details</span><span class="token punctuation">:</span> always
+ 
+ <span class="token comment">#设置mybatis的驼峰命名自动映射</span>
+<span class="token key atrule">mybatis</span><span class="token punctuation">:</span>
+  <span class="token key atrule">configuration</span><span class="token punctuation">:</span>
+    <span class="token key atrule">map-underscore-to-camel-case</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>      
+    
+ <span class="token comment">#设置mybatis-plus全局配置   </span>
+<span class="token key atrule">mybatis-plus</span><span class="token punctuation">:</span>
+  <span class="token key atrule">global-config</span><span class="token punctuation">:</span>
+    <span class="token key atrule">db-config</span><span class="token punctuation">:</span>
+      <span class="token key atrule">table-prefix</span><span class="token punctuation">:</span> tb_  <span class="token comment">#设置表名前缀为tb_</span>
+      <span class="token key atrule">id-type</span><span class="token punctuation">:</span> auto  <span class="token comment">#设置主键按自动增长赋值(默认为雪花算法,适合分布式数据库项目)</span>
+  <span class="token key atrule">configuration</span><span class="token punctuation">:</span>
+    <span class="token key atrule">log-impl</span><span class="token punctuation">:</span> org.apache.ibatis.logging.stdout.StdOutImpl     <span class="token comment">#log显示sql语句</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h1><p>CAS  比较并设置   version</p>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#spring%E4%B8%AD-Resource%E5%92%8C-Autowired%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">spring中@Resource和@Autowired的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BeanFactory%E5%92%8CFactoryBean%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">BeanFactory和FactoryBean的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJDBCTemplate"><span class="toc-text">什么是JDBCTemplate?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#spring%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86API"><span class="toc-text">spring事务管理API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Transaction%E4%B8%AD%E7%9A%84%E5%85%AD%E5%A4%A7%E5%B1%9E%E6%80%A7%E4%B9%8Bpripagation-%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA"><span class="toc-text">@Transaction中的六大属性之pripagation:事务的传播行为</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Transaction%E4%B8%AD%E7%9A%84%E5%85%AD%E5%A4%A7%E5%B1%9E%E6%80%A7%E4%B9%8Bioslation-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-text">@Transaction中的六大属性之ioslation:事务的隔离级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Transaction%E4%B8%AD%E7%9A%84%E5%85%AD%E5%A4%A7%E5%B1%9E%E6%80%A7%E4%B9%8Btimeout-%E4%BA%8B%E5%8A%A1%E7%9A%84%E8%B6%85%E6%97%B6%E6%97%B6%E9%97%B4"><span class="toc-text">@Transaction中的六大属性之timeout:事务的超时时间</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Transaction%E4%B8%AD%E7%9A%84%E5%85%AD%E5%A4%A7%E5%B1%9E%E6%80%A7%E4%B9%8BreadOnly-%E6%98%AF%E5%90%A6%E5%8F%AA%E8%AF%BB"><span class="toc-text">@Transaction中的六大属性之readOnly:是否只读</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Transaction%E4%B8%AD%E7%9A%84%E5%85%AD%E5%A4%A7%E5%B1%9E%E6%80%A7%E4%B9%8BrollbackFor%E5%92%8CnoRollbackfor-%E5%9B%9E%E6%BB%9A%E5%92%8C%E4%B8%8D%E5%9B%9E%E6%BB%9A"><span class="toc-text">@Transaction中的六大属性之rollbackFor和noRollbackfor:回滚和不回滚</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8Filter%E5%92%8C%E6%8B%A6%E6%88%AA%E5%99%A8Interceptor%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">过滤器Filter和拦截器Interceptor的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ApplicationContext%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">ApplicationContext是什么</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E4%BE%9D%E8%B5%96"><span class="toc-text">各种依赖</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#application-yml%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">application.yml配置文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B9%90%E8%A7%82%E9%94%81"><span class="toc-text">乐观锁</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2022/04/22/springboot%E9%AB%98%E7%BA%A7/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">springboot高级</span>
+            </a>
+        
+        
+            <a class="next" href="/2022/04/15/%E5%85%B3%E4%BA%8E%E5%AD%A6%E4%B9%A0Spring%E7%9A%84%E6%80%BB%E7%BB%93%E5%92%8C%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/">
+                
+                <span class="prev-text">Spring的总结和一些问题</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
