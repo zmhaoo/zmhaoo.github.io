@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>Mysql存储引擎 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">主页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">关于</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        Mysql存储引擎
+    </div>
+    <p class="sub">5月 10 2022</p>
+    <div class="post-content">
+        <h1 id="MYSQL体系结构-连接层"><a href="#MYSQL体系结构-连接层" class="headerlink" title="MYSQL体系结构:连接层"></a>MYSQL体系结构:连接层</h1><p>最上层是一些客户端的链接服务,主要完成一些类似于链接处理,授权认证,及相关的安全方案.服务器也会安全接入的每个客户端验证它所具有的操作权限</p>
+<h1 id="MYSQL体系结构-服务层"><a href="#MYSQL体系结构-服务层" class="headerlink" title="MYSQL体系结构:服务层"></a>MYSQL体系结构:服务层</h1><p>第二层架构主要完成大多数的核心服务功能,如SQL接口,并完成缓存查询,Sql的分析和优化,部分内置函数的执行.所有跨存储引擎的功能也是在这一层实现的,如过程,函数等</p>
+<h1 id="MYSQL体系结构-引擎层"><a href="#MYSQL体系结构-引擎层" class="headerlink" title="MYSQL体系结构:引擎层"></a>MYSQL体系结构:引擎层</h1><p>存储引擎真正的负责了Mysql中数据的存储和提取,服务器通过API和存储引擎进行通信.不同的存储引擎距有不同的功能,这样我们可以根据自己的需要,来选取核实的存储引擎.存储引擎是可插拔式的</p>
+<h1 id="MYSQL体系结构-存储层"><a href="#MYSQL体系结构-存储层" class="headerlink" title="MYSQL体系结构:存储层"></a>MYSQL体系结构:存储层</h1><p>主要是将数据存储在文件系统上,并且完成与存储引擎的交互</p>
+<h1 id="存储引擎简介"><a href="#存储引擎简介" class="headerlink" title="存储引擎简介"></a>存储引擎简介</h1><p>存储引擎就是存储数据,建立索引,更新&#x2F;查询数据等技术的实现方式.</p>
+<p>指定存储引擎的语句:ENGINE&#x3D;INNODB &lt;—-可替换</p>
+<p>查看当前数据库支持的存储引擎:SHOW ENGINES</p>
+<p>没有指定存储引擎时,默认为InnoDB</p>
+<p><strong>存储引擎是基于表的么人不是基于库的,所以存储引擎也被称为表类型</strong></p>
+<h1 id="InnoDB存储引擎的特点"><a href="#InnoDB存储引擎的特点" class="headerlink" title="InnoDB存储引擎的特点"></a>InnoDB存储引擎的特点</h1><p>InnoDB介绍:</p>
+<p>InnoDB是一种兼顾高可靠性的高性能的通用存储引擎,在Mysql5.5之后,InnoDB是默认的MYSQL存储引擎</p>
+<p>InnoDB特点:</p>
+<p>DML(增删改操作)操作遵循ACID模型,支持事务</p>
+<p>行级锁,提高并发访问性能</p>
+<p>支持外检Foreign key约束,保证数据的完整性和正确性</p>
+<p>InnoDB文件:</p>
+<p>xxx.ibd:xxx代表的是表名,innoDB引擎的每张表都会对应这样的一个表空间文件,存储该表的表结构(frm 8.0前  ,sdi 8.0后),数据和索引. 参数:innodb_flie_per_table如果打开,代表 每一张表都代表一个表空间</p>
+<h1 id="查看ibd文件"><a href="#查看ibd文件" class="headerlink" title="查看ibd文件"></a>查看ibd文件</h1><p>idb文件是不能直接打开的,里面记录的都是二进制数据,如果非要打开看可以使用cmd输入—–&gt;   ibd2sdi xxx.idb</p>
+<h1 id="ibd文件存储结构"><a href="#ibd文件存储结构" class="headerlink" title="ibd文件存储结构"></a>ibd文件存储结构</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq7wjv0rj20pw0ccq4e.jpg" alt="image-20220510095308222"></p>
+<h1 id="MyISAM存储引擎的特点"><a href="#MyISAM存储引擎的特点" class="headerlink" title="MyISAM存储引擎的特点"></a>MyISAM存储引擎的特点</h1><p>介绍:</p>
+<p>MyISAM是MySQL早期默认的存储引擎</p>
+<p>特点:</p>
+<p>不支持事务,不支持外键</p>
+<p>支持表锁,不支持行锁</p>
+<p>访问速度快 </p>
+<p>文件:</p>
+<p>xxx.sdi:存储表结构信息(存储的json格式数据)</p>
+<p>xxx.MYD:存储数据</p>
+<p>xxx.MYI:存储索引</p>
+<h1 id="Memory存储引擎的特点"><a href="#Memory存储引擎的特点" class="headerlink" title="Memory存储引擎的特点"></a>Memory存储引擎的特点</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq80a7hfj20mg089jrl.jpg" alt=" "></p>
+<h1 id="三个存储引擎的区别"><a href="#三个存储引擎的区别" class="headerlink" title="三个存储引擎的区别"></a>三个存储引擎的区别</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq7sxlvrj20ni09eaaq.jpg" alt="image-20220510100124777"></p>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MYSQL%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84-%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-text">MYSQL体系结构:连接层</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MYSQL%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84-%E6%9C%8D%E5%8A%A1%E5%B1%82"><span class="toc-text">MYSQL体系结构:服务层</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MYSQL%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84-%E5%BC%95%E6%93%8E%E5%B1%82"><span class="toc-text">MYSQL体系结构:引擎层</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MYSQL%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84-%E5%AD%98%E5%82%A8%E5%B1%82"><span class="toc-text">MYSQL体系结构:存储层</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B"><span class="toc-text">存储引擎简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#InnoDB%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">InnoDB存储引擎的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8Bibd%E6%96%87%E4%BB%B6"><span class="toc-text">查看ibd文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ibd%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="toc-text">ibd文件存储结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyISAM%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">MyISAM存储引擎的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Memory%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">Memory存储引擎的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">三个存储引擎的区别</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2022/05/10/Mysql%E7%B4%A2%E5%BC%95-%E6%A0%B8%E5%BF%83/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">Mysql索引(核心)</span>
+            </a>
+        
+        
+            <a class="next" href="/2022/05/08/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+                
+                <span class="prev-text">HashMap源码解析</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
