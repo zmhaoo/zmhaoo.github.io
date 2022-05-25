@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>Nacos集群搭建 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">主页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">关于</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        Nacos集群搭建
+    </div>
+    <p class="sub">5月 25 2022</p>
+    <div class="post-content">
+        <h1 id="Nacos集群搭建"><a href="#Nacos集群搭建" class="headerlink" title="Nacos集群搭建"></a><strong>Nacos集群搭建</strong></h1><h1 id="1-集群结构图"><a href="#1-集群结构图" class="headerlink" title="1.集群结构图"></a><strong>1.集群结构图</strong></h1><p>官方给出的Nacos集群图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13dhnzyj20ij0bljrv.jpg" alt="image-20210409210621117"></p>
+<p>其中包含3个nacos节点，然后一个负载均衡器代理3个Nacos。这里负载均衡器可以使用nginx。</p>
+<p>我们计划的集群结构：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13ex8byj20ky0ji3zo.jpg" alt="image-20210409211355037"></p>
+<p>三个nacos节点的地址：</p>
+<table>
+<thead>
+<tr>
+<th align="left">节点</th>
+<th align="left">ip</th>
+<th align="left">port</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">nacos1</td>
+<td align="left">192.168.150.1</td>
+<td align="left">8845</td>
+</tr>
+<tr>
+<td align="left">nacos2</td>
+<td align="left">192.168.150.1</td>
+<td align="left">8846</td>
+</tr>
+<tr>
+<td align="left">nacos3</td>
+<td align="left">192.168.150.1</td>
+<td align="left">8847</td>
+</tr>
+</tbody></table>
+<p>此处的IP是你自己服务的IP，不一定要按照我的来</p>
+<h1 id="2-搭建集群"><a href="#2-搭建集群" class="headerlink" title="2.搭建集群"></a><strong>2.搭建集群</strong></h1><p>搭建集群的基本步骤：</p>
+<ul>
+<li>搭建数据库，初始化数据库表结构</li>
+<li>下载nacos安装包</li>
+<li>配置nacos</li>
+<li>启动nacos集群</li>
+<li>nginx反向代理</li>
+</ul>
+<h2 id="2-1-初始化数据库"><a href="#2-1-初始化数据库" class="headerlink" title="2.1.初始化数据库"></a><strong>2.1.初始化数据库</strong></h2><p>Nacos默认数据存储在内嵌数据库Derby中，不属于生产可用的数据库。</p>
+<p>官方推荐的最佳实践是使用带有主从的高可用数据库集群，主从模式的高可用数据库可以参考<strong>传智教育</strong>的后续高手课程。</p>
+<p>这里我们以单点的数据库为例来讲解。</p>
+<p>首先新建一个数据库，命名为nacos，而后导入下面的SQL：</p>
+<pre class="line-numbers language-none"><code class="language-none">CREATE TABLE &#96;config_info&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(255) DEFAULT NULL,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;content&#39;,
+  &#96;md5&#96; varchar(32) DEFAULT NULL COMMENT &#39;md5&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  &#96;src_user&#96; text COMMENT &#39;source user&#39;,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL COMMENT &#39;source ip&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  &#96;c_desc&#96; varchar(256) DEFAULT NULL,
+  &#96;c_use&#96; varchar(64) DEFAULT NULL,
+  &#96;effect&#96; varchar(64) DEFAULT NULL,
+  &#96;type&#96; varchar(64) DEFAULT NULL,
+  &#96;c_schema&#96; text,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfo_datagrouptenant&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_info&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_info_aggr   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_info_aggr&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(255) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;datum_id&#96; varchar(255) NOT NULL COMMENT &#39;datum_id&#39;,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;内容&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL COMMENT &#39;修改时间&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfoaggr_datagrouptenantdatum&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;,&#96;datum_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;增加租户字段&#39;;
+
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_info_beta   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_info_beta&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL COMMENT &#39;app_name&#39;,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;content&#39;,
+  &#96;beta_ips&#96; varchar(1024) DEFAULT NULL COMMENT &#39;betaIps&#39;,
+  &#96;md5&#96; varchar(32) DEFAULT NULL COMMENT &#39;md5&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  &#96;src_user&#96; text COMMENT &#39;source user&#39;,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL COMMENT &#39;source ip&#39;,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfobeta_datagrouptenant&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_info_beta&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_info_tag   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_info_tag&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;tenant_id&#39;,
+  &#96;tag_id&#96; varchar(128) NOT NULL COMMENT &#39;tag_id&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL COMMENT &#39;app_name&#39;,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;content&#39;,
+  &#96;md5&#96; varchar(32) DEFAULT NULL COMMENT &#39;md5&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  &#96;src_user&#96; text COMMENT &#39;source user&#39;,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL COMMENT &#39;source ip&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfotag_datagrouptenanttag&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;,&#96;tag_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_info_tag&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_tags_relation   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_tags_relation&#96; (
+  &#96;id&#96; bigint(20) NOT NULL COMMENT &#39;id&#39;,
+  &#96;tag_name&#96; varchar(128) NOT NULL COMMENT &#39;tag_name&#39;,
+  &#96;tag_type&#96; varchar(64) DEFAULT NULL COMMENT &#39;tag_type&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;tenant_id&#39;,
+  &#96;nid&#96; bigint(20) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (&#96;nid&#96;),
+  UNIQUE KEY &#96;uk_configtagrelation_configidtag&#96; (&#96;id&#96;,&#96;tag_name&#96;,&#96;tag_type&#96;),
+  KEY &#96;idx_tenant_id&#96; (&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_tag_relation&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; group_capacity   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;group_capacity&#96; (
+  &#96;id&#96; bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;主键ID&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;Group ID，空字符表示整个集群&#39;,
+  &#96;quota&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;配额，0表示使用默认值&#39;,
+  &#96;usage&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;使用量&#39;,
+  &#96;max_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_aggr_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;聚合子配置最大个数，，0表示使用默认值&#39;,
+  &#96;max_aggr_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个聚合数据的子配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_history_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;最大变更历史数量&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_group_id&#96; (&#96;group_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;集群、各Group容量信息表&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; his_config_info   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;his_config_info&#96; (
+  &#96;id&#96; bigint(64) unsigned NOT NULL,
+  &#96;nid&#96; bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  &#96;data_id&#96; varchar(255) NOT NULL,
+  &#96;group_id&#96; varchar(128) NOT NULL,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL COMMENT &#39;app_name&#39;,
+  &#96;content&#96; longtext NOT NULL,
+  &#96;md5&#96; varchar(32) DEFAULT NULL,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  &#96;src_user&#96; text,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL,
+  &#96;op_type&#96; char(10) DEFAULT NULL,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  PRIMARY KEY (&#96;nid&#96;),
+  KEY &#96;idx_gmt_create&#96; (&#96;gmt_create&#96;),
+  KEY &#96;idx_gmt_modified&#96; (&#96;gmt_modified&#96;),
+  KEY &#96;idx_did&#96; (&#96;data_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;多租户改造&#39;;
+
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; tenant_capacity   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;tenant_capacity&#96; (
+  &#96;id&#96; bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;主键ID&#39;,
+  &#96;tenant_id&#96; varchar(128) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;Tenant ID&#39;,
+  &#96;quota&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;配额，0表示使用默认值&#39;,
+  &#96;usage&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;使用量&#39;,
+  &#96;max_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_aggr_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;聚合子配置最大个数&#39;,
+  &#96;max_aggr_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个聚合数据的子配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_history_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;最大变更历史数量&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_tenant_id&#96; (&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;租户容量信息表&#39;;
+
+
+CREATE TABLE &#96;tenant_info&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;kp&#96; varchar(128) NOT NULL COMMENT &#39;kp&#39;,
+  &#96;tenant_id&#96; varchar(128) default &#39;&#39; COMMENT &#39;tenant_id&#39;,
+  &#96;tenant_name&#96; varchar(128) default &#39;&#39; COMMENT &#39;tenant_name&#39;,
+  &#96;tenant_desc&#96; varchar(256) DEFAULT NULL COMMENT &#39;tenant_desc&#39;,
+  &#96;create_source&#96; varchar(32) DEFAULT NULL COMMENT &#39;create_source&#39;,
+  &#96;gmt_create&#96; bigint(20) NOT NULL COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; bigint(20) NOT NULL COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_tenant_info_kptenantid&#96; (&#96;kp&#96;,&#96;tenant_id&#96;),
+  KEY &#96;idx_tenant_id&#96; (&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;tenant_info&#39;;
+
+CREATE TABLE &#96;users&#96; (
+  &#96;username&#96; varchar(50) NOT NULL PRIMARY KEY,
+  &#96;password&#96; varchar(500) NOT NULL,
+  &#96;enabled&#96; boolean NOT NULL
+);
+
+CREATE TABLE &#96;roles&#96; (
+  &#96;username&#96; varchar(50) NOT NULL,
+  &#96;role&#96; varchar(50) NOT NULL,
+  UNIQUE INDEX &#96;idx_user_role&#96; (&#96;username&#96; ASC, &#96;role&#96; ASC) USING BTREE
+);
+
+CREATE TABLE &#96;permissions&#96; (
+    &#96;role&#96; varchar(50) NOT NULL,
+    &#96;resource&#96; varchar(255) NOT NULL,
+    &#96;action&#96; varchar(8) NOT NULL,
+    UNIQUE INDEX &#96;uk_role_permission&#96; (&#96;role&#96;,&#96;resource&#96;,&#96;action&#96;) USING BTREE
+);
+
+INSERT INTO users (username, password, enabled) VALUES (&#39;nacos&#39;, &#39;$2a$10$EuWPZHzz32dJN7jexM34MOeYirDdFAZm2kuWj7VEOJhhZkDrxfvUu&#39;, TRUE);
+
+INSERT INTO roles (username, role) VALUES (&#39;nacos&#39;, &#39;ROLE_ADMIN&#39;);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="2-2-下载nacos"><a href="#2-2-下载nacos" class="headerlink" title="2.2.下载nacos"></a><strong>2.2.下载nacos</strong></h2><p>nacos在GitHub上有下载地址：<a target="_blank" rel="noopener" href="https://github.com/alibaba/nacos/tags%EF%BC%8C%E5%8F%AF%E4%BB%A5%E9%80%89%E6%8B%A9%E4%BB%BB%E6%84%8F%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD%E3%80%82">https://github.com/alibaba/nacos/tags，可以选择任意版本下载。</a></p>
+<p>本例中才用1.4.1版本：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13e1gsyj20jv09r74u.jpg" alt="image-20210409212119411"></p>
+<h2 id="2-3-配置Nacos"><a href="#2-3-配置Nacos" class="headerlink" title="2.3.配置Nacos"></a><strong>2.3.配置Nacos</strong></h2><p>将这个包解压到任意非中文目录下，如图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13fhkn4j20el064dfx.jpg" alt="image-20210402161843337"></p>
+<p>目录说明：</p>
+<ul>
+<li>bin：启动脚本</li>
+<li>conf：配置文件</li>
+</ul>
+<p>进入nacos的conf目录，修改配置文件cluster.conf.example，重命名为cluster.conf：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13bni9bj209r09674u.jpg" alt="image-20210409212459292"></p>
+<p>然后添加内容：</p>
+<pre class="line-numbers language-none"><code class="language-none">127.0.0.1:8845
+127.0.0.1:8846
+127.0.0.1:8847<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<blockquote>
+<p>注意：此处的IP是你自己服务的IP，不一定要按照我的来！</p>
+</blockquote>
+<p>可以在单节点运行时，到nacos控制台查看自己的节点IP，那么这里就配置一样的IP：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13cktpbj20jq0edq3t.jpg" alt="image-20210830170229215"></p>
+<p>然后修改application.properties文件，添加数据库配置</p>
+<pre class="line-numbers language-none"><code class="language-none">spring.datasource.platform&#x3D;mysql
+
+db.num&#x3D;1
+
+db.url.0&#x3D;jdbc:mysql:&#x2F;&#x2F;127.0.0.1:3306&#x2F;nacos?characterEncoding&#x3D;utf8&amp;connectTimeout&#x3D;1000&amp;socketTimeout&#x3D;3000&amp;autoReconnect&#x3D;true&amp;useUnicode&#x3D;true&amp;useSSL&#x3D;false&amp;serverTimezone&#x3D;UTC
+db.user.0&#x3D;root
+db.password.0&#x3D;123<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>这里的数据库地址、用户名、密码请根据实际情况配置。</p>
+<h2 id="2-4-启动"><a href="#2-4-启动" class="headerlink" title="2.4.启动"></a><strong>2.4.启动</strong></h2><p>将nacos文件夹复制三份，分别命名为：nacos1、nacos2、nacos3</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13efuj2j20a803imx2.jpg" alt="image-20210409213335538"> </p>
+<p>然后分别修改三个文件夹中的application.properties，</p>
+<p>nacos1:</p>
+<pre class="line-numbers language-none"><code class="language-none">server.port&#x3D;8845<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>nacos2:</p>
+<pre class="line-numbers language-none"><code class="language-none">server.port&#x3D;8846<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>nacos3:</p>
+<pre class="line-numbers language-none"><code class="language-none">server.port&#x3D;8847<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>然后分别启动三个nacos节点：</p>
+<pre class="line-numbers language-none"><code class="language-none">startup.cmd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h2 id="2-5-nginx反向代理"><a href="#2-5-nginx反向代理" class="headerlink" title="2.5.nginx反向代理"></a><strong>2.5.nginx反向代理</strong></h2><p>找到课前资料提供的nginx安装包： </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13fybvvj20a0048q2z.jpg" alt="image-20210410103253355"> </p>
+<p>解压到任意非中文目录下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13gwmb2j209g094t8u.jpg" alt="image-20210410103322874"> </p>
+<p>修改conf&#x2F;nginx.conf文件，配置如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">upstream nacos-cluster &#123;
+    server 127.0.0.1:8845;
+  server 127.0.0.1:8846;
+  server 127.0.0.1:8847;
+&#125;
+
+server &#123;
+    listen       80;
+    server_name  localhost;
+
+    location &#x2F;nacos &#123;
+        proxy_pass http:&#x2F;&#x2F;nacos-cluster;
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>而后在浏览器访问：<a target="_blank" rel="noopener" href="http://localhost/nacos%E5%8D%B3%E5%8F%AF%E3%80%82">http://localhost/nacos即可。</a></p>
+<p>代码中application.yml文件配置如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    nacos:
+      server-addr: localhost:80 # Nacos地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+
+
+<h2 id="2-6-优化"><a href="#2-6-优化" class="headerlink" title="2.6.优化"></a><strong>2.6.优化</strong></h2><ul>
+<li>实际部署时，需要给做反向代理的nginx服务器设置一个域名，这样后续如果有服务器迁移nacos的客户端也无需更改配置.</li>
+<li>Nacos的各个节点应该部署到多个不同服务器，做好容灾和隔离</li>
+</ul>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Nacos%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-text">Nacos集群搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E9%9B%86%E7%BE%A4%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="toc-text">1.集群结构图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E6%90%AD%E5%BB%BA%E9%9B%86%E7%BE%A4"><span class="toc-text">2.搭建集群</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-text">2.1.初始化数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E4%B8%8B%E8%BD%BDnacos"><span class="toc-text">2.2.下载nacos</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E9%85%8D%E7%BD%AENacos"><span class="toc-text">2.3.配置Nacos</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E5%90%AF%E5%8A%A8"><span class="toc-text">2.4.启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">2.5.nginx反向代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E4%BC%98%E5%8C%96"><span class="toc-text">2.6.优化</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2022/05/25/Feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">Feign远程调用</span>
+            </a>
+        
+        
+            <a class="next" href="/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/">
+                
+                <span class="prev-text">Nacos注册中心的使用</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>

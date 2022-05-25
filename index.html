@@ -44,6 +44,994 @@
     
         <article class="post article-entry">
             <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/05/25/Gateway%E7%BD%91%E5%85%B3/">Gateway网关</a>
+            </div>
+            <p class="sub">5月 25 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="1-Gateway服务网关"><a href="#1-Gateway服务网关" class="headerlink" title="1.Gateway服务网关"></a><strong>1.Gateway服务网关</strong></h1><p>Spring Cloud Gateway 是 Spring Cloud 的一个全新项目，该项目是基于 Spring 5.0，Spring Boot 2.0 和 Project Reactor 等响应式编程和事件流技术开发的网关，它旨在为微服务架构提供一种简单有效的统一的 API 路由管理方式。</p>
+<h2 id="1-1-为什么需要网关"><a href="#1-1-为什么需要网关" class="headerlink" title="1.1.为什么需要网关"></a><strong>1.1.为什么需要网关</strong></h2><p>Gateway网关是我们服务的守门神，所有微服务的统一入口。</p>
+<p>网关的<strong>核心功能特性</strong>：</p>
+<ul>
+<li>请求路由</li>
+<li>权限控制</li>
+<li>限流</li>
+</ul>
+<p>架构图：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714210131152.png?lastModify=1653489702" alt="image-20210714210131152"></p>
+<p><strong>权限控制</strong>：网关作为微服务入口，需要校验用户是是否有请求资格，如果没有则进行拦截。</p>
+<p><strong>路由和负载均衡</strong>：一切请求都必须先经过gateway，但网关不处理业务，而是根据某种规则，把请求转发到某个微服务，这个过程叫做路由。当然路由的目标服务有多个时，还需要做负载均衡。</p>
+<p><strong>限流</strong>：当请求流量过高时，在网关中按照下流的微服务能够接受的速度来放行请求，避免服务压力过大。</p>
+<p>在SpringCloud中网关的实现包括两种：</p>
+<ul>
+<li>gateway</li>
+<li>zuul</li>
+</ul>
+<p>Zuul是基于Servlet的实现，属于阻塞式编程。而SpringCloudGateway则是基于Spring5中提供的WebFlux，属于响应式编程的实现，具备更好的性能。</p>
+<h2 id="1-2-gateway快速入门"><a href="#1-2-gateway快速入门" class="headerlink" title="1.2.gateway快速入门"></a><strong>1.2.gateway快速入门</strong></h2><p>下面，我们就演示下网关的基本路由功能。基本步骤如下：</p>
+<ol>
+<li>创建SpringBoot工程gateway，引入网关依赖</li>
+<li>编写启动类</li>
+<li>编写基础配置和路由规则</li>
+<li>启动网关服务进行测试</li>
+</ol>
+<h3 id="1）创建gateway服务，引入依赖"><a href="#1）创建gateway服务，引入依赖" class="headerlink" title="1）创建gateway服务，引入依赖"></a>1）创建gateway服务，引入依赖</h3><p>创建服务：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1631tktj20pa0ajq40.jpg" alt="image-20210714210919458"></p>
+<p>引入依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;!--网关--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-gateway&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;
+&lt;!--nacos服务发现依赖--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.alibaba.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="2）编写启动类"><a href="#2）编写启动类" class="headerlink" title="2）编写启动类"></a>2）编写启动类</h3><pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class GatewayApplication &#123;
+
+  public static void main(String[] args) &#123;
+    SpringApplication.run(GatewayApplication.class, args);
+  &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="3）编写基础配置和路由规则"><a href="#3）编写基础配置和路由规则" class="headerlink" title="3）编写基础配置和路由规则"></a>3）编写基础配置和路由规则</h3><p>创建application.yml文件，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">server:
+  port: 10010 # 网关端口
+spring:
+  application:
+    name: gateway # 服务名称
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # nacos地址
+    gateway:
+      routes: # 网关路由配置
+        - id: user-service # 路由id，自定义，只要唯一即可
+          # uri: http:&#x2F;&#x2F;127.0.0.1:8081 # 路由的目标地址 http就是固定地址
+          uri: lb:&#x2F;&#x2F;userservice # 路由的目标地址 lb就是负载均衡，后面跟服务名称
+          predicates: # 路由断言，也就是判断请求是否符合路由规则的条件
+            - Path&#x3D;&#x2F;user&#x2F;** # 这个是按照路径匹配，只要以&#x2F;user&#x2F;开头就符合要求<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>我们将符合<code>Path</code> 规则的一切请求，都代理到 <code>uri</code>参数指定的地址。</p>
+<p>本例中，我们将 <code>/user/**</code>开头的请求，代理到<code>lb://userservice</code>，lb是负载均衡，根据服务名拉取服务列表，实现负载均衡。</p>
+<h3 id="4）重启测试"><a href="#4）重启测试" class="headerlink" title="4）重启测试"></a>4）重启测试</h3><p>重启网关，访问<a target="_blank" rel="noopener" href="http://localhost:10010/user/1%E6%97%B6%EF%BC%8C%E7%AC%A6%E5%90%88%60/user/**%60%E8%A7%84%E5%88%99%EF%BC%8C%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%88%B0uri%EF%BC%9Ahttp://userservice/user/1%EF%BC%8C%E5%BE%97%E5%88%B0%E4%BA%86%E7%BB%93%E6%9E%9C%EF%BC%9A">http://localhost:10010/user/1时，符合`/user/**`规则，请求转发到uri：http://userservice/user/1，得到了结果：</a></p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714211908341.png?lastModify=1653489702" alt="image-20210714211908341"></p>
+<h3 id="5）网关路由的流程图"><a href="#5）网关路由的流程图" class="headerlink" title="5）网关路由的流程图"></a>5）网关路由的流程图</h3><p>整个访问的流程如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16f2lupj20zl0hnwg3.jpg" alt="image-20210714211742956"></p>
+<p>总结：</p>
+<p>网关搭建步骤：</p>
+<ol>
+<li>创建项目，引入nacos服务发现和gateway依赖</li>
+<li>配置application.yml，包括服务基本信息、nacos地址、路由</li>
+</ol>
+<p>路由配置包括：</p>
+<ol>
+<li>路由id：路由的唯一标示</li>
+<li>路由目标（uri）：路由的目标地址，http代表固定地址，lb代表根据服务名负载均衡</li>
+<li>路由断言（predicates）：判断路由的规则，</li>
+<li>路由过滤器（filters）：对请求或响应做处理</li>
+</ol>
+<p>接下来，就重点来学习路由断言和路由过滤器的详细知识</p>
+<h2 id="1-3-断言工厂"><a href="#1-3-断言工厂" class="headerlink" title="1.3.断言工厂"></a><strong>1.3.断言工厂</strong></h2><p>我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件</p>
+<p>例如Path&#x3D;&#x2F;user&#x2F;**是按照路径匹配，这个规则是由</p>
+<p><code>org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory</code>类来</p>
+<p>处理的，像这样的断言工厂在SpringCloudGateway还有十几个:</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>名称</strong></th>
+<th align="left"><strong>说明</strong></th>
+<th align="left"><strong>示例</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">After</td>
+<td align="left">是某个时间点后的请求</td>
+<td align="left">-  After&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver]</td>
+</tr>
+<tr>
+<td align="left">Before</td>
+<td align="left">是某个时间点之前的请求</td>
+<td align="left">-  Before&#x3D;2031-04-13T15:14:47.433+08:00[Asia&#x2F;Shanghai]</td>
+</tr>
+<tr>
+<td align="left">Between</td>
+<td align="left">是某两个时间点之前的请求</td>
+<td align="left">-  Between&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver],  2037-01-21T17:42:47.789-07:00[America&#x2F;Denver]</td>
+</tr>
+<tr>
+<td align="left">Cookie</td>
+<td align="left">请求必须包含某些cookie</td>
+<td align="left">- Cookie&#x3D;chocolate, ch.p</td>
+</tr>
+<tr>
+<td align="left">Header</td>
+<td align="left">请求必须包含某些header</td>
+<td align="left">- Header&#x3D;X-Request-Id, \d+</td>
+</tr>
+<tr>
+<td align="left">Host</td>
+<td align="left">请求必须是访问某个host（域名）</td>
+<td align="left">-  Host&#x3D;<strong>.somehost.org,</strong>.anotherhost.org</td>
+</tr>
+<tr>
+<td align="left">Method</td>
+<td align="left">请求方式必须是指定方式</td>
+<td align="left">- Method&#x3D;GET,POST</td>
+</tr>
+<tr>
+<td align="left">Path</td>
+<td align="left">请求路径必须符合指定规则</td>
+<td align="left">- Path&#x3D;&#x2F;red&#x2F;{segment},&#x2F;blue&#x2F;**</td>
+</tr>
+<tr>
+<td align="left">Query</td>
+<td align="left">请求参数必须包含指定参数</td>
+<td align="left">- Query&#x3D;name, Jack或者-  Query&#x3D;name</td>
+</tr>
+<tr>
+<td align="left">RemoteAddr</td>
+<td align="left">请求者的ip必须是指定范围</td>
+<td align="left">- RemoteAddr&#x3D;192.168.1.1&#x2F;24</td>
+</tr>
+<tr>
+<td align="left">Weight</td>
+<td align="left">权重处理</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p>我们只需要掌握Path这种路由工程就可以了。</p>
+<h2 id="1-4-过滤器工厂"><a href="#1-4-过滤器工厂" class="headerlink" title="1.4.过滤器工厂"></a><strong>1.4.过滤器工厂</strong></h2><p>GatewayFilter是网关中提供的一种过滤器，可以对进入网关的请求和微服务返回的响应做处理：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714212312871.png?lastModify=1653489702" alt="image-20210714212312871"></p>
+<h3 id="1-4-1-路由过滤器的种类"><a href="#1-4-1-路由过滤器的种类" class="headerlink" title="1.4.1.路由过滤器的种类"></a>1.4.1.路由过滤器的种类</h3><p>Spring提供了31种不同的路由过滤器工厂。例如：</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>名称</strong></th>
+<th align="left"><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">AddRequestHeader</td>
+<td align="left">给当前请求添加一个请求头</td>
+</tr>
+<tr>
+<td align="left">RemoveRequestHeader</td>
+<td align="left">移除请求中的一个请求头</td>
+</tr>
+<tr>
+<td align="left">AddResponseHeader</td>
+<td align="left">给响应结果中添加一个响应头</td>
+</tr>
+<tr>
+<td align="left">RemoveResponseHeader</td>
+<td align="left">从响应结果中移除有一个响应头</td>
+</tr>
+<tr>
+<td align="left">RequestRateLimiter</td>
+<td align="left">限制请求的流量</td>
+</tr>
+</tbody></table>
+<h3 id="1-4-2-请求头过滤器"><a href="#1-4-2-请求头过滤器" class="headerlink" title="1.4.2.请求头过滤器"></a>1.4.2.请求头过滤器</h3><p>下面我们以AddRequestHeader 为例来讲解。</p>
+<blockquote>
+<p><strong>需求</strong>：给所有进入userservice的请求添加一个请求头：Truth&#x3D;itcast is freaking awesome!</p>
+</blockquote>
+<p>第一步，只需要修改gateway服务的application.yml文件，添加路由过滤即可：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    gateway:
+      routes:
+      - id: user-service 
+        uri: lb:&#x2F;&#x2F;userservice 
+        predicates: 
+        - Path&#x3D;&#x2F;user&#x2F;** 
+        filters: # 过滤器
+        - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! # 添加请求头<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>当前过滤器写在userservice路由下，因此仅仅对访问userservice的请求有效。</p>
+<p>第二步，在userController中修改方法</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;**
+ * 路径： &#x2F;user&#x2F;110
+ *
+ * @param id 用户id
+ * @return 用户
+ *&#x2F;
+@GetMapping(&quot;&#x2F;&#123;id&#125;&quot;)
+public User queryById(@PathVariable(&quot;id&quot;) Long id,
+                      @RequestHeader(&quot;Truth&quot;) String truth) &#123;
+    System.out.println(truth);
+    return userService.queryById(id);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>第三步，重启网关服务和user服务，并通过网关访问user用户信息 <a target="_blank" rel="noopener" href="http://localhost:10010/user/3">http://localhost:10010/user/3</a></p>
+<p>查看控制台信息，发现可以得到请求头中的信息的</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653321682110.png?lastModify=1653489702" alt="1653321682110"></p>
+<h3 id="1-4-3-默认过滤器"><a href="#1-4-3-默认过滤器" class="headerlink" title="1.4.3.默认过滤器"></a>1.4.3.默认过滤器</h3><p>如果要对所有的路由都生效，则可以将过滤器工厂写到default下。格式如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    gateway:
+      routes:
+      - id: user-service 
+        uri: lb:&#x2F;&#x2F;userservice 
+        predicates: 
+        - Path&#x3D;&#x2F;user&#x2F;**
+      default-filters: # 默认过滤项
+      - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="1-4-4-总结"><a href="#1-4-4-总结" class="headerlink" title="1.4.4.总结"></a>1.4.4.总结</h3><p>过滤器的作用是什么？</p>
+<p>① 对路由的请求或响应做加工处理，比如添加请求头</p>
+<p>② 配置在路由下的过滤器只对当前路由的请求生效</p>
+<p>defaultFilters的作用是什么？</p>
+<p>① 对所有路由都生效的过滤器</p>
+<h2 id="1-5-全局过滤器"><a href="#1-5-全局过滤器" class="headerlink" title="1.5.全局过滤器"></a><strong>1.5.全局过滤器</strong></h2><p>上一节学习的过滤器，网关提供了31种，但每一种过滤器的作用都是固定的。如果我们希望拦截请求，做自己的业务逻辑则没办法实现。</p>
+<h3 id="1-5-1-全局过滤器作用"><a href="#1-5-1-全局过滤器作用" class="headerlink" title="1.5.1.全局过滤器作用"></a>1.5.1.全局过滤器作用</h3><p>全局过滤器的作用也是处理一切进入网关的请求和微服务响应，与GatewayFilter的作用一样。区别在于GatewayFilter通过配置定义，处理逻辑是固定的；而GlobalFilter的逻辑需要自己写代码实现。</p>
+<p>定义方式是实现GlobalFilter接口。</p>
+<pre class="line-numbers language-none"><code class="language-none">public interface GlobalFilter &#123;
+    &#x2F;**
+     *  处理当前请求，有必要的话通过&#123;@link GatewayFilterChain&#125;将请求交给下一个过滤器处理
+     *
+     * @param exchange 请求上下文，里面可以获取Request、Response等信息
+     * @param chain 用来把请求委托给下一个过滤器 
+     * @return &#123;@code Mono&lt;Void&gt;&#125; 返回标示当前过滤器业务结束
+     *&#x2F;
+    Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>在filter中编写自定义逻辑，可以实现下列功能：</p>
+<ul>
+<li>登录状态判断</li>
+<li>权限校验</li>
+<li>请求限流等</li>
+</ul>
+<h3 id="1-5-2-自定义全局过滤器"><a href="#1-5-2-自定义全局过滤器" class="headerlink" title="1.5.2.自定义全局过滤器"></a>1.5.2.自定义全局过滤器</h3><p>需求：定义全局过滤器，拦截请求，判断请求的参数是否满足下面条件：</p>
+<ul>
+<li>参数中是否有authorization，</li>
+<li>authorization参数值是否为admin</li>
+</ul>
+<p>如果同时满足则放行，否则拦截</p>
+<p>实现：</p>
+<p>在gateway中定义一个过滤器：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway.filters;
+
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+@Order(-1)
+@Component
+public class AuthorizeFilter implements GlobalFilter &#123;
+    @Override
+    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;
+        &#x2F;&#x2F; 1.获取请求参数
+        MultiValueMap&lt;String, String&gt; params &#x3D; exchange.getRequest().getQueryParams();
+        &#x2F;&#x2F; 2.获取authorization参数
+        String auth &#x3D; params.getFirst(&quot;authorization&quot;);
+        &#x2F;&#x2F; 3.校验
+        if (&quot;admin&quot;.equals(auth)) &#123;
+            &#x2F;&#x2F; 放行
+            return chain.filter(exchange);
+        &#125;
+        &#x2F;&#x2F; 4.拦截
+        &#x2F;&#x2F; 4.1.禁止访问，设置状态码
+        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+        &#x2F;&#x2F; 4.2.结束处理
+        return exchange.getResponse().setComplete();
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+<h3 id="1-5-3-过滤器执行顺序"><a href="#1-5-3-过滤器执行顺序" class="headerlink" title="1.5.3.过滤器执行顺序"></a>1.5.3.过滤器执行顺序</h3><p>请求进入网关会碰到三类过滤器：当前路由的过滤器、DefaultFilter、GlobalFilter</p>
+<p>请求路由后，会将当前路由过滤器和DefaultFilter、GlobalFilter，合并到一个过滤器链（集合）中，排序后依次执行每个过滤器：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16c9jpqj21200d7gna.jpg" alt="image-20210714214228409"></p>
+<p>排序的规则是什么呢？</p>
+<ul>
+<li>每一个过滤器都必须指定一个int类型的order值，<strong>order值越小，优先级越高，执行顺序越靠前</strong>。</li>
+<li>GlobalFilter通过实现Ordered接口，或者添加@Order注解来指定order值，由我们自己指定</li>
+<li>路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增。</li>
+<li>当过滤器的order值一样时，会按照 defaultFilter &gt; 路由过滤器 &gt; GlobalFilter的顺序执行。</li>
+</ul>
+<p>详细内容，可以查看源码：</p>
+<p><code>org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator#getFilters()</code>方法是先加载defaultFilters，然后再加载某个route的filters，然后合并。</p>
+<p><code>org.springframework.cloud.gateway.handler.FilteringWebHandler#handle()</code>方法会加载全局过滤器，与前面的过滤器合并后根据order排序，组织过滤器链</p>
+<h2 id="1-6-跨域问题"><a href="#1-6-跨域问题" class="headerlink" title="1.6.跨域问题"></a><strong>1.6.跨域问题</strong></h2><h3 id="1-6-1-什么是跨域问题"><a href="#1-6-1-什么是跨域问题" class="headerlink" title="1.6.1.什么是跨域问题"></a>1.6.1.什么是跨域问题</h3><p>跨域：域名不一致就是跨域，主要包括：</p>
+<ul>
+<li>域名不同： <a href="www.taobao.com">www.taobao.com</a> 和 <a href="www.taobao.org">www.taobao.org</a> 和 <a href="www.jd.com">www.jd.com</a> 和 miaosha.jd.com</li>
+<li>域名相同，端口不同：localhost:8080和localhost8081</li>
+</ul>
+<p>跨域问题：浏览器禁止请求的发起者与服务端发生跨域ajax请求，请求被浏览器拦截的问题</p>
+<p>解决方案：CORS，这个以前应该学习过，这里不再赘述了。不知道的小伙伴可以查看<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/04/cors.html">https://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
+<h3 id="1-6-2-模拟跨域问题"><a href="#1-6-2-模拟跨域问题" class="headerlink" title="1.6.2.模拟跨域问题"></a>1.6.2.模拟跨域问题</h3><p>找到课前资料的页面文件：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l164rshjj20gm05v3z7.jpg" alt="image-20210714215713563"></p>
+<p>放入idea的resource下，然后打开index.html点击右上角的谷歌浏览器</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16bfxlaj21eo0lzn1p.jpg" alt="1653322918256"></p>
+<p>点击执行谷歌浏览器展示页面效果</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l165qv67j20te0c0myt.jpg" alt="1653322945983"></p>
+<p>F12可以在浏览器控制台看到下面的错误：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714215832675.png?lastModify=1653489702" alt="image-20210714215832675"></p>
+<p>从localhost:63342访问localhost:10010，端口不同，显然是跨域的请求。</p>
+<h3 id="1-6-3-解决跨域问题"><a href="#1-6-3-解决跨域问题" class="headerlink" title="1.6.3.解决跨域问题"></a>1.6.3.解决跨域问题</h3><p>在gateway服务的application.yml文件中，添加下面的配置：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    gateway:
+      # 。。。
+      globalcors: # 全局的跨域处理
+        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
+        corsConfigurations:
+          &#39;[&#x2F;**]&#39;:
+            allowedOrigins: # 允许哪些网站的跨域请求 
+              - &quot;http:&#x2F;&#x2F;localhost:63342&quot;
+            allowedMethods: # 允许的跨域ajax的请求方式
+              - &quot;GET&quot;
+              - &quot;POST&quot;
+              - &quot;DELETE&quot;
+              - &quot;PUT&quot;
+              - &quot;OPTIONS&quot;
+            allowedHeaders: &quot;*&quot; # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie
+            maxAge: 360000 # 这次跨域检测的有效期<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/05/25/Feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8/">Feign远程调用</a>
+            </div>
+            <p class="sub">5月 25 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="1-Feign远程调用"><a href="#1-Feign远程调用" class="headerlink" title="1.Feign远程调用"></a><strong>1.Feign远程调用</strong></h1><p>先来看我们以前利用RestTemplate发起远程调用的代码：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174814204.png?lastModify=1653489702" alt="image-20210714174814204"></p>
+<p>存在下面的问题：</p>
+<p>•代码可读性差，编程体验不统一</p>
+<p>•参数复杂URL难以维护</p>
+<p>Feign是一个声明式的http客户端，官方地址：<a target="_blank" rel="noopener" href="https://github.com/OpenFeign/feign">https://github.com/OpenFeign/feign</a></p>
+<p>其作用就是帮助我们优雅的实现http请求的发送，解决上面提到的问题。</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174918088.png?lastModify=1653489702" alt="image-20210714174918088"></p>
+<h2 id="1-1-Feign替代RestTemplate"><a href="#1-1-Feign替代RestTemplate" class="headerlink" title="1.1.Feign替代RestTemplate"></a><strong>1.1.Feign替代RestTemplate</strong></h2><p>Fegin的使用步骤如下：</p>
+<h3 id="1）引入依赖"><a href="#1）引入依赖" class="headerlink" title="1）引入依赖"></a>1）引入依赖</h3><p>我们在order-service服务的pom文件中引入feign的依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="2）添加注解"><a href="#2）添加注解" class="headerlink" title="2）添加注解"></a>2）添加注解</h3><p>在order-service的启动类添加注解开启Feign的功能：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714175102524.png?lastModify=1653489702" alt="image-20210714175102524"></p>
+<h3 id="3）编写Feign的客户端"><a href="#3）编写Feign的客户端" class="headerlink" title="3）编写Feign的客户端"></a>3）编写Feign的客户端</h3><p>在order-service中新建一个接口，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.order.client;
+
+import cn.itcast.order.pojo.User;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(&quot;userservice&quot;)
+public interface UserClient &#123;
+    @GetMapping(&quot;&#x2F;user&#x2F;&#123;id&#125;&quot;)
+    User findById(@PathVariable(&quot;id&quot;) Long id);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>这个客户端主要是基于SpringMVC的注解来声明远程调用的信息，比如：</p>
+<ul>
+<li>服务名称：userservice</li>
+<li>请求方式：GET</li>
+<li>请求路径：&#x2F;user&#x2F;{id}</li>
+<li>请求参数：Long id</li>
+<li>返回值类型：User</li>
+</ul>
+<p>这样，Feign就可以帮助我们发送http请求，无需自己使用RestTemplate来发送了。</p>
+<h3 id="4）测试"><a href="#4）测试" class="headerlink" title="4）测试"></a>4）测试</h3><p>修改order-service中的OrderService类中的queryOrderById方法，使用Feign客户端代替RestTemplate：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16dc9z2j20jy0br403.jpg" alt="image-20210714175415087"></p>
+<p>是不是看起来优雅多了。</p>
+<h3 id="5）总结"><a href="#5）总结" class="headerlink" title="5）总结"></a>5）总结</h3><p>使用Feign的步骤：</p>
+<p>① 引入依赖</p>
+<p>② 添加@EnableFeignClients注解</p>
+<p>③ 编写FeignClient接口</p>
+<p>④ 使用FeignClient中定义的方法代替RestTemplate</p>
+<h2 id="1-2-自定义配置"><a href="#1-2-自定义配置" class="headerlink" title="1.2.自定义配置"></a><strong>1.2.自定义配置</strong></h2><p>Feign可以支持很多的自定义配置，如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">作用</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>feign.Logger.Level</strong></td>
+<td align="left">修改日志级别</td>
+<td align="left">包含四种不同的级别：NONE、BASIC、HEADERS、FULL</td>
+</tr>
+<tr>
+<td align="left">feign.codec.Decoder</td>
+<td align="left">响应结果的解析器</td>
+<td align="left">http远程调用的结果做解析，例如解析json字符串为java对象</td>
+</tr>
+<tr>
+<td align="left">feign.codec.Encoder</td>
+<td align="left">请求参数编码</td>
+<td align="left">将请求参数编码，便于通过http请求发送</td>
+</tr>
+<tr>
+<td align="left">feign. Contract</td>
+<td align="left">支持的注解格式</td>
+<td align="left">默认是SpringMVC的注解</td>
+</tr>
+<tr>
+<td align="left">feign. Retryer</td>
+<td align="left">失败重试机制</td>
+<td align="left">请求失败的重试机制，默认是没有，不过会使用Ribbon的重试</td>
+</tr>
+</tbody></table>
+<p>一般情况下，默认值就能满足我们使用，如果要自定义时，只需要创建自定义的@Bean覆盖默认Bean即可。</p>
+<p>下面以日志为例来演示如何自定义配置。</p>
+<h3 id="1-2-1-配置文件方式"><a href="#1-2-1-配置文件方式" class="headerlink" title="1.2.1.配置文件方式"></a>1.2.1.配置文件方式</h3><p>基于配置文件修改feign的日志级别可以针对单个服务：</p>
+<pre class="line-numbers language-none"><code class="language-none">feign:  
+  client:
+    config: 
+      userservice: # 针对某个微服务的配置
+        loggerLevel: FULL #  日志级别 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>也可以针对所有服务：</p>
+<pre class="line-numbers language-none"><code class="language-none">feign:  
+  client:
+    config: 
+      default: # 这里用default就是全局配置，如果是写服务名称，则是针对某个微服务的配置
+        loggerLevel: FULL #  日志级别 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>而日志的级别分为四种：</p>
+<ul>
+<li>NONE：不记录任何日志信息，这是默认值。</li>
+<li>BASIC：仅记录请求的方法，URL以及响应状态码和执行时间</li>
+<li>HEADERS：在BASIC的基础上，额外记录了请求和响应的头信息</li>
+<li>FULL：记录所有请求和响应的明细，包括头信息、请求体、元数据。</li>
+</ul>
+<h3 id="1-2-2-Java代码方式"><a href="#1-2-2-Java代码方式" class="headerlink" title="1.2.2.Java代码方式"></a>1.2.2.Java代码方式</h3><p>也可以基于Java代码来修改日志级别，先声明一个类，然后声明一个Logger.Level的对象：</p>
+<pre class="line-numbers language-none"><code class="language-none">public class DefaultFeignConfiguration  &#123;
+    @Bean
+    public Logger.Level feignLogLevel()&#123;
+        return Logger.Level.BASIC; &#x2F;&#x2F; 日志级别为BASIC
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>如果要<strong>全局生效</strong>，将其放到启动类的@EnableFeignClients这个注解中：</p>
+<pre class="line-numbers language-none"><code class="language-none">@EnableFeignClients(defaultConfiguration &#x3D; DefaultFeignConfiguration .class) <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>如果是<strong>局部生效</strong>，则把它放到对应的@FeignClient这个注解中：</p>
+<pre class="line-numbers language-none"><code class="language-none">@FeignClient(value &#x3D; &quot;userservice&quot;, configuration &#x3D; DefaultFeignConfiguration .class) <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+
+
+<h2 id="1-3-Feign使用优化"><a href="#1-3-Feign使用优化" class="headerlink" title="1.3.Feign使用优化"></a><strong>1.3.Feign使用优化</strong></h2><p>Feign底层发起http请求，依赖于其它的框架。其底层客户端实现包括：</p>
+<p>•URLConnection：默认实现，不支持连接池</p>
+<p>•Apache HttpClient ：支持连接池</p>
+<p>•OKHttp：支持连接池</p>
+<p>因此提高Feign的性能主要手段就是使用<strong>连接池</strong>代替默认的URLConnection。</p>
+<p>这里我们用Apache的HttpClient来演示。</p>
+<p>1）引入依赖</p>
+<p>在order-service的pom文件中引入Apache的HttpClient依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;!--httpClient的依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.github.openfeign&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;feign-httpclient&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>2）配置连接池</p>
+<p>在order-service的application.yml中添加配置：</p>
+<pre class="line-numbers language-none"><code class="language-none">feign:
+  client:
+    config:
+      default: # default全局的配置
+        loggerLevel: BASIC # 日志级别，BASIC就是基本的请求和响应信息
+  httpclient:
+    enabled: true # 开启feign对HttpClient的支持
+    max-connections: 200 # 最大的连接数
+    max-connections-per-route: 50 # 每个路径的最大连接数<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>接下来进行debug调试来查看请求方式使用的是不是HttpClient</p>
+<p>第一步，断点，查看userFeign接口</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l15ygnihj214a0jjwj9.jpg" alt="1653318270375"></p>
+<p>全局搜索FeginInvocationHandler</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653318395262.png?lastModify=1653489702" alt="1653318395262"></p>
+<p>进去找到invoke代理</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l15z8g97j20sy0endhx.jpg" alt="1653318794674"></p>
+<p>在 return dispatch.get(method).invoke(args)这行打断点，然后当debug走到这的时候，执行F7或者<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16g2rgbj20ci01w744.jpg" alt="1653318856129">该按钮</p>
+<p>然后进入</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653318900374.png?lastModify=1653489702" alt="1653318900374"></p>
+<p>然后debug走到 return executeAndDecode(template, options);的时候进入到当前方法中</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653319052336.png?lastModify=1653489702" alt="1653319052336"></p>
+<p>然后执行F7或者<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16g2rgbj20ci01w744.jpg" alt="1653318856129">按钮执行下一步</p>
+<p>走过了response &#x3D; client.execute(request, options);这一步，可以看到</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1621a9oj21040m2te5.jpg" alt="1653319122374"></p>
+<p>可以看到client中使用的是ApacheHttpClient</p>
+<p>总结，Feign的优化：</p>
+<p>1.日志级别尽量用basic</p>
+<p>2.使用HttpClient或OKHttp代替URLConnection</p>
+<p>①  引入feign-httpClient依赖</p>
+<p>②  配置文件开启httpClient功能，设置连接池参数</p>
+<h2 id="1-4-最佳实践"><a href="#1-4-最佳实践" class="headerlink" title="1.4.最佳实践"></a><strong>1.4.最佳实践</strong></h2><p>所谓最佳实践，就是使用过程中总结的经验，最好的一种使用方式。</p>
+<p>自习观察可以发现，Feign的客户端与服务提供者的controller代码非常相似：</p>
+<p>feign客户端：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l169g71hj20j104zmxs.jpg" alt="image-20210714190542730"></p>
+<p>UserController：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l162kktxj20rv0bmta0.jpg" alt="image-20210714190528450"></p>
+<p>有没有一种办法简化这种重复的代码编写呢？</p>
+<h3 id="1-4-1-继承方式"><a href="#1-4-1-继承方式" class="headerlink" title="1.4.1.继承方式"></a>1.4.1.继承方式</h3><p>一样的代码可以通过继承来共享：</p>
+<p>1）定义一个API接口，利用定义方法，并基于SpringMVC注解做声明。</p>
+<p>2）Feign客户端和Controller都集成改接口</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l167827zj20xx0b9jsk.jpg" alt="image-20210714190640857"></p>
+<p>优点：</p>
+<ul>
+<li>简单</li>
+<li>实现了代码共享</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>服务提供方、服务消费方紧耦合</li>
+<li>参数列表中的注解映射并不会继承，因此Controller中必须再次声明方法、参数列表、注解</li>
+</ul>
+<h3 id="1-4-2-抽取方式"><a href="#1-4-2-抽取方式" class="headerlink" title="1.4.2.抽取方式"></a>1.4.2.抽取方式</h3><p>将Feign的Client抽取为独立模块，并且把接口有关的POJO、默认的Feign配置都放到这个模块中，提供给所有消费者使用。</p>
+<p>例如，将UserClient、User、Feign的默认配置都抽取到一个feign-api包中，所有微服务引用该依赖包，即可直接使用。</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714214041796.png?lastModify=1653489702" alt="image-20210714214041796"></p>
+<h3 id="1-4-3-实现基于抽取的最佳实践"><a href="#1-4-3-实现基于抽取的最佳实践" class="headerlink" title="1.4.3.实现基于抽取的最佳实践"></a>1.4.3.实现基于抽取的最佳实践</h3><h4 id="1）抽取"><a href="#1）抽取" class="headerlink" title="1）抽取"></a>1）抽取</h4><p>首先创建一个module，命名为feign-api：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714204557771.png?lastModify=1653489702" alt="image-20210714204557771"></p>
+<p>项目结构：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1659i8zj209p0520sx.jpg" alt="image-20210714204656214"></p>
+<p>在feign-api中然后引入feign的starter依赖</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>然后，order-service中编写的UserClient、User、DefaultFeignConfiguration都复制到feign-api项目中</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714205221970.png?lastModify=1653489702" alt="image-20210714205221970"></p>
+<h4 id="2）在order-service中使用feign-api"><a href="#2）在order-service中使用feign-api" class="headerlink" title="2）在order-service中使用feign-api"></a>2）在order-service中使用feign-api</h4><p>首先，删除order-service中的UserClient、User、DefaultFeignConfiguration等类或接口。</p>
+<p>在order-service的pom文件中中引入feign-api的依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
+    &lt;groupId&gt;cn.itcast.demo&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;feign-api&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;1.0&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>修改order-service中的所有与上述三个组件有关的导包部分，改成导入feign-api中的包</p>
+<h4 id="3）重启测试"><a href="#3）重启测试" class="headerlink" title="3）重启测试"></a>3）重启测试</h4><p>重启后，发现服务报错了：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16aulhlj20wn064dgx.jpg" alt="image-20210714205623048"></p>
+<p>这是因为UserClient现在在cn.itcast.feign.clients包下，</p>
+<p>而order-service的@EnableFeignClients注解是在cn.itcast.order包下，不在同一个包，无法扫描到UserClient。</p>
+<h4 id="4）解决扫描包问题"><a href="#4）解决扫描包问题" class="headerlink" title="4）解决扫描包问题"></a>4）解决扫描包问题</h4><p>方式一：</p>
+<p>指定Feign应该扫描的包：</p>
+<pre class="line-numbers language-none"><code class="language-none">@EnableFeignClients(basePackages &#x3D; &quot;cn.itcast.feign.clients&quot;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>方式二：</p>
+<p>指定需要加载的Client接口：</p>
+<pre class="line-numbers language-none"><code class="language-none">@EnableFeignClients(clients &#x3D; &#123;UserClient.class&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/05/25/nacos%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">Nacos集群搭建</a>
+            </div>
+            <p class="sub">5月 25 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="Nacos集群搭建"><a href="#Nacos集群搭建" class="headerlink" title="Nacos集群搭建"></a><strong>Nacos集群搭建</strong></h1><h1 id="1-集群结构图"><a href="#1-集群结构图" class="headerlink" title="1.集群结构图"></a><strong>1.集群结构图</strong></h1><p>官方给出的Nacos集群图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13dhnzyj20ij0bljrv.jpg" alt="image-20210409210621117"></p>
+<p>其中包含3个nacos节点，然后一个负载均衡器代理3个Nacos。这里负载均衡器可以使用nginx。</p>
+<p>我们计划的集群结构：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13ex8byj20ky0ji3zo.jpg" alt="image-20210409211355037"></p>
+<p>三个nacos节点的地址：</p>
+<table>
+<thead>
+<tr>
+<th align="left">节点</th>
+<th align="left">ip</th>
+<th align="left">port</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">nacos1</td>
+<td align="left">192.168.150.1</td>
+<td align="left">8845</td>
+</tr>
+<tr>
+<td align="left">nacos2</td>
+<td align="left">192.168.150.1</td>
+<td align="left">8846</td>
+</tr>
+<tr>
+<td align="left">nacos3</td>
+<td align="left">192.168.150.1</td>
+<td align="left">8847</td>
+</tr>
+</tbody></table>
+<p>此处的IP是你自己服务的IP，不一定要按照我的来</p>
+<h1 id="2-搭建集群"><a href="#2-搭建集群" class="headerlink" title="2.搭建集群"></a><strong>2.搭建集群</strong></h1><p>搭建集群的基本步骤：</p>
+<ul>
+<li>搭建数据库，初始化数据库表结构</li>
+<li>下载nacos安装包</li>
+<li>配置nacos</li>
+<li>启动nacos集群</li>
+<li>nginx反向代理</li>
+</ul>
+<h2 id="2-1-初始化数据库"><a href="#2-1-初始化数据库" class="headerlink" title="2.1.初始化数据库"></a><strong>2.1.初始化数据库</strong></h2><p>Nacos默认数据存储在内嵌数据库Derby中，不属于生产可用的数据库。</p>
+<p>官方推荐的最佳实践是使用带有主从的高可用数据库集群，主从模式的高可用数据库可以参考<strong>传智教育</strong>的后续高手课程。</p>
+<p>这里我们以单点的数据库为例来讲解。</p>
+<p>首先新建一个数据库，命名为nacos，而后导入下面的SQL：</p>
+<pre class="line-numbers language-none"><code class="language-none">CREATE TABLE &#96;config_info&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(255) DEFAULT NULL,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;content&#39;,
+  &#96;md5&#96; varchar(32) DEFAULT NULL COMMENT &#39;md5&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  &#96;src_user&#96; text COMMENT &#39;source user&#39;,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL COMMENT &#39;source ip&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  &#96;c_desc&#96; varchar(256) DEFAULT NULL,
+  &#96;c_use&#96; varchar(64) DEFAULT NULL,
+  &#96;effect&#96; varchar(64) DEFAULT NULL,
+  &#96;type&#96; varchar(64) DEFAULT NULL,
+  &#96;c_schema&#96; text,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfo_datagrouptenant&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_info&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_info_aggr   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_info_aggr&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(255) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;datum_id&#96; varchar(255) NOT NULL COMMENT &#39;datum_id&#39;,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;内容&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL COMMENT &#39;修改时间&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfoaggr_datagrouptenantdatum&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;,&#96;datum_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;增加租户字段&#39;;
+
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_info_beta   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_info_beta&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL COMMENT &#39;app_name&#39;,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;content&#39;,
+  &#96;beta_ips&#96; varchar(1024) DEFAULT NULL COMMENT &#39;betaIps&#39;,
+  &#96;md5&#96; varchar(32) DEFAULT NULL COMMENT &#39;md5&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  &#96;src_user&#96; text COMMENT &#39;source user&#39;,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL COMMENT &#39;source ip&#39;,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfobeta_datagrouptenant&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_info_beta&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_info_tag   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_info_tag&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;tenant_id&#39;,
+  &#96;tag_id&#96; varchar(128) NOT NULL COMMENT &#39;tag_id&#39;,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL COMMENT &#39;app_name&#39;,
+  &#96;content&#96; longtext NOT NULL COMMENT &#39;content&#39;,
+  &#96;md5&#96; varchar(32) DEFAULT NULL COMMENT &#39;md5&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  &#96;src_user&#96; text COMMENT &#39;source user&#39;,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL COMMENT &#39;source ip&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_configinfotag_datagrouptenanttag&#96; (&#96;data_id&#96;,&#96;group_id&#96;,&#96;tenant_id&#96;,&#96;tag_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_info_tag&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; config_tags_relation   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;config_tags_relation&#96; (
+  &#96;id&#96; bigint(20) NOT NULL COMMENT &#39;id&#39;,
+  &#96;tag_name&#96; varchar(128) NOT NULL COMMENT &#39;tag_name&#39;,
+  &#96;tag_type&#96; varchar(64) DEFAULT NULL COMMENT &#39;tag_type&#39;,
+  &#96;data_id&#96; varchar(255) NOT NULL COMMENT &#39;data_id&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL COMMENT &#39;group_id&#39;,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;tenant_id&#39;,
+  &#96;nid&#96; bigint(20) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (&#96;nid&#96;),
+  UNIQUE KEY &#96;uk_configtagrelation_configidtag&#96; (&#96;id&#96;,&#96;tag_name&#96;,&#96;tag_type&#96;),
+  KEY &#96;idx_tenant_id&#96; (&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;config_tag_relation&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; group_capacity   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;group_capacity&#96; (
+  &#96;id&#96; bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;主键ID&#39;,
+  &#96;group_id&#96; varchar(128) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;Group ID，空字符表示整个集群&#39;,
+  &#96;quota&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;配额，0表示使用默认值&#39;,
+  &#96;usage&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;使用量&#39;,
+  &#96;max_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_aggr_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;聚合子配置最大个数，，0表示使用默认值&#39;,
+  &#96;max_aggr_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个聚合数据的子配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_history_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;最大变更历史数量&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_group_id&#96; (&#96;group_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;集群、各Group容量信息表&#39;;
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; his_config_info   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;his_config_info&#96; (
+  &#96;id&#96; bigint(64) unsigned NOT NULL,
+  &#96;nid&#96; bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  &#96;data_id&#96; varchar(255) NOT NULL,
+  &#96;group_id&#96; varchar(128) NOT NULL,
+  &#96;app_name&#96; varchar(128) DEFAULT NULL COMMENT &#39;app_name&#39;,
+  &#96;content&#96; longtext NOT NULL,
+  &#96;md5&#96; varchar(32) DEFAULT NULL,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  &#96;src_user&#96; text,
+  &#96;src_ip&#96; varchar(50) DEFAULT NULL,
+  &#96;op_type&#96; char(10) DEFAULT NULL,
+  &#96;tenant_id&#96; varchar(128) DEFAULT &#39;&#39; COMMENT &#39;租户字段&#39;,
+  PRIMARY KEY (&#96;nid&#96;),
+  KEY &#96;idx_gmt_create&#96; (&#96;gmt_create&#96;),
+  KEY &#96;idx_gmt_modified&#96; (&#96;gmt_modified&#96;),
+  KEY &#96;idx_did&#96; (&#96;data_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;多租户改造&#39;;
+
+
+&#x2F;******************************************&#x2F;
+&#x2F;*   数据库全名 &#x3D; nacos_config   *&#x2F;
+&#x2F;*   表名称 &#x3D; tenant_capacity   *&#x2F;
+&#x2F;******************************************&#x2F;
+CREATE TABLE &#96;tenant_capacity&#96; (
+  &#96;id&#96; bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;主键ID&#39;,
+  &#96;tenant_id&#96; varchar(128) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;Tenant ID&#39;,
+  &#96;quota&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;配额，0表示使用默认值&#39;,
+  &#96;usage&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;使用量&#39;,
+  &#96;max_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_aggr_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;聚合子配置最大个数&#39;,
+  &#96;max_aggr_size&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;单个聚合数据的子配置大小上限，单位为字节，0表示使用默认值&#39;,
+  &#96;max_history_count&#96; int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;最大变更历史数量&#39;,
+  &#96;gmt_create&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_tenant_id&#96; (&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;租户容量信息表&#39;;
+
+
+CREATE TABLE &#96;tenant_info&#96; (
+  &#96;id&#96; bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#39;id&#39;,
+  &#96;kp&#96; varchar(128) NOT NULL COMMENT &#39;kp&#39;,
+  &#96;tenant_id&#96; varchar(128) default &#39;&#39; COMMENT &#39;tenant_id&#39;,
+  &#96;tenant_name&#96; varchar(128) default &#39;&#39; COMMENT &#39;tenant_name&#39;,
+  &#96;tenant_desc&#96; varchar(256) DEFAULT NULL COMMENT &#39;tenant_desc&#39;,
+  &#96;create_source&#96; varchar(32) DEFAULT NULL COMMENT &#39;create_source&#39;,
+  &#96;gmt_create&#96; bigint(20) NOT NULL COMMENT &#39;创建时间&#39;,
+  &#96;gmt_modified&#96; bigint(20) NOT NULL COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (&#96;id&#96;),
+  UNIQUE KEY &#96;uk_tenant_info_kptenantid&#96; (&#96;kp&#96;,&#96;tenant_id&#96;),
+  KEY &#96;idx_tenant_id&#96; (&#96;tenant_id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_bin COMMENT&#x3D;&#39;tenant_info&#39;;
+
+CREATE TABLE &#96;users&#96; (
+  &#96;username&#96; varchar(50) NOT NULL PRIMARY KEY,
+  &#96;password&#96; varchar(500) NOT NULL,
+  &#96;enabled&#96; boolean NOT NULL
+);
+
+CREATE TABLE &#96;roles&#96; (
+  &#96;username&#96; varchar(50) NOT NULL,
+  &#96;role&#96; varchar(50) NOT NULL,
+  UNIQUE INDEX &#96;idx_user_role&#96; (&#96;username&#96; ASC, &#96;role&#96; ASC) USING BTREE
+);
+
+CREATE TABLE &#96;permissions&#96; (
+    &#96;role&#96; varchar(50) NOT NULL,
+    &#96;resource&#96; varchar(255) NOT NULL,
+    &#96;action&#96; varchar(8) NOT NULL,
+    UNIQUE INDEX &#96;uk_role_permission&#96; (&#96;role&#96;,&#96;resource&#96;,&#96;action&#96;) USING BTREE
+);
+
+INSERT INTO users (username, password, enabled) VALUES (&#39;nacos&#39;, &#39;$2a$10$EuWPZHzz32dJN7jexM34MOeYirDdFAZm2kuWj7VEOJhhZkDrxfvUu&#39;, TRUE);
+
+INSERT INTO roles (username, role) VALUES (&#39;nacos&#39;, &#39;ROLE_ADMIN&#39;);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="2-2-下载nacos"><a href="#2-2-下载nacos" class="headerlink" title="2.2.下载nacos"></a><strong>2.2.下载nacos</strong></h2><p>nacos在GitHub上有下载地址：<a target="_blank" rel="noopener" href="https://github.com/alibaba/nacos/tags%EF%BC%8C%E5%8F%AF%E4%BB%A5%E9%80%89%E6%8B%A9%E4%BB%BB%E6%84%8F%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD%E3%80%82">https://github.com/alibaba/nacos/tags，可以选择任意版本下载。</a></p>
+<p>本例中才用1.4.1版本：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13e1gsyj20jv09r74u.jpg" alt="image-20210409212119411"></p>
+<h2 id="2-3-配置Nacos"><a href="#2-3-配置Nacos" class="headerlink" title="2.3.配置Nacos"></a><strong>2.3.配置Nacos</strong></h2><p>将这个包解压到任意非中文目录下，如图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13fhkn4j20el064dfx.jpg" alt="image-20210402161843337"></p>
+<p>目录说明：</p>
+<ul>
+<li>bin：启动脚本</li>
+<li>conf：配置文件</li>
+</ul>
+<p>进入nacos的conf目录，修改配置文件cluster.conf.example，重命名为cluster.conf：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13bni9bj209r09674u.jpg" alt="image-20210409212459292"></p>
+<p>然后添加内容：</p>
+<pre class="line-numbers language-none"><code class="language-none">127.0.0.1:8845
+127.0.0.1:8846
+127.0.0.1:8847<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<blockquote>
+<p>注意：此处的IP是你自己服务的IP，不一定要按照我的来！</p>
+</blockquote>
+<p>可以在单节点运行时，到nacos控制台查看自己的节点IP，那么这里就配置一样的IP：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13cktpbj20jq0edq3t.jpg" alt="image-20210830170229215"></p>
+<p>然后修改application.properties文件，添加数据库配置</p>
+<pre class="line-numbers language-none"><code class="language-none">spring.datasource.platform&#x3D;mysql
+
+db.num&#x3D;1
+
+db.url.0&#x3D;jdbc:mysql:&#x2F;&#x2F;127.0.0.1:3306&#x2F;nacos?characterEncoding&#x3D;utf8&amp;connectTimeout&#x3D;1000&amp;socketTimeout&#x3D;3000&amp;autoReconnect&#x3D;true&amp;useUnicode&#x3D;true&amp;useSSL&#x3D;false&amp;serverTimezone&#x3D;UTC
+db.user.0&#x3D;root
+db.password.0&#x3D;123<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>这里的数据库地址、用户名、密码请根据实际情况配置。</p>
+<h2 id="2-4-启动"><a href="#2-4-启动" class="headerlink" title="2.4.启动"></a><strong>2.4.启动</strong></h2><p>将nacos文件夹复制三份，分别命名为：nacos1、nacos2、nacos3</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13efuj2j20a803imx2.jpg" alt="image-20210409213335538"> </p>
+<p>然后分别修改三个文件夹中的application.properties，</p>
+<p>nacos1:</p>
+<pre class="line-numbers language-none"><code class="language-none">server.port&#x3D;8845<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>nacos2:</p>
+<pre class="line-numbers language-none"><code class="language-none">server.port&#x3D;8846<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>nacos3:</p>
+<pre class="line-numbers language-none"><code class="language-none">server.port&#x3D;8847<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>然后分别启动三个nacos节点：</p>
+<pre class="line-numbers language-none"><code class="language-none">startup.cmd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h2 id="2-5-nginx反向代理"><a href="#2-5-nginx反向代理" class="headerlink" title="2.5.nginx反向代理"></a><strong>2.5.nginx反向代理</strong></h2><p>找到课前资料提供的nginx安装包： </p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13fybvvj20a0048q2z.jpg" alt="image-20210410103253355"> </p>
+<p>解压到任意非中文目录下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l13gwmb2j209g094t8u.jpg" alt="image-20210410103322874"> </p>
+<p>修改conf&#x2F;nginx.conf文件，配置如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">upstream nacos-cluster &#123;
+    server 127.0.0.1:8845;
+  server 127.0.0.1:8846;
+  server 127.0.0.1:8847;
+&#125;
+
+server &#123;
+    listen       80;
+    server_name  localhost;
+
+    location &#x2F;nacos &#123;
+        proxy_pass http:&#x2F;&#x2F;nacos-cluster;
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>而后在浏览器访问：<a target="_blank" rel="noopener" href="http://localhost/nacos%E5%8D%B3%E5%8F%AF%E3%80%82">http://localhost/nacos即可。</a></p>
+<p>代码中application.yml文件配置如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    nacos:
+      server-addr: localhost:80 # Nacos地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+
+
+<h2 id="2-6-优化"><a href="#2-6-优化" class="headerlink" title="2.6.优化"></a><strong>2.6.优化</strong></h2><ul>
+<li>实际部署时，需要给做反向代理的nginx服务器设置一个域名，这样后续如果有服务器迁移nacos的客户端也无需更改配置.</li>
+<li>Nacos的各个节点应该部署到多个不同服务器，做好容灾和隔离</li>
+</ul>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
                 <a class="post-title-link text-underline" href="/2022/05/23/Nacos%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/">Nacos注册中心的使用</a>
             </div>
             <p class="sub">5月 23 2022</p>
@@ -508,6 +1496,548 @@
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inwq8ndkj21gn05yaaw.jpg" alt="1652356722332"></p>
 <p>使用了饥饿加载之后，第一次访问的时间差不多是650ms左右</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2inwl5n8nj21fw05c3zd.jpg" alt="1652356816332"></p>
+
+                
+            </div>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2022/05/23/Nacos%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E7%9A%84%E4%BD%BF%E7%94%A8/">Nacos配置中心的使用</a>
+            </div>
+            <p class="sub">5月 23 2022</p>
+            <div class="post-content">
+                
+                    <h1 id="1-Nacos配置管理"><a href="#1-Nacos配置管理" class="headerlink" title="1.Nacos配置管理"></a><strong>1.Nacos配置管理</strong></h1><p>Nacos除了可以做注册中心，同样可以做配置管理来使用。</p>
+<h2 id="1-1-统一配置管理"><a href="#1-1-统一配置管理" class="headerlink" title="1.1.统一配置管理"></a><strong>1.1.统一配置管理</strong></h2><p>当微服务部署的实例越来越多，达到数十、数百时，逐个修改微服务配置就会让人抓狂，而且很容易出错。我们需要一种统一配置管理方案，可以集中管理所有实例的配置。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16fjxesj20qc0b2aar.jpg" alt="image-20210714164426792"></p>
+<p>Nacos一方面可以将配置集中管理，另一方可以在配置变更时，及时通知微服务，实现配置的热更新。</p>
+<h3 id="1-1-1-在nacos中添加配置文件"><a href="#1-1-1-在nacos中添加配置文件" class="headerlink" title="1.1.1.在nacos中添加配置文件"></a>1.1.1.在nacos中添加配置文件</h3><p>如何在nacos中管理配置呢？</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l160pcn2j214q0go0ub.jpg" alt="image-20210714164742924"></p>
+<p>然后在弹出的表单中，填写配置信息：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l167tfmoj20rb0hq75s.jpg" alt="image-20210714164856664"></p>
+<blockquote>
+<p>注意：项目的核心配置，需要热更新的配置才有放到nacos管理的必要。基 置还是保存在微服务本地比较好。</p>
+</blockquote>
+<h3 id="1-1-2-从微服务拉取配置"><a href="#1-1-2-从微服务拉取配置" class="headerlink" title="1.1.2.从微服务拉取配置"></a>1.1.2.从微服务拉取配置</h3><p>微服务要拉取nacos中管理的配置，并且与本地的application.yml配置合并，才能完成项目启动。</p>
+<p>但如果尚未读取application.yml，又如何得知nacos地址呢？</p>
+<p>因此spring引入了一种新的配置文件：bootstrap.yaml文件，会在application.yml之前被读取，流程如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l163ylpoj21670dwdhr.jpg" alt="img"></p>
+<p>1）引入nacos-config依赖</p>
+<p>首先，在user-service服务中，引入nacos-config的客户端依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;!--nacos配置管理依赖--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.alibaba.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-config&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>2）添加bootstrap.yaml</p>
+<p>然后，在user-service中添加一个bootstrap.yaml文件，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  application:
+    name: userservice # 服务名称
+  profiles:
+    active: dev #开发环境，这里是dev 
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # Nacos地址
+      config:
+        file-extension: yaml # 文件后缀名<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>这里会根据spring.cloud.nacos.server-addr获取nacos地址，再根据</p>
+<p><code>$&#123;spring.application.name&#125;-$&#123;spring.profiles.active&#125;.$&#123;spring.cloud.nacos.config.file-extension&#125;</code>作为文件id，来读取配置。</p>
+<p>本例中，就是去读取<code>userservice-dev.yaml</code>：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714170845901.png?lastModify=1653489702" alt="image-20210714170845901"></p>
+<p>3）读取nacos配置</p>
+<p>在user-service中的UserController中添加业务逻辑，读取pattern.dateformat配置：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1669it0j20wy0dtjto.jpg" alt="image-20210714170337448"></p>
+<p>完整代码：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.user.web;
+
+import cn.itcast.user.pojo.User;
+import cn.itcast.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@Slf4j
+@RestController
+@RequestMapping(&quot;&#x2F;user&quot;)
+public class UserController &#123;
+
+    @Autowired
+    private UserService userService;
+
+    @Value(&quot;$&#123;pattern.dateformat&#125;&quot;)
+    private String dateformat;
+    
+    @GetMapping(&quot;now&quot;)
+    public String now()&#123;
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateformat));
+    &#125;
+    &#x2F;&#x2F; ...略
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>在页面访问，可以看到效果：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l164gfytj20f802jwef.jpg" alt="image-20210714170449612"></p>
+<h2 id="1-2-配置热更新"><a href="#1-2-配置热更新" class="headerlink" title="1.2.配置热更新"></a><strong>1.2.配置热更新</strong></h2><p>我们最终的目的，是修改nacos中的配置后，微服务中无需重启即可让配置生效，也就是<strong>配置热更新</strong>。</p>
+<p>要实现配置热更新，可以使用两种方式：</p>
+<h3 id="1-2-1-方式一"><a href="#1-2-1-方式一" class="headerlink" title="1.2.1.方式一"></a>1.2.1.方式一</h3><p>在@Value注入的变量所在类上添加注解@RefreshScope：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714171036335.png?lastModify=1653489702" alt="image-20210714171036335"></p>
+<h3 id="1-2-2-方式二"><a href="#1-2-2-方式二" class="headerlink" title="1.2.2.方式二"></a>1.2.2.方式二</h3><p>使用@ConfigurationProperties注解代替@Value注解。</p>
+<p>在user-service服务中，添加一个类，读取patterrn.dateformat属性：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.user.config;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
+@Data
+@ConfigurationProperties(prefix &#x3D; &quot;pattern&quot;)
+public class PatternProperties &#123;
+    private String dateformat;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>在UserController中使用这个类代替@Value：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l168itk9j215t0ew414.jpg" alt="image-20210714171316124"></p>
+<p>完整代码：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.user.web;
+
+import cn.itcast.user.config.PatternProperties;
+import cn.itcast.user.pojo.User;
+import cn.itcast.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@Slf4j
+@RestController
+@RequestMapping(&quot;&#x2F;user&quot;)
+public class UserController &#123;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PatternProperties patternProperties;
+
+    @GetMapping(&quot;now&quot;)
+    public String now()&#123;
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(patternProperties.getDateformat()));
+    &#125;
+
+    &#x2F;&#x2F; 略
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+<h2 id="1-3-配置共享"><a href="#1-3-配置共享" class="headerlink" title="1.3.配置共享"></a><strong>1.3.配置共享</strong></h2><p>其实微服务启动时，会去nacos读取多个配置文件，例如：</p>
+<ul>
+<li><code>[spring.application.name]-[spring.profiles.active].yaml</code>，例如：userservice-dev.yaml</li>
+<li><code>[spring.application.name].yaml</code>，例如：userservice.yaml</li>
+</ul>
+<p>而<code>[spring.application.name].yaml</code>不包含环境，因此可以被多个环境共享。</p>
+<p>下面我们通过案例来测试配置共享</p>
+<h3 id="1）添加一个环境共享配置"><a href="#1）添加一个环境共享配置" class="headerlink" title="1）添加一个环境共享配置"></a>1）添加一个环境共享配置</h3><p>我们在nacos中添加一个userservice.yaml文件：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714173233650.png?lastModify=1653489702" alt="image-20210714173233650"></p>
+<h3 id="2）在user-service中读取共享配置"><a href="#2）在user-service中读取共享配置" class="headerlink" title="2）在user-service中读取共享配置"></a>2）在user-service中读取共享配置</h3><p>在user-service服务中，修改PatternProperties类，读取新添加的属性：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714173324231.png?lastModify=1653489702" alt="image-20210714173324231"></p>
+<p>在user-service服务中，修改UserController，添加一个方法：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16a1bsgj20ji0d2myp.jpg" alt="image-20210714173721309"></p>
+<h3 id="3）运行两个UserApplication，使用不同的profile"><a href="#3）运行两个UserApplication，使用不同的profile" class="headerlink" title="3）运行两个UserApplication，使用不同的profile"></a>3）运行两个UserApplication，使用不同的profile</h3><p>修改UserApplication2这个启动项，改变其profile值：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16097vsj20ks07lmyj.jpg" alt="image-20210714173538538"></p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714173519963.png?lastModify=1653489702" alt="image-20210714173519963"></p>
+<p>这样，UserApplication(8081)使用的profile是dev，UserApplication2(8082)使用的profile是test。</p>
+<p>启动UserApplication和UserApplication2</p>
+<p>访问<a target="_blank" rel="noopener" href="http://localhost:8081/user/prop%EF%BC%8C%E7%BB%93%E6%9E%9C%EF%BC%9A">http://localhost:8081/user/prop，结果：</a></p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174313344.png?lastModify=1653489702" alt="image-20210714174313344"></p>
+<p>访问<a target="_blank" rel="noopener" href="http://localhost:8082/user/prop%EF%BC%8C%E7%BB%93%E6%9E%9C%EF%BC%9A">http://localhost:8082/user/prop，结果：</a></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16e70mpj20ij05raa7.jpg" alt="image-20210714174424818"></p>
+<p>可以看出来，不管是dev，还是test环境，都读取到了envSharedValue这个属性的值。</p>
+<h3 id="4）配置共享的优先级"><a href="#4）配置共享的优先级" class="headerlink" title="4）配置共享的优先级"></a>4）配置共享的优先级</h3><p>当nacos、服务本地同时出现相同属性时，优先级有高低之分：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174623557.png?lastModify=1653489702" alt="image-20210714174623557"></p>
+<h2 id="1-4-搭建Nacos集群"><a href="#1-4-搭建Nacos集群" class="headerlink" title="1.4.搭建Nacos集群"></a><strong>1.4.搭建Nacos集群</strong></h2><p>Nacos生产环境下一定要部署为集群状态，部署方式参考Nacos集群搭建文章</p>
+<h1 id="3-Gateway服务网关"><a href="#3-Gateway服务网关" class="headerlink" title="3.Gateway服务网关"></a><strong>3.Gateway服务网关</strong></h1><p>Spring Cloud Gateway 是 Spring Cloud 的一个全新项目，该项目是基于 Spring 5.0，Spring Boot 2.0 和 Project Reactor 等响应式编程和事件流技术开发的网关，它旨在为微服务架构提供一种简单有效的统一的 API 路由管理方式。</p>
+<h2 id="3-1-为什么需要网关"><a href="#3-1-为什么需要网关" class="headerlink" title="3.1.为什么需要网关"></a><strong>3.1.为什么需要网关</strong></h2><p>Gateway网关是我们服务的守门神，所有微服务的统一入口。</p>
+<p>网关的<strong>核心功能特性</strong>：</p>
+<ul>
+<li>请求路由</li>
+<li>权限控制</li>
+<li>限流</li>
+</ul>
+<p>架构图：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714210131152.png?lastModify=1653489702" alt="image-20210714210131152"></p>
+<p><strong>权限控制</strong>：网关作为微服务入口，需要校验用户是是否有请求资格，如果没有则进行拦截。</p>
+<p><strong>路由和负载均衡</strong>：一切请求都必须先经过gateway，但网关不处理业务，而是根据某种规则，把请求转发到某个微服务，这个过程叫做路由。当然路由的目标服务有多个时，还需要做负载均衡。</p>
+<p><strong>限流</strong>：当请求流量过高时，在网关中按照下流的微服务能够接受的速度来放行请求，避免服务压力过大。</p>
+<p>在SpringCloud中网关的实现包括两种：</p>
+<ul>
+<li>gateway</li>
+<li>zuul</li>
+</ul>
+<p>Zuul是基于Servlet的实现，属于阻塞式编程。而SpringCloudGateway则是基于Spring5中提供的WebFlux，属于响应式编程的实现，具备更好的性能。</p>
+<h2 id="3-2-gateway快速入门"><a href="#3-2-gateway快速入门" class="headerlink" title="3.2.gateway快速入门"></a><strong>3.2.gateway快速入门</strong></h2><p>下面，我们就演示下网关的基本路由功能。基本步骤如下：</p>
+<ol>
+<li>创建SpringBoot工程gateway，引入网关依赖</li>
+<li>编写启动类</li>
+<li>编写基础配置和路由规则</li>
+<li>启动网关服务进行测试</li>
+</ol>
+<h3 id="1）创建gateway服务，引入依赖"><a href="#1）创建gateway服务，引入依赖" class="headerlink" title="1）创建gateway服务，引入依赖"></a>1）创建gateway服务，引入依赖</h3><p>创建服务：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1631tktj20pa0ajq40.jpg" alt="image-20210714210919458"></p>
+<p>引入依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;!--网关--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-gateway&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;
+&lt;!--nacos服务发现依赖--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.alibaba.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="2）编写启动类"><a href="#2）编写启动类" class="headerlink" title="2）编写启动类"></a>2）编写启动类</h3><pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class GatewayApplication &#123;
+
+  public static void main(String[] args) &#123;
+    SpringApplication.run(GatewayApplication.class, args);
+  &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="3）编写基础配置和路由规则"><a href="#3）编写基础配置和路由规则" class="headerlink" title="3）编写基础配置和路由规则"></a>3）编写基础配置和路由规则</h3><p>创建application.yml文件，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">server:
+  port: 10010 # 网关端口
+spring:
+  application:
+    name: gateway # 服务名称
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # nacos地址
+    gateway:
+      routes: # 网关路由配置
+        - id: user-service # 路由id，自定义，只要唯一即可
+          # uri: http:&#x2F;&#x2F;127.0.0.1:8081 # 路由的目标地址 http就是固定地址
+          uri: lb:&#x2F;&#x2F;userservice # 路由的目标地址 lb就是负载均衡，后面跟服务名称
+          predicates: # 路由断言，也就是判断请求是否符合路由规则的条件
+            - Path&#x3D;&#x2F;user&#x2F;** # 这个是按照路径匹配，只要以&#x2F;user&#x2F;开头就符合要求<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>我们将符合<code>Path</code> 规则的一切请求，都代理到 <code>uri</code>参数指定的地址。</p>
+<p>本例中，我们将 <code>/user/**</code>开头的请求，代理到<code>lb://userservice</code>，lb是负载均衡，根据服务名拉取服务列表，实现负载均衡。</p>
+<h3 id="4）重启测试"><a href="#4）重启测试" class="headerlink" title="4）重启测试"></a>4）重启测试</h3><p>重启网关，访问<a target="_blank" rel="noopener" href="http://localhost:10010/user/1%E6%97%B6%EF%BC%8C%E7%AC%A6%E5%90%88%60/user/**%60%E8%A7%84%E5%88%99%EF%BC%8C%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%88%B0uri%EF%BC%9Ahttp://userservice/user/1%EF%BC%8C%E5%BE%97%E5%88%B0%E4%BA%86%E7%BB%93%E6%9E%9C%EF%BC%9A">http://localhost:10010/user/1时，符合`/user/**`规则，请求转发到uri：http://userservice/user/1，得到了结果：</a></p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714211908341.png?lastModify=1653489702" alt="image-20210714211908341"></p>
+<h3 id="5）网关路由的流程图"><a href="#5）网关路由的流程图" class="headerlink" title="5）网关路由的流程图"></a>5）网关路由的流程图</h3><p>整个访问的流程如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16f2lupj20zl0hnwg3.jpg" alt="image-20210714211742956"></p>
+<p>总结：</p>
+<p>网关搭建步骤：</p>
+<ol>
+<li>创建项目，引入nacos服务发现和gateway依赖</li>
+<li>配置application.yml，包括服务基本信息、nacos地址、路由</li>
+</ol>
+<p>路由配置包括：</p>
+<ol>
+<li>路由id：路由的唯一标示</li>
+<li>路由目标（uri）：路由的目标地址，http代表固定地址，lb代表根据服务名负载均衡</li>
+<li>路由断言（predicates）：判断路由的规则，</li>
+<li>路由过滤器（filters）：对请求或响应做处理</li>
+</ol>
+<p>接下来，就重点来学习路由断言和路由过滤器的详细知识</p>
+<h2 id="3-3-断言工厂"><a href="#3-3-断言工厂" class="headerlink" title="3.3.断言工厂"></a><strong>3.3.断言工厂</strong></h2><p>我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件</p>
+<p>例如Path&#x3D;&#x2F;user&#x2F;**是按照路径匹配，这个规则是由</p>
+<p><code>org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory</code>类来</p>
+<p>处理的，像这样的断言工厂在SpringCloudGateway还有十几个:</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>名称</strong></th>
+<th align="left"><strong>说明</strong></th>
+<th align="left"><strong>示例</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">After</td>
+<td align="left">是某个时间点后的请求</td>
+<td align="left">-  After&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver]</td>
+</tr>
+<tr>
+<td align="left">Before</td>
+<td align="left">是某个时间点之前的请求</td>
+<td align="left">-  Before&#x3D;2031-04-13T15:14:47.433+08:00[Asia&#x2F;Shanghai]</td>
+</tr>
+<tr>
+<td align="left">Between</td>
+<td align="left">是某两个时间点之前的请求</td>
+<td align="left">-  Between&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver],  2037-01-21T17:42:47.789-07:00[America&#x2F;Denver]</td>
+</tr>
+<tr>
+<td align="left">Cookie</td>
+<td align="left">请求必须包含某些cookie</td>
+<td align="left">- Cookie&#x3D;chocolate, ch.p</td>
+</tr>
+<tr>
+<td align="left">Header</td>
+<td align="left">请求必须包含某些header</td>
+<td align="left">- Header&#x3D;X-Request-Id, \d+</td>
+</tr>
+<tr>
+<td align="left">Host</td>
+<td align="left">请求必须是访问某个host（域名）</td>
+<td align="left">-  Host&#x3D;<strong>.somehost.org,</strong>.anotherhost.org</td>
+</tr>
+<tr>
+<td align="left">Method</td>
+<td align="left">请求方式必须是指定方式</td>
+<td align="left">- Method&#x3D;GET,POST</td>
+</tr>
+<tr>
+<td align="left">Path</td>
+<td align="left">请求路径必须符合指定规则</td>
+<td align="left">- Path&#x3D;&#x2F;red&#x2F;{segment},&#x2F;blue&#x2F;**</td>
+</tr>
+<tr>
+<td align="left">Query</td>
+<td align="left">请求参数必须包含指定参数</td>
+<td align="left">- Query&#x3D;name, Jack或者-  Query&#x3D;name</td>
+</tr>
+<tr>
+<td align="left">RemoteAddr</td>
+<td align="left">请求者的ip必须是指定范围</td>
+<td align="left">- RemoteAddr&#x3D;192.168.1.1&#x2F;24</td>
+</tr>
+<tr>
+<td align="left">Weight</td>
+<td align="left">权重处理</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p>我们只需要掌握Path这种路由工程就可以了。</p>
+<h2 id="3-4-过滤器工厂"><a href="#3-4-过滤器工厂" class="headerlink" title="3.4.过滤器工厂"></a><strong>3.4.过滤器工厂</strong></h2><p>GatewayFilter是网关中提供的一种过滤器，可以对进入网关的请求和微服务返回的响应做处理：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714212312871.png?lastModify=1653489702" alt="image-20210714212312871"></p>
+<h3 id="3-4-1-路由过滤器的种类"><a href="#3-4-1-路由过滤器的种类" class="headerlink" title="3.4.1.路由过滤器的种类"></a>3.4.1.路由过滤器的种类</h3><p>Spring提供了31种不同的路由过滤器工厂。例如：</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>名称</strong></th>
+<th align="left"><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">AddRequestHeader</td>
+<td align="left">给当前请求添加一个请求头</td>
+</tr>
+<tr>
+<td align="left">RemoveRequestHeader</td>
+<td align="left">移除请求中的一个请求头</td>
+</tr>
+<tr>
+<td align="left">AddResponseHeader</td>
+<td align="left">给响应结果中添加一个响应头</td>
+</tr>
+<tr>
+<td align="left">RemoveResponseHeader</td>
+<td align="left">从响应结果中移除有一个响应头</td>
+</tr>
+<tr>
+<td align="left">RequestRateLimiter</td>
+<td align="left">限制请求的流量</td>
+</tr>
+</tbody></table>
+<h3 id="3-4-2-请求头过滤器"><a href="#3-4-2-请求头过滤器" class="headerlink" title="3.4.2.请求头过滤器"></a>3.4.2.请求头过滤器</h3><p>下面我们以AddRequestHeader 为例来讲解。</p>
+<blockquote>
+<p><strong>需求</strong>：给所有进入userservice的请求添加一个请求头：Truth&#x3D;itcast is freaking awesome!</p>
+</blockquote>
+<p>第一步，只需要修改gateway服务的application.yml文件，添加路由过滤即可：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    gateway:
+      routes:
+      - id: user-service 
+        uri: lb:&#x2F;&#x2F;userservice 
+        predicates: 
+        - Path&#x3D;&#x2F;user&#x2F;** 
+        filters: # 过滤器
+        - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! # 添加请求头<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>当前过滤器写在userservice路由下，因此仅仅对访问userservice的请求有效。</p>
+<p>第二步，在userController中修改方法</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;**
+ * 路径： &#x2F;user&#x2F;110
+ *
+ * @param id 用户id
+ * @return 用户
+ *&#x2F;
+@GetMapping(&quot;&#x2F;&#123;id&#125;&quot;)
+public User queryById(@PathVariable(&quot;id&quot;) Long id,
+                      @RequestHeader(&quot;Truth&quot;) String truth) &#123;
+    System.out.println(truth);
+    return userService.queryById(id);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>第三步，重启网关服务和user服务，并通过网关访问user用户信息 <a target="_blank" rel="noopener" href="http://localhost:10010/user/3">http://localhost:10010/user/3</a></p>
+<p>查看控制台信息，发现可以得到请求头中的信息的</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653321682110.png?lastModify=1653489702" alt="1653321682110"></p>
+<h3 id="3-4-3-默认过滤器"><a href="#3-4-3-默认过滤器" class="headerlink" title="3.4.3.默认过滤器"></a>3.4.3.默认过滤器</h3><p>如果要对所有的路由都生效，则可以将过滤器工厂写到default下。格式如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    gateway:
+      routes:
+      - id: user-service 
+        uri: lb:&#x2F;&#x2F;userservice 
+        predicates: 
+        - Path&#x3D;&#x2F;user&#x2F;**
+      default-filters: # 默认过滤项
+      - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="3-4-4-总结"><a href="#3-4-4-总结" class="headerlink" title="3.4.4.总结"></a>3.4.4.总结</h3><p>过滤器的作用是什么？</p>
+<p>① 对路由的请求或响应做加工处理，比如添加请求头</p>
+<p>② 配置在路由下的过滤器只对当前路由的请求生效</p>
+<p>defaultFilters的作用是什么？</p>
+<p>① 对所有路由都生效的过滤器</p>
+<h2 id="3-5-全局过滤器"><a href="#3-5-全局过滤器" class="headerlink" title="3.5.全局过滤器"></a><strong>3.5.全局过滤器</strong></h2><p>上一节学习的过滤器，网关提供了31种，但每一种过滤器的作用都是固定的。如果我们希望拦截请求，做自己的业务逻辑则没办法实现。</p>
+<h3 id="3-5-1-全局过滤器作用"><a href="#3-5-1-全局过滤器作用" class="headerlink" title="3.5.1.全局过滤器作用"></a>3.5.1.全局过滤器作用</h3><p>全局过滤器的作用也是处理一切进入网关的请求和微服务响应，与GatewayFilter的作用一样。区别在于GatewayFilter通过配置定义，处理逻辑是固定的；而GlobalFilter的逻辑需要自己写代码实现。</p>
+<p>定义方式是实现GlobalFilter接口。</p>
+<pre class="line-numbers language-none"><code class="language-none">public interface GlobalFilter &#123;
+    &#x2F;**
+     *  处理当前请求，有必要的话通过&#123;@link GatewayFilterChain&#125;将请求交给下一个过滤器处理
+     *
+     * @param exchange 请求上下文，里面可以获取Request、Response等信息
+     * @param chain 用来把请求委托给下一个过滤器 
+     * @return &#123;@code Mono&lt;Void&gt;&#125; 返回标示当前过滤器业务结束
+     *&#x2F;
+    Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>在filter中编写自定义逻辑，可以实现下列功能：</p>
+<ul>
+<li>登录状态判断</li>
+<li>权限校验</li>
+<li>请求限流等</li>
+</ul>
+<h3 id="3-5-2-自定义全局过滤器"><a href="#3-5-2-自定义全局过滤器" class="headerlink" title="3.5.2.自定义全局过滤器"></a>3.5.2.自定义全局过滤器</h3><p>需求：定义全局过滤器，拦截请求，判断请求的参数是否满足下面条件：</p>
+<ul>
+<li>参数中是否有authorization，</li>
+<li>authorization参数值是否为admin</li>
+</ul>
+<p>如果同时满足则放行，否则拦截</p>
+<p>实现：</p>
+<p>在gateway中定义一个过滤器：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway.filters;
+
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+@Order(-1)
+@Component
+public class AuthorizeFilter implements GlobalFilter &#123;
+    @Override
+    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;
+        &#x2F;&#x2F; 1.获取请求参数
+        MultiValueMap&lt;String, String&gt; params &#x3D; exchange.getRequest().getQueryParams();
+        &#x2F;&#x2F; 2.获取authorization参数
+        String auth &#x3D; params.getFirst(&quot;authorization&quot;);
+        &#x2F;&#x2F; 3.校验
+        if (&quot;admin&quot;.equals(auth)) &#123;
+            &#x2F;&#x2F; 放行
+            return chain.filter(exchange);
+        &#125;
+        &#x2F;&#x2F; 4.拦截
+        &#x2F;&#x2F; 4.1.禁止访问，设置状态码
+        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+        &#x2F;&#x2F; 4.2.结束处理
+        return exchange.getResponse().setComplete();
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+<h3 id="3-5-3-过滤器执行顺序"><a href="#3-5-3-过滤器执行顺序" class="headerlink" title="3.5.3.过滤器执行顺序"></a>3.5.3.过滤器执行顺序</h3><p>请求进入网关会碰到三类过滤器：当前路由的过滤器、DefaultFilter、GlobalFilter</p>
+<p>请求路由后，会将当前路由过滤器和DefaultFilter、GlobalFilter，合并到一个过滤器链（集合）中，排序后依次执行每个过滤器：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16c9jpqj21200d7gna.jpg" alt="image-20210714214228409"></p>
+<p>排序的规则是什么呢？</p>
+<ul>
+<li>每一个过滤器都必须指定一个int类型的order值，<strong>order值越小，优先级越高，执行顺序越靠前</strong>。</li>
+<li>GlobalFilter通过实现Ordered接口，或者添加@Order注解来指定order值，由我们自己指定</li>
+<li>路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增。</li>
+<li>当过滤器的order值一样时，会按照 defaultFilter &gt; 路由过滤器 &gt; GlobalFilter的顺序执行。</li>
+</ul>
+<p>详细内容，可以查看源码：</p>
+<p><code>org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator#getFilters()</code>方法是先加载defaultFilters，然后再加载某个route的filters，然后合并。</p>
+<p><code>org.springframework.cloud.gateway.handler.FilteringWebHandler#handle()</code>方法会加载全局过滤器，与前面的过滤器合并后根据order排序，组织过滤器链</p>
+<h2 id="3-6-跨域问题"><a href="#3-6-跨域问题" class="headerlink" title="3.6.跨域问题"></a><strong>3.6.跨域问题</strong></h2><h3 id="3-6-1-什么是跨域问题"><a href="#3-6-1-什么是跨域问题" class="headerlink" title="3.6.1.什么是跨域问题"></a>3.6.1.什么是跨域问题</h3><p>跨域：域名不一致就是跨域，主要包括：</p>
+<ul>
+<li>域名不同： <a href="www.taobao.com">www.taobao.com</a> 和 <a href="www.taobao.org">www.taobao.org</a> 和 <a href="www.jd.com">www.jd.com</a> 和 miaosha.jd.com</li>
+<li>域名相同，端口不同：localhost:8080和localhost8081</li>
+</ul>
+<p>跨域问题：浏览器禁止请求的发起者与服务端发生跨域ajax请求，请求被浏览器拦截的问题</p>
+<p>解决方案：CORS，这个以前应该学习过，这里不再赘述了。不知道的小伙伴可以查看<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/04/cors.html">https://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
+<h3 id="3-6-2-模拟跨域问题"><a href="#3-6-2-模拟跨域问题" class="headerlink" title="3.6.2.模拟跨域问题"></a>3.6.2.模拟跨域问题</h3><p>找到课前资料的页面文件：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l164rshjj20gm05v3z7.jpg" alt="image-20210714215713563"></p>
+<p>放入idea的resource下，然后打开index.html点击右上角的谷歌浏览器</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16bfxlaj21eo0lzn1p.jpg" alt="1653322918256"></p>
+<p>点击执行谷歌浏览器展示页面效果</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l165qv67j20te0c0myt.jpg" alt="1653322945983"></p>
+<p>F12可以在浏览器控制台看到下面的错误：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714215832675.png?lastModify=1653489702" alt="image-20210714215832675"></p>
+<p>从localhost:63342访问localhost:10010，端口不同，显然是跨域的请求。</p>
+<h3 id="3-6-3-解决跨域问题"><a href="#3-6-3-解决跨域问题" class="headerlink" title="3.6.3.解决跨域问题"></a>3.6.3.解决跨域问题</h3><p>在gateway服务的application.yml文件中，添加下面的配置：</p>
+<pre class="line-numbers language-none"><code class="language-none">spring:
+  cloud:
+    gateway:
+      # 。。。
+      globalcors: # 全局的跨域处理
+        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
+        corsConfigurations:
+          &#39;[&#x2F;**]&#39;:
+            allowedOrigins: # 允许哪些网站的跨域请求 
+              - &quot;http:&#x2F;&#x2F;localhost:63342&quot;
+            allowedMethods: # 允许的跨域ajax的请求方式
+              - &quot;GET&quot;
+              - &quot;POST&quot;
+              - &quot;DELETE&quot;
+              - &quot;PUT&quot;
+              - &quot;OPTIONS&quot;
+            allowedHeaders: &quot;*&quot; # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie
+            maxAge: 360000 # 这次跨域检测的有效期<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
                 
             </div>
@@ -1912,744 +3442,6 @@ nohup java -jar helloworld-8081.jar &amp;&gt; helloworld-8081.log &amp;<span ari
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>上述配置的weight权重是相对的，在上述的配置中，效果就是，在大数据量的请求下，最终8080接收的请求数是8081的两倍。</p>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/05/11/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8CShardingJDBC/">数据库主从复制</a>
-            </div>
-            <p class="sub">5月 11 2022</p>
-            <div class="post-content">
-                
-                    <h2 id="1-MySQL主从复制"><a href="#1-MySQL主从复制" class="headerlink" title="1. MySQL主从复制"></a>1. MySQL主从复制</h2><p>MySQL数据库默认是支持主从复制的，不需要借助于其他的技术，我们只需要在数据库中简单的配置即可。接下来，我们就从以下的几个方面，来介绍一下主从复制：</p>
-<h3 id="1-1-介绍"><a href="#1-1-介绍" class="headerlink" title="1.1 介绍"></a>1.1 介绍</h3><p>MySQL主从复制是一个异步的复制过程，底层是基于Mysql数据库自带的 <strong>二进制日志</strong> 功能。就是一台或多台MySQL数据库（slave，即<strong>从库</strong>）从另一台MySQL数据库（master，即<strong>主库</strong>）进行日志的复制，然后再解析日志并应用到自身，最终实现 <strong>从库</strong> 的数据和 <strong>主库</strong> 的数据保持一致。MySQL主从复制是<strong>MySQL数据库自带功能</strong>，无需借助第三方工具。</p>
-<blockquote>
-<p><strong>二进制日志：</strong> </p>
-<p>​    二进制日志（BINLOG）记录了所有的 DDL（数据定义语言）语句和 DML（数据操纵语言）语句,包括改密码，<strong>但是不包括数据查询语句</strong>。此日志对于灾难时的数据恢复起着极其重要的作用，MySQL的主从复制， 就是通过该<strong>binlog</strong>实现的。<strong>默认MySQL是未开启该日志的。</strong></p>
-</blockquote>
-<p><strong>MySQL的主从复制原理如下：</strong> </p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5jw19fkj20fk0amq3k.jpg" alt="image-20220511204640329"></p>
-<p><strong>MySQL复制过程分成三步：</strong></p>
-<p>1). MySQL master 将数据变更写入二进制日志( binary log)</p>
-<p>2). slave将master的binary log拷贝到它的中继日志（relay log）</p>
-<p>3). slave重做中继日志中的事件，将数据变更反映它自己的数据</p>
-<h3 id="1-2-主库配置"><a href="#1-2-主库配置" class="headerlink" title="1.2 主库配置"></a>1.2 主库配置</h3><p> <strong>1)修改Mysql数据库的配置文件&#x2F;etc&#x2F;my.cnf</strong>**</p>
-<p>在[mysqld]下面增加配置: </p>
-<pre class="line-numbers language-none"><code class="language-none">log-bin&#x3D;mysql-bin   #[必须]启用二进制日志
-server-id&#x3D;100       #[必须]服务器唯一ID(唯一即可)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5k0049hj20jp0a3q4f.jpg" alt="image-20220511205023685"></p>
-<p><strong>2)重启Mysql服务</strong></p>
-<p>执行指令： </p>
-<pre class="line-numbers language-none"><code class="language-none">systemctl restart mysqld<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5k3zn92j20uo01ujro.jpg" alt="image-20210825115853116"> </p>
-<p><strong>3). 创建数据同步的用户并授权</strong></p>
-<p>登录mysql，并执行如下指令，创建用户并授权：</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">GRANT</span> <span class="token keyword">REPLICATION</span> SLAVE <span class="token keyword">ON</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">to</span> <span class="token string">'xiaoming'</span><span class="token variable">@'%'</span> identified <span class="token keyword">by</span> <span class="token string">'Root@123456'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><strong>&#x3D;&#x3D;注：上面SQL的作用是创建一个用户 xiaoming ，密码为 Root@123456 ，并且给xiaoming用户授予REPLICATION SLAVE权限。常用于建立复制时所需要用到的用户权限，也就是slave必须被master授权具有该权限的用户，才能通过该用户复制。&#x3D;&#x3D;</strong></p>
-<blockquote>
-<p>MySQL密码复杂程度说明: </p>
-<p>​    <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5k6qbwrj20ei03ejrt.jpg" alt="image-20210825144818269"> </p>
-<p>​    目前mysql5.7默认密码校验策略等级为 MEDIUM , 该等级要求密码组成为: 数字、小写字母、大写字母 、特殊字符、长度至少8位</p>
-</blockquote>
-<p><strong>4). 登录Mysql数据库，查看master同步状态</strong></p>
-<p>执行下面SQL，记录下结果中<strong>File</strong>和<strong>Position</strong>的值</p>
-<pre class="line-numbers language-none"><code class="language-none">show master status;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5k927f8j20xe04fab1.jpg" alt="image-20210825120355600"> </p>
-<p><strong>&#x3D;&#x3D;注：上面SQL的作用是查看Master的状态，执行完此SQL后不要再执行任何操作&#x3D;&#x3D;</strong></p>
-<h3 id="1-3从库配置"><a href="#1-3从库配置" class="headerlink" title="1.3从库配置"></a>1.3从库配置</h3><p><strong>1). 修改Mysql数据库的配置文件&#x2F;etc&#x2F;my.cnf</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">server-id&#x3D;200 	#[必须]服务器唯一ID<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5kbw5z0j207p02ajrc.jpg" alt="image-20220220175414871"> </p>
-<p><strong>2). 重启Mysql服务</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">systemctl restart mysqld<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<p><strong>3). 登录Mysql数据库，设置主库地址及同步位置</strong></p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">change master to master_host&#x3D;&#39;8.130.21.14&#39;,master_user&#x3D;&#39;xiaoming&#39;,master_password&#x3D;&#39;Root@123456&#39;,master_log_file&#x3D;&#39;mysql-bin.000001&#39;,master_log_pos&#x3D;441;
-
-start slave;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<blockquote>
-<p>参数说明： </p>
-<p>​    A. master_host : 主库的IP地址</p>
-<p>​    B. master_user : 访问主库进行主从复制的用户名(上面在主库创建的)</p>
-<p>​    C. master_password : 访问主库进行主从复制的用户名对应的密码</p>
-<p>​    D. master_log_file : 从哪个日志文件开始同步(上述查询master状态中展示的有)</p>
-<p>​    E. master_log_pos : 从指定日志文件的哪个位置开始同步(上述查询master状态中展示的有)</p>
-</blockquote>
-<p><strong>4). 查看从数据库的状态</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">show slave status;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>然后通过状态信息中的 Slave_IO_running 和 Slave_SQL_running 可以看出主从同步是否就绪，如果这两个参数全为Yes，表示主从同步已经配置完成。</p>
-<p> <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5kjp6sxj210y0ofgrt.jpg" alt="image-20210825142313382"></p>
-<blockquote>
-<p>MySQL命令行技巧： </p>
-<p>​    \G : 在MySQL的sql语句后加上\G，表示将查询结果进行按列打印，可以使每个字段打印到单独的行。即将查到的结构旋转90度变成纵向；</p>
-</blockquote>
-<h2 id="2-读写分离案例"><a href="#2-读写分离案例" class="headerlink" title="2. 读写分离案例"></a>2. 读写分离案例</h2><h3 id="2-1-背景介绍"><a href="#2-1-背景介绍" class="headerlink" title="2.1 背景介绍"></a>2.1 背景介绍</h3><p>面对日益增加的系统访问量，数据库的吞吐量面临着巨大瓶颈。 对于同一时刻有大量并发读操作和较少写操作类型的应用系统来说，将数据库拆分为<strong>主库</strong>和<strong>从库</strong>，主库负责处理事务性的增删改操作，从库负责处理查询操作<strong>，能够有效的避免由数据更新导致的行锁</strong>，使得整个系统的查询性能得到极大的改善。</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5klfhcej20tn0b0jsg.jpg" alt="image-20210825145647274"> </p>
-<p>通过读写分离,就可以降低单台数据库的访问压力, 提高访问效率，也可以避免单机故障。</p>
-<p>主从复制的结构，我们在第一节已经完成了，那么我们在项目中，如何通过java代码来完成读写分离呢，如何在执行select的时候查询从库，而在执行insert、update、delete的时候，操作主库呢？这个时候，我们就需要介绍一个新的技术 ShardingJDBC。</p>
-<h3 id="2-2-ShardingJDBC介绍"><a href="#2-2-ShardingJDBC介绍" class="headerlink" title="2.2 ShardingJDBC介绍"></a>2.2 ShardingJDBC介绍</h3><p>Sharding-JDBC定位为轻量级Java框架，在Java的JDBC层提供的额外服务。 它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。</p>
-<p>使用Sharding-JDBC可以在程序中轻松的实现数据库读写分离。</p>
-<p>Sharding-JDBC具有以下几个特点： </p>
-<p>1). 适用于任何基于JDBC的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。</p>
-<p>2). 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。</p>
-<p>3). 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer，PostgreSQL以及任何遵循SQL92标准的数据库。</p>
-<h3 id="2-3-读写分离配置"><a href="#2-3-读写分离配置" class="headerlink" title="2.3 读写分离配置"></a>2.3 读写分离配置</h3><p>1). 在pom.xml中增加shardingJdbc的maven坐标</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.apache.shardingsphere<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>sharding-jdbc-spring-boot-starter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>4.0.0-RC1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>2). 在application.yml中增加数据源的配置</p>
-<pre class="line-numbers language-yml" data-language="yml"><code class="language-yml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-  <span class="token key atrule">shardingsphere</span><span class="token punctuation">:</span>
-    <span class="token key atrule">datasource</span><span class="token punctuation">:</span>
-      <span class="token key atrule">names</span><span class="token punctuation">:</span>
-        master<span class="token punctuation">,</span>slave
-      <span class="token comment"># 主数据源</span>
-      <span class="token key atrule">master</span><span class="token punctuation">:</span>
-        <span class="token key atrule">type</span><span class="token punctuation">:</span> com.alibaba.druid.pool.DruidDataSource
-        <span class="token key atrule">driver-class-name</span><span class="token punctuation">:</span> com.mysql.cj.jdbc.Driver
-        <span class="token key atrule">url</span><span class="token punctuation">:</span> jdbc<span class="token punctuation">:</span>mysql<span class="token punctuation">:</span>//192.168.100.100<span class="token punctuation">:</span>3306/rw<span class="token punctuation">?</span>characterEncoding=utf<span class="token punctuation">-</span><span class="token number">8</span>
-        <span class="token key atrule">username</span><span class="token punctuation">:</span> root
-        <span class="token key atrule">password</span><span class="token punctuation">:</span> root
-      <span class="token comment"># 从数据源</span>
-      <span class="token key atrule">slave</span><span class="token punctuation">:</span>
-        <span class="token key atrule">type</span><span class="token punctuation">:</span> com.alibaba.druid.pool.DruidDataSource
-        <span class="token key atrule">driver-class-name</span><span class="token punctuation">:</span> com.mysql.cj.jdbc.Driver
-        <span class="token key atrule">url</span><span class="token punctuation">:</span> jdbc<span class="token punctuation">:</span>mysql<span class="token punctuation">:</span>//192.168.100.200<span class="token punctuation">:</span>3306/rw<span class="token punctuation">?</span>characterEncoding=utf<span class="token punctuation">-</span><span class="token number">8</span>
-        <span class="token key atrule">username</span><span class="token punctuation">:</span> root
-        <span class="token key atrule">password</span><span class="token punctuation">:</span> root
-    <span class="token key atrule">masterslave</span><span class="token punctuation">:</span>
-      <span class="token comment"># 读写分离配置</span>
-      <span class="token key atrule">load-balance-algorithm-type</span><span class="token punctuation">:</span> round_robin <span class="token comment">#轮询</span>
-      <span class="token comment"># 最终的数据源名称</span>
-      <span class="token key atrule">name</span><span class="token punctuation">:</span> dataSource
-      <span class="token comment"># 主库数据源名称</span>
-      <span class="token key atrule">master-data-source-name</span><span class="token punctuation">:</span> master
-      <span class="token comment"># 从库数据源名称列表，多个逗号分隔</span>
-      <span class="token key atrule">slave-data-source-names</span><span class="token punctuation">:</span> slave
-    <span class="token key atrule">props</span><span class="token punctuation">:</span>
-      <span class="token key atrule">sql</span><span class="token punctuation">:</span>
-        <span class="token key atrule">show</span><span class="token punctuation">:</span> <span class="token boolean important">true</span> <span class="token comment">#开启SQL显示，默认false</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>配置解析: </p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5kqiiudj21e50de44v.jpg" alt="image-20210825162910711"> </p>
-<p>3). 在application.yml中增加配置</p>
-<pre class="line-numbers language-yml" data-language="yml"><code class="language-yml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>  
-  <span class="token key atrule">main</span><span class="token punctuation">:</span>
-    <span class="token key atrule">allow-bean-definition-overriding</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>该配置项的目的,就是如果当前项目中存在同名的bean,后定义的bean会覆盖先定义的。</p>
-<p>spring中(spring.main.allow-bean-definition-overriding) 分析：<a target="_blank" rel="noopener" href="https://blog.csdn.net/liubenlong007/article/details/87885567">https://blog.csdn.net/liubenlong007/article/details/87885567</a></p>
-<p>&#x3D;&#x3D;如果不配置该项，项目启动之后将会报错：&#x3D;&#x3D; </p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5kncntaj20tn0b0jsg.jpg" alt="image-20210825163737687"> </p>
-<p>报错信息表明，在声明 org.apache.shardingsphere.shardingjdbc.spring.boot 包下的SpringBootConfiguration中的dataSource这个bean时出错, 原因是有一个同名的 dataSource 的bean在com.alibaba.druid.spring.boot.autoconfigure包下的DruidDataSourceAutoConfigure类加载时已经声明了。</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5koge4cj21e706ydim.jpg" alt="image-20210825164147056"> </p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5krkhptj210y0ofgrt.jpg" alt="image-20210825164227927"> </p>
-<p>而我们需要用到的是 shardingjdbc包下的dataSource，所以我们需要配置上述属性，让后加载的覆盖先加载的。</p>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/05/11/JVM%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">JVM的学习总结</a>
-            </div>
-            <p class="sub">5月 11 2022</p>
-            <div class="post-content">
-                
-                    <h1 id="什么是JVM"><a href="#什么是JVM" class="headerlink" title="什么是JVM?"></a>什么是JVM?</h1><ul>
-<li>定义</li>
-</ul>
-<p>​    java 程序运行环境(java二进制字节码的运行环境)</p>
-<ul>
-<li>好处</li>
-</ul>
-<p>​    一次编写,到处运行</p>
-<p>​    自动内存管理,垃圾回收功能</p>
-<p>​    数组下标越界检查</p>
-<p>​    多态</p>
-<ul>
-<li>比较</li>
-</ul>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5weo104j20mx0dx406.jpg" alt="image-20220511191019291"></p>
-<h1 id="JVM内存结构图"><a href="#JVM内存结构图" class="headerlink" title="JVM内存结构图"></a>JVM内存结构图</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5whivtvj20qs0e8ta9.jpg" alt="image-20220511192331436"></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wj7543j20tl0gqgon.jpg" alt="WechatIMG244"></p>
-<h1 id="内存结构之程序计数器-寄存器"><a href="#内存结构之程序计数器-寄存器" class="headerlink" title="内存结构之程序计数器(寄存器)"></a>内存结构之程序计数器(寄存器)</h1><p>作用:</p>
-<p>​       记住下一条JVM指令的执行地址</p>
-<p>特点:</p>
-<p>​      线程私有随着线程创建而创建,随着线程销毁而销毁,每个线程都有自己的程序计数器</p>
-<p>​      是一块比较小的内存空间,不会存在内存溢出</p>
-<p>实现</p>
-<p>​       计数器在物理上是通过寄存器来实现的</p>
-<h1 id="内存结构之虚拟机栈"><a href="#内存结构之虚拟机栈" class="headerlink" title="内存结构之虚拟机栈"></a>内存结构之虚拟机栈</h1><p>线程运行时需要的内存空间,称为虚拟机栈</p>
-<p>每个栈由多个栈帧(Frame)组成,对应着每次方法调用时所占用的内存</p>
-<p>每个线程只能有一个活动栈帧,对应着当前正在执行的那个方法,也就是栈的最顶部</p>
-<p>栈帧出栈时会释放掉携带的资源</p>
-<p>问题辨析:</p>
-<p>1.垃圾回收是否涉及栈内存?</p>
-<p>​    不需要,因为方法调用产生的栈帧内存会随着方法调用的结束后弹出栈并且自动释放资源,被自动回收</p>
-<p>2.栈内存分配越大越好吗?</p>
-<p>​    并不是,每个栈内存大小初始值一般都是1024KB,除了windows系统会根据虚拟内存影响内存大小,栈内存越大</p>
-<p>线程数越少,线程数少了就会影响执行效率,一般让栈内存扩大只是为了一些方法的递归调用,不容易栈溢出.并不会因为</p>
-<p>栈内存越大,执行效率越高,反而会让线程减少,降低执行效率.(一般采用默认大小就可以了)</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wmfr7xj20bu0600t2.jpg" alt="image-20220511201653094"></p>
-<p>3.方法内的局部变量是否线程安全?</p>
-<p>​    首先要看,这个变量是对外共享的,还是对每个线程私有的,比如两个线程同时调用一个方法,方法中的局部变量是static修饰的,那么这个变量是共享的,因为静态变量只加载一次存在于静态区域,线程也就自然不安全,如果这个变量是个普通的局部变量,那么不会有线程安全问题,因为每个线程调用方法时都会生成对应线程的的栈帧.</p>
-<p>​      <strong>如果方法内部局部变量没有逃离方法的作用访问,他是线程安全的</strong></p>
-<p>​      <strong>如果局部变量引用了对象,并逃离了方法的作用范围,需要考虑线程安全问题</strong></p>
-<h1 id="栈内存溢出"><a href="#栈内存溢出" class="headerlink" title="栈内存溢出"></a>栈内存溢出</h1><p>1.栈帧过多导致栈内存溢出</p>
-<p>2.栈帧过大导致栈内存溢出</p>
-<h1 id="线程运行诊断"><a href="#线程运行诊断" class="headerlink" title="线程运行诊断"></a>线程运行诊断</h1><h3 id="案例1-cpu占用过多"><a href="#案例1-cpu占用过多" class="headerlink" title="案例1:cpu占用过多"></a>案例1:cpu占用过多</h3><p>定位</p>
-<p>1.用top定位那个进程对cpu的占用过高</p>
-<p>2.通过Linux命令查看是哪条线程引起的cup占用过高</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查看进程对cup占用情况-------&gt;只能定位进程,不能定位线程
-zhangminghao@zhangminghaodeMacBook-Pro ~ % top
-PID    COMMAND      %CPU TIME     #TH   #WQ   #PORT MEM    PURG   CMPRS  PGRP
-1704   FinalShell            63.3 02:14:05       150      0       1030  1364M       0B     360M   1704
-368    WindowServer     35.1 73:51.63        21        5       2665+ 379M-  43M+     57M       368
-1687   iTerm2                 30.8 04:04.45 8      5       314     54M    3536K     6608K       1687
-
-#查看线程对cup的占用情况
-#H:进程里的线程数
-#eo:需要展示的字段
-zhangminghao@zhangminghaodeMacBook-Pro ~ %  ps H -eo pid,tid,%cpu | grep 进程id    
-
-#利用jdk提供的工具命令,可以根据线程id找到有问题的线程,进一步定位到问题代码的源码行号
-zhangminghao@zhangminghaodeMacBook-Pro ~ % jstack 进程id   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>通过进程id的16进制来找出对应的线程,知道了是那个那个程序运行出了问题</strong></p>
-<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wpm1lsj210b0ipn1g.jpg" alt="image-20220512203716530" style="zoom: 50%;" />
-
-<p><strong>通过信息找到java代码中的行号,检查到cpu占用过高的原因</strong></p>
-<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wr4cotj20c2076t96.jpg" alt="image-20220512203955346"  />
-
-
-
-<h3 id="案例2-运行很长时间没有结果"><a href="#案例2-运行很长时间没有结果" class="headerlink" title="案例2:运行很长时间没有结果"></a>案例2:运行很长时间没有结果</h3><p> 1,通过jstack 进程id命令查看线程执行信息</p>
-<p>2.观察最后的输出结果(发现死锁问题)</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ws4yldj20t30g9dit.jpg" alt="image-20220512210643175"></p>
-<h1 id="本地方法栈Native-Method-Stack"><a href="#本地方法栈Native-Method-Stack" class="headerlink" title="本地方法栈Native Method Stack"></a>本地方法栈Native Method Stack</h1><h3 id="什么是本地方法"><a href="#什么是本地方法" class="headerlink" title="什么是本地方法"></a>什么是本地方法</h3><p>​    本地方法Native Method ,指的是那些不是JAVA代码编写的方法</p>
-<h3 id="本地方法的作用"><a href="#本地方法的作用" class="headerlink" title="本地方法的作用"></a>本地方法的作用</h3><p>​    JAVA代码是受限制的,有时候不能直接跟底层操作系统打交道,需要调用一些 用C或者C++编写的本地方法来间接调用执行.</p>
-<h1 id="Heap堆"><a href="#Heap堆" class="headerlink" title="Heap堆"></a>Heap堆</h1><h3 id="什么是堆"><a href="#什么是堆" class="headerlink" title="什么是堆"></a>什么是堆</h3><p>​    通过new关键字,创建的对象都会使用堆内存,堆内存默认大小是4个G </p>
-<h3 id="堆的特点"><a href="#堆的特点" class="headerlink" title="堆的特点"></a>堆的特点</h3><p>​    它是线程共享的,堆中对象都需要考虑线程安全问题</p>
-<p>​    有垃圾回收机制</p>
-<h3 id="堆内存的溢出问题"><a href="#堆内存的溢出问题" class="headerlink" title="堆内存的溢出问题"></a>堆内存的溢出问题</h3><p>​    java.lang.OutofMemoryError:Java heap space</p>
-<h1 id="堆内存溢出的原因"><a href="#堆内存溢出的原因" class="headerlink" title="堆内存溢出的原因"></a>堆内存溢出的原因</h1><p>堆内存不是有垃圾回收机制吗,为什么还会有内存溢出的问题呢,原因是,堆内存的垃圾回收机制是在对象应用完毕后,才会自动回收,如果一个对象一直被引用,而且内存越来越大,就会导致堆内存溢出问题发发生,如以下代码:    </p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Test</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> list <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>一直在做死循环做添加操作<span class="token punctuation">,</span>且是引用中状态<span class="token punctuation">,</span>导致堆不能垃圾回收
-            <span class="token class-name">String</span> a <span class="token operator">=</span> <span class="token string">"hello"</span><span class="token punctuation">;</span>
-            <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>
-                list<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                a <span class="token operator">=</span> a<span class="token operator">+</span>a<span class="token punctuation">;</span>
-                i<span class="token operator">++</span><span class="token punctuation">;</span>
-                <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-></span>最终输出<span class="token number">26</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
-#异常信息
-<span class="token class-name">Exception</span> in thread <span class="token string">"main"</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>OutOfMemoryError</span><span class="token operator">:</span> <span class="token class-name">Java</span> heap space
-	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span>Arrays</span><span class="token punctuation">.</span><span class="token function">copyOf</span><span class="token punctuation">(</span><span class="token class-name">Arrays</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">3332</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>AbstractStringBuilder</span><span class="token punctuation">.</span><span class="token function">ensureCapacityInternal</span><span class="token punctuation">(</span><span class="token class-name">AbstractStringBuilder</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">124</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>AbstractStringBuilder</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token class-name">AbstractStringBuilder</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">448</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>StringBuilder</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token class-name">StringBuilder</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">136</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>itheima<span class="token punctuation">.</span>test<span class="token punctuation">.</span></span>Test</span><span class="token punctuation">.</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">Test</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">19</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>堆内存默认为4G,通过设置堆内存空间为8m,发现在i值到达17的时候就内存溢出了,所以可以通过这种方式,尽早的暴露出内存溢出的问题:</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5wvth3wj218o0u0tej.jpg" alt="image-20220513203904487"></p>
-<h1 id="堆的内存诊断jmap"><a href="#堆的内存诊断jmap" class="headerlink" title="堆的内存诊断jmap"></a>堆的内存诊断jmap</h1><h3 id="1-jps工具"><a href="#1-jps工具" class="headerlink" title="1.jps工具:"></a>1.jps工具:</h3><p>​    是 java 提供的一个用来显示当前所有 java 进程的 pid 的命令,可以查看当前系统中有那些JAVA进程</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">zhangminghao<span class="token annotation punctuation">@localhost</span> java<span class="token operator">-</span><span class="token class-name">Spring</span> <span class="token operator">%</span> jps 
-<span class="token number">1488</span> 
-<span class="token number">1956</span> <span class="token class-name">Jps</span>
-<span class="token number">1684</span> <span class="token class-name">Launcher</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="2-jmap工具"><a href="#2-jmap工具" class="headerlink" title="2.jmap工具"></a>2.jmap工具</h3><p>​        jmap（Java Virtual Machine Memory Map）是JDK提供的一个可以生成Java虚拟机的堆转储快照dump文件的命令行工具。除此以外，jmap命令还可以查看finalize执行队列、Java堆和方法区的详细信息，比如空间使用率、当前使用的什么垃圾回收器、分代情况等等</p>
-<p>​     查看堆内存占用情况heao进程id——&gt;&gt;jmap -heap 进程id</p>
-<h3 id="3-jconsole工具"><a href="#3-jconsole工具" class="headerlink" title="3,jconsole工具"></a>3,jconsole工具</h3><p>​     图形界面的,多功能的检测工具,可以连续检测</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">zhangminghao<span class="token annotation punctuation">@localhost</span> java<span class="token operator">-</span><span class="token class-name">Spring</span> <span class="token operator">%</span> jconsole<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ww8dmgj20qf0713zs.jpg" alt="image-20220513210926906"></p>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/05/10/Mysql%E7%B4%A2%E5%BC%95-%E6%A0%B8%E5%BF%83/">Mysql索引(核心)</a>
-            </div>
-            <p class="sub">5月 10 2022</p>
-            <div class="post-content">
-                
-                    <h1 id="索引的概述"><a href="#索引的概述" class="headerlink" title="索引的概述"></a>索引的概述</h1><p>索引是帮助Mysql高效获取数据的一个有序的数据结构</p>
-<p>优缺点</p>
-<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tqtt6gj20r504ajru.jpg" alt="image-20220510102517966" style="zoom:150%;" />
-
-<h1 id="索引的结构"><a href="#索引的结构" class="headerlink" title="索引的结构"></a>索引的结构</h1><p>Mysql的索引是在存储引擎实层实现的,不同的存储索引有不同的结构,主要包括以下几种</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5trrd5nj20r907gdgr.jpg" alt="image-20220510102752768"></p>
-<p>不同存储引擎支持的索引结构</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ts6jk2j20r407j3yx.jpg" alt="image-20220510102843612"></p>
-<p><strong>平常所说的索引,如果没有特别指明,都是值B+树结构组织的索引</strong></p>
-<h1 id="各个数据结构的优缺点"><a href="#各个数据结构的优缺点" class="headerlink" title="各个数据结构的优缺点"></a>各个数据结构的优缺点</h1><ul>
-<li>二叉树和红黑树</li>
-</ul>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tu4tlzj20rz0cg3zr.jpg" alt="image-20220510103435512"></p>
-<ul>
-<li>B树(多路平衡查找树)</li>
-</ul>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5txaoxkj20tc0cg3zw.jpg" alt="image-20220510103600779"></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5txsdvfj20ry0c575o.jpg" alt="image-20220510104003733"><strong>B-Tree(B树)总结:①指针比key多一个②当key等于最大度数时(违背x阶时)中间元素向上分类</strong></p>
-<ul>
-<li>B+树</li>
-</ul>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tz7djwj20ri08ydgp.jpg" alt="image-20220510104651047"></p>
-<p><strong>B+Tree数相对于B-Tree区别:</strong></p>
-<p><strong>①:所有数据都会出现在叶子节点</strong></p>
-<p><strong>②:叶子节点行程一个单项链表的结构</strong></p>
-<ul>
-<li>Hash</li>
-</ul>
-<p>  <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u4lqq4j20sc0cedht.jpg" alt="image-20220510105739506"></p>
-<p>  索引特点:</p>
-<p>  1.Hash索引只能用于对等比较(&#x3D;,in),不支持范围查询(between,&gt;,&lt;,…),因为存储顺序不一致</p>
-<p>  2.无法利用索引完成排序操作</p>
-<p>  3.查询效率高,通常只需要一次检索就可以了,效率通常要高于B+Tree树(这里的通常指的是,没有哈希碰撞的前提下)</p>
-<p>​    存储引擎支持:</p>
-<p>​    在Mysql中,支持hash索引的是Memory引擎,而InnoDB中具有自适应hash功能,hash索引是存储引擎根据B+Tree索引在指定条件下自动构建的.</p>
-<h1 id="Mysql中的B-树索引"><a href="#Mysql中的B-树索引" class="headerlink" title="Mysql中的B+树索引"></a>Mysql中的B+树索引</h1><p>Mysql索引数据结构对经典的B+Tree进行了优化,在原B+Tree的基础上,增加了一个指向相邻叶子节点的链表指针,就形成了带有顺序指针的B+Tree,提高区间访问的性能**(就是叶子节点的单向链表变成了双向链表)**</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u5j8fhj20rj09075i.jpg" alt="image-20220510105526048"></p>
-<h1 id="为什么InnoDB存储引擎选择使用B-Tree索引结构"><a href="#为什么InnoDB存储引擎选择使用B-Tree索引结构" class="headerlink" title="为什么InnoDB存储引擎选择使用B+Tree索引结构"></a>为什么InnoDB存储引擎选择使用B+Tree索引结构</h1><p>①相对于二叉树,层级更少,搜索效率更高</p>
-<p>②对于B-Tree,无论是叶子节点还是非叶子节点,都会保存数据,这样导致一页(磁盘块,一个节点一个磁盘块,16kb)中存储的键值减少,指针跟着减少,要同样保存大量数据,只能增加树的高度,导致性能降低(B+Tree只有叶子节点才会存储行数据,其他节点只起到了索引的作用,除了叶子节点,其他的页只存放key和索引,因为不存储数据,所以可以存放更多的索引和key,也就可以降低树的高度,层级变小,从而增加查询效率)<strong>而且在mysql中对b+树索引进行了优化,对叶子节点的单项链表变成了双向链表,便于范围搜索和排序</strong></p>
-<p>③相对于Hash索引(只能进行等值匹配),B+Tree支持范围匹配及排序操作</p>
-<h1 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u92miej20r3077t9f.jpg" alt="image-20220510113432105"></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u9yambj20rd0ac75g.jpg" alt="image-20220510112749285"></p>
-<p><strong>就会隐式的定义一个 rowid 作为聚集索引</strong></p>
-<h1 id="InnoDB—-gt-回表查询"><a href="#InnoDB—-gt-回表查询" class="headerlink" title="InnoDB—-&gt;回表查询"></a>InnoDB—-&gt;回表查询</h1><p>如果想要执行类似于:selecy*from where name &#x3D; ‘Arm’ 这种sql语句,那么mysql先回根据二级索引找到对应的主键,或者带有唯一约束的值,然后通过主键或者唯一约束的值来通过聚集索引来查询对应row(行数据)</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uc5k8yj20xs0h80uo.jpg" alt="image-20220510115518828"></p>
-<h1 id="InnoDB主键索引的B-Tree高度为多高呢"><a href="#InnoDB主键索引的B-Tree高度为多高呢" class="headerlink" title="InnoDB主键索引的B+Tree高度为多高呢?"></a>InnoDB主键索引的B+Tree高度为多高呢?</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5udhri1j20jl0hidhd.jpg" alt="image-20220510123359487"></p>
-<p><strong>可以得出,用innodb来存储2000多万条数据,树也只有三层,大大的提高了检索效率!</strong></p>
-<h1 id="索引的语法"><a href="#索引的语法" class="headerlink" title="索引的语法"></a>索引的语法</h1><ul>
-<li><p>创建索引:<strong>构建B+Tree的数据结构,构建一次,一劳永逸,空间换时间</strong></p>
-<pre class="line-numbers language-JAVA" data-language="JAVA"><code class="language-JAVA">* create index idx_user_name on tb_user(name);
-* create unique index idx_user_phone on tb_user(phone);
-* create index idx_user_pro_age_sta on tb_user(profession,age,status); ---&gt; 创建联合索引<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>查看索引:</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">show index from tb_user<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>删除索引:</p>
-<pre class="line-numbers language-JAVA" data-language="JAVA"><code class="language-JAVA">drop index idx_user_phone on tb_user<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><strong>SQL语句的优化一般优化的是查询语句,在优化查询语句中索引占主导地位</strong></p>
-</li>
-</ul>
-<h1 id="sql优化性能分析"><a href="#sql优化性能分析" class="headerlink" title="sql优化性能分析"></a>sql优化性能分析</h1><ul>
-<li><p>SQL的执行频率</p>
-<blockquote>
-<p>Mysql客户端链接成功后,通过Show[session|global] status 命令可以提供服务器状态信息,通过如下命令,可以查看当前数据库的insert,update,delete,select的访问频次</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">SHOW GLOBAL STATUS LIKE 'COM_______' <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-></span><span class="token number">7</span>个下划线代表<span class="token number">7</span>个字符<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uhipaej20e109qmxx.jpg" alt="image-20220510125834554"></p>
-</blockquote>
-</li>
-</ul>
-<p><strong>如果我们使用执行频率查看到当前数据库select查询的执行频次占据绝大部分,我们就需要对当前数据库来进行优化</strong></p>
-<ul>
-<li><p>慢查询日志</p>
-</li>
-<li><blockquote>
-<p>  慢查询日志记录了所有执行时间超过指定参数(long_query_time,单位:妙,默认10妙)的所有sql语句的日志,我们可以通过查询慢查询日志,来定位执行效率比较低的语句,来做对应的优化处理.</p>
-<p>  Mysql的慢查询日志默认没有开启,需要在Mysql的配置文件(&#x2F;etc&#x2F;my.cnf)中配置如下信息:</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查询慢查询日志是否开启
-mysql&gt; show variables like &#39;slow_query_log&#39;;
-+----------------+-------+
-| Variable_name  | Value |
-+----------------+-------+
-| slow_query_log | OFF   |  -------&gt;可以看到默认开关是关闭的
-+----------------+-------+
-1 row in set (0.01 sec)
-
-#可以在&#x2F;etc&#x2F;my.cnf中配置一下信息
-#开启Mysql慢查询日志开关
-slow_query_log&#x3D;1
-#设置慢查询日志的时间为2妙,sql语执行时间超过2秒,就会视为慢查询,记录慢查询日志
-long_query_time&#x3D;2
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>配置完毕后,可以通过一下命令重启Mysql服务器进行测试,查询慢日志文件中记录的信息&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;localhost-show.log</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#重启mysql服务
-  systemctl restart mysqld;
- #进入mysql继续用命令查看当前慢日志开关
-mysql&gt; show variables like &#39;slow_query_log&#39;;
-+----------------+-------+
-| Variable_name  | Value |
-+----------------+-------+
-| slow_query_log | ON    | -------&gt;可以看到开关从OFF变成了ON,表示已经开启慢查询日志
-+----------------+-------+
-1 row in set (0.01 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>当慢查询日志开启后,慢查询日志的位置在&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;的目录下,文件名教localhost-slow.log</strong></p>
-<p><strong>注意:但是只用慢查询日志的话,只能锁定一些自己定义的慢查询时间(设定的预设时间),来查到查询慢的sql语句,比较笼统,如果有的sql语句在1.98s或者1.99s其实也是属于慢查询,但是因为配置的原因并不会记录到慢查询日志中去,所以这个时候就要用到profiling工具来辅助sql调优</strong></p>
-</blockquote>
-</li>
-<li><p>Profile详情</p>
-<blockquote>
-<p>show profiles 能够在做SQL优化的时候帮助我们了解时间都耗费到哪里去了.通过have_profiling参数,能够看到Mysql是否支持</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#profile操作
-mysql&gt; SELECT @@have_profiling;
-+------------------+
-| @@have_profiling |
-+------------------+
-| YES              |    ---------&gt;可以看到当前数据库支持profile
-+------------------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>支持是支持,但是还要检查一下profiling是否是开启状态,<strong>默认是关闭的</strong>,可以通过session&#x2F;global级别开启profiling:</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查看是否开启了profiling开关
-mysql&gt; select @@profiling;
-+-------------+
-| @@profiling |
-+-------------+
-|           0 |     ------&gt;可以看到默认是关闭的
-+-------------+
-1 row in set, 1 warning (0.00 sec)
-
-#设置profiling的开关
-mysql&gt; set profiling &#x3D; 1;   ---------&gt;设置开关为1,就是打开
-Query OK, 0 rows affected, 1 warning (0.00 sec)
-
-mysql&gt; select @@profiling;
-+-------------+
-| @@profiling |
-+-------------+
-|           1 |     ---------------&gt;再次查看发现,profiling开关已经被开启了
-+-------------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p> 这个时候就可以通过一下语句来查询,每个查询的sql语句的详细执行情况了</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查看每一条sql的耗时的基本情况
-mysql&gt; show profiles;   
-+----------+------------+--------------------+
-| Query_ID | Duration   | Query              |
-+----------+------------+--------------------+
-|        1 | 0.00013000 | select @@profiling |
-|        2 | 0.00011800 | SELECT DATABASE()  |
-|        3 | 0.00166125 | show databases     |
-|        4 | 0.00015150 | show tables        |
-|        5 | 0.00024825 | show tables        |
-|        6 | 0.00024200 | select * from user |
-|        7 | 0.00013325 | select * from DISH |
-|        8 | 0.00027600 | select * from dish |
-+----------+------------+--------------------+
-8 rows in set, 1 warning (0.00 sec)
-
-#查看指定的query_id的SQL语句各个阶段的耗时情况
- mysql&gt; show profile for query 3;   -------&gt;根据从show profiles中查询的基本情况的query_id来查看该语句各个阶段的耗时详情
-+----------------------+----------+
-| Status               | Duration |
-+----------------------+----------+
-| starting             | 0.000031 |
-| checking permissions | 0.000010 |
-| Opening tables       | 0.000028 |
-| init                 | 0.000006 |
-| System lock          | 0.000004 |
-| optimizing           | 0.000003 |
-| statistics           | 0.000009 |
-| preparing            | 0.000007 |
-| executing            | 0.001503 |    ----------&gt;可以发现在执行的时候耗时最长
-| Sending data         | 0.000019 |
-| end                  | 0.000003 |
-| query end            | 0.000004 |
-| closing tables       | 0.000003 |
-| removing tmp table   | 0.000005 |
-| closing tables       | 0.000003 |
-| freeing items        | 0.000013 |
-| cleaning up          | 0.000012 |
-+----------------------+----------+
-17 rows in set, 1 warning (0.00 sec)
-#还可以在show profile for query语句中的profile后面加上cup关键字 ,就可以查询到cup的耗时情况
-mysql&gt; show profile cpu  for query 3;
-+----------------------+----------+----------+------------+
-| Status               | Duration | CPU_user | CPU_system |   ---------&gt;可以看到比上面的结果多了一个CPU_user的的字段信息
-+----------------------+----------+----------+------------+
-| starting             | 0.000031 | 0.000013 |   0.000015 |
-| checking permissions | 0.000010 | 0.000005 |   0.000005 |
-| Opening tables       | 0.000028 | 0.000013 |   0.000015 |
-| init                 | 0.000006 | 0.000002 |   0.000003 |
-| System lock          | 0.000004 | 0.000002 |   0.000002 |
-| optimizing           | 0.000003 | 0.000001 |   0.000002 |
-| statistics           | 0.000009 | 0.000005 |   0.000005 |
-| preparing            | 0.000007 | 0.000003 |   0.000003 |
-| executing            | 0.001503 | 0.000000 |   0.000286 |
-| Sending data         | 0.000019 | 0.000000 |   0.000015 |
-| end                  | 0.000003 | 0.000000 |   0.000003 |
-| query end            | 0.000004 | 0.000000 |   0.000004 |
-| closing tables       | 0.000003 | 0.000000 |   0.000003 |
-| removing tmp table   | 0.000005 | 0.000000 |   0.000005 |
-| closing tables       | 0.000003 | 0.000000 |   0.000003 |
-| freeing items        | 0.000013 | 0.000000 |   0.000012 |
-| cleaning up          | 0.000012 | 0.000000 |   0.000012 |
-+----------------------+----------+----------+------------+
-17 rows in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-</li>
-<li><p>explain执行计划:</p>
-<p>可以模拟 优化器 执行SQL查询语句，并不会去真正的执行这条SQL，从而知道 MySQL 是如何处理你的SQL语句的。可用来分析你的查询语句或是表结构的性能瓶颈。<strong>从而评判sql语句的执行性能</strong></p>
-<blockquote>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#使用explain模拟优化器
-mysql&gt; explain select * from dish; 
-+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+
-| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
-+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+
-|  1 | SIMPLE      | dish  | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   26 |   100.00 | NULL  |
-+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>expalin执行计划各个字段的含义:</p>
-<p><strong>id:</strong></p>
-<p>select查询的序列号,表示查询中执行select子句或者是操作表的顺序(id相同,执行顺序从上到下:id不同,值越大,越先执行)</p>
-<p><strong>select_type:</strong></p>
-<p>表示SELECT的类型,常见的取值有SIMPLE(简单表,即不实用表连接或者子查询),PRIMARY(主查询),PRIMARY(主查询,即外层的查询),UNION(UNION中搞得第二个或者后面的查询语句),SUBQUERY(SELECT&#x2F;WHERE之后包含了子查询)等</p>
-<p><strong>type:</strong></p>
-<p>表示连接类型,性能由好到差的连接类型为NULL,system,const,eq_ref,ref,range,index,all.</p>
-<p><strong>possible_key:</strong></p>
-<p>显示可能应用在这张表上的索引,一个或者多个</p>
-<p><strong>key</strong></p>
-<p>实际使用的索引,如果为null,则没有使用索引.</p>
-<p><strong>key_len</strong></p>
-<p>表示索引中使用的字节数,该值为索引字段最大可能长度,并非实际使用长度,在不损失精确性的前提下,长度越长越好.</p>
-<p><strong>rows</strong></p>
-<p>MYSQL认为必须要执行查询的行数,在Innodb引擎的表中,是一个估计值,可能并不总是准确的.</p>
-<p><strong>filtered</strong></p>
-<p>表示返回结果的行数占需读取行数的百分比,filtered的值越大越好</p>
-<p><strong>Extra</strong></p>
-<p>该语句没有查询出来的字段,会在额外字段中展示</p>
-<p>using index condition  回表查询</p>
-<p>using index 索引覆盖</p>
-<p>using where 全表扫描</p>
-<p>需重点关注以下字段信息:</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uo0um1j20uv046t9s.jpg" alt="image-20220510144105150"></p>
-</blockquote>
-</li>
-</ul>
-<h2 id="索引的使用"><a href="#索引的使用" class="headerlink" title="索引的使用"></a>索引的使用</h2><ul>
-<li><p>验证索引效率</p>
-<p>在不用默认主键的聚合索引通过普通字段查询数据时,1000万条数据需要耗时20多s</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uq1th2j21420a6ad4.jpg" alt="image-20220510145621792"></p>
-</li>
-</ul>
-<p>​    这个时候我们针对刚刚的字段来创建对应的索引,构造该字段的B+Tree索引数据结构(为1000万条的数据构造数据结构是非常耗时的经过1min11s的时间终于构建成功)</p>
-<p>​        <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uqwe9ej20b201ut8q.jpg" alt="image-20220510145924020"></p>
-<p>此时查询一下当前表的索引,发现刚刚创建的索引已经构建成功<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ut08o0j212p088abo.jpg" alt="image-20220510150140764"></p>
-<p>这个时候我们再次查询一下刚刚的sql语句</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uvpvx4j20er0bgq41.jpg" alt="image-20220510150423765"></p>
-<p><strong>可以看到再次执行时,只用了0.01s的时间,这就是索引对于查询效率的提升</strong></p>
-<h1 id="无效索引"><a href="#无效索引" class="headerlink" title="无效索引"></a>无效索引</h1><ul>
-<li>没有遵守最左前缀法则</li>
-</ul>
-<p>如果索引了多列(联合索引),要遵守最左前缀法则.最左前缀法则指的是查询从索引的最左列开始,并且不跳过索引中的列,如果跳跃某一列,索引将部分失效(后面的字段索引失效) —-&gt;必须包含最左边的列,不然会失效,导致全表扫描</p>
-<ul>
-<li>范围查询</li>
-</ul>
-<p>联合索引中,出现范围查询(&gt;,&lt;),范围查询右侧的列索引会失效(<strong>但是&lt;&#x3D;,&gt;&#x3D;索引会生效</strong>)</p>
-<ul>
-<li>索引列运算</li>
-</ul>
-<p>不要在索引列上进行运算操作,索引将失效</p>
-<ul>
-<li>字符串不加引号</li>
-</ul>
-<p>字符串类型字段使用时,不加引号,会发生隐式转换,索引将失效</p>
-<ul>
-<li>模糊查询</li>
-</ul>
-<p>如果仅仅是尾部模糊匹配,索引不会失效.如果是头部模糊匹配,索引失效.(例如: ‘xx%’可以  ‘%xx’不可以)</p>
-<ul>
-<li>or连接条件</li>
-</ul>
-<p>用or分割开的条件,如果or前的条件中的列有索引,而后面的列没有索引,那么涉及的索引都不会被用到,索引失效(只有两侧都有索引的时候,索引才会剩生效)—–&gt;解决方法,只需要在没有索引的一方建立索引即可 </p>
-<h1 id="select-联合索引-or关键字遇到的问题—-不走索引查询-最左原则失效问题"><a href="#select-联合索引-or关键字遇到的问题—-不走索引查询-最左原则失效问题" class="headerlink" title="select * +联合索引+or关键字遇到的问题—-不走索引查询+最左原则失效问题?"></a>select * +联合索引+or关键字遇到的问题—-不走索引查询+最左原则失效问题?</h1><p><strong>有个问题,select * 的时候用 or 且满足左右两边都是索引的情况下按道理来说可以用到索引但是如果是联合索引,则不会走索引查询,而是全表扫描,如果是两边都是单个索引就会合并索引走二级索引+回表查询,如果所有字段都有索引,那么就会索引覆盖,直接走二级索引,符合索引覆盖</strong></p>
-<ul>
-<li><strong>数据分布影响</strong> —–重点</li>
-</ul>
-<p>如果MYSQL评估使用索引比全表更慢,则不使用索引.(比如查询一个比最小数据大的所有数据,因此本来就是要走全表扫描的,索引还不如直接走全表扫描来的快,也就不会走索引)</p>
-<ul>
-<li><strong>关于字段是否有null</strong> —重点</li>
-</ul>
-<p><strong>在where后面进行null值判断,导致索引失效的原因并不是null本身,而是mysql根据数据分布来自动判断是否用索引,比如一个字段里绝大多数都是null,这个时候你查询字段里为null的值,mysql会认为全表扫描比索引来的更快,所以不会使用索引,如果一个字段里的null是极少数的,那么当你查询字段里为null的值的数据的时候,mysql会判断全表扫描的性能要低于索引查询,这个时候就会使用索引!</strong></p>
-<p>因为在判断时候,联合索引必须要有最左前缀,如果用or,就不能保证有最左前缀,所以直接全表扫描!</p>
-<h1 id="SQL提示"><a href="#SQL提示" class="headerlink" title="SQL提示"></a>SQL提示</h1><p>SQL提示,是优化数据库的一个重要手段,简单来说,就是在SQL语句中加入一些认为的提示来达到优化操作的目的.</p>
-<p>当单列索引存在与联合索引中的时候,Mysql会自动选择一个效率高的索引,如果想要使用其他索引的话,那就需要在sql语句中指定要用的索引,sql语句如下:</p>
-<p><strong>use index(索引名)—–&gt;建议(MySQL不一定执行,会自动判断)</strong></p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#默认情况下
-mysql&gt; explain select * from dish where name &#x3D; &#39;梅菜扣肉&#39;;
-+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+
-| id | select_type | table | partitions | type  | possible_keys                          | key           | key_len | ref   | rows | filtered | Extra |
-+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+
-|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name,idx_dish_name_price_code | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |
-+----+-------------+-------+------------+-------+----------------------------------------+---------------+---------+-------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)
-
-#给mysql建议使用索引情况下----&gt;mysql会自动判断,如果建议的索引效率低,则不会执行建议的索引
-mysql&gt; explain select * from dish use   index(idx_dish_name_price_code) where name &#x3D; &#39;梅菜扣肉&#39;;
-+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
-| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |
-+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
-|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |
-+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>ignore index(索引名)——&gt;表示忽略某个索引,也就是不用的索引</strong></p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#忽略联合索引索引,会执行另外的索引
-mysql&gt; explain select * from dish ignore  index(idx_dish_name_price_code) where name &#x3D; &#39;梅菜扣肉&#39;;
-+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
-| id | select_type | table | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |
-+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
-|  1 | SIMPLE      | dish  | NULL       | const | idx_dish_name | idx_dish_name | 194     | const |    1 |   100.00 | NULL  |
-+----+-------------+-------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>force index(索引名)——&gt;强制Mysql执行某个索引</strong></p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#强制使用联合索引
-mysql&gt; explain select * from dish force  index(idx_dish_name_price_code) where name &#x3D; &#39;梅菜扣肉&#39;;
-+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
-| id | select_type | table | partitions | type | possible_keys            | key                      | key_len | ref   | rows | filtered | Extra |
-+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
-|  1 | SIMPLE      | dish  | NULL       | ref  | idx_dish_name_price_code | idx_dish_name_price_code | 194     | const |    1 |   100.00 | NULL  |
-+----+-------------+-------+------------+------+--------------------------+--------------------------+---------+-------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h1><p>尽量使用覆盖索引(查询使用了索引,并且需要返回的列,在索引中已经全部能够找到),减少select * .</p>
-<p>覆盖索引的白话:就是要查询的字段都是设置了索引,建议直接覆盖所索引,就不需要回表查询了!</p>
-<p>如果要查询的字段中包含没有索引的字段,那么会在二级索引找到有索引字段的值后拿到挂在叶子节点底下的主键值获取者约束唯一字段的值去聚集函数中进行回表查询,如下图所示:</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v1fz2cj20wx0f60vb.jpg" alt="image-20220510171143926"></p>
-<p>解决方案:就是将没有加入索引的字段也加上索引,实现索引覆盖效果,效率提高,尽量不用select * 不然大概率都会进行回表查询,性能就会下降</p>
-<h1 id="前缀索引"><a href="#前缀索引" class="headerlink" title="前缀索引"></a>前缀索引</h1><p>当字段类型为字符串(varcahr,text等)时,有时候需要索引很长的字符串,这会让索引变得很大,查询时,浪费大量的磁盘IO,影响查询效率.此时可以只将字符串的一部分前缀,建立索引,这样可以大大节约索引空间,从而提高索引效率</p>
-<p>语法:</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#创建前缀索引
-create index idx_xxxx on table_name(colum(n));<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>前缀长度:<br>可以根据索引的有选择性来决定,而选择性是指不重复的索引值(基数)和数据表的记录总数的比值,索引选择性越高则查询效率越高,唯一索引的选择性是1,这是最好的索引选择性,性能也是最好的. </p>
-<pre class="line-numbers language-MYSQL" data-language="MYSQL"><code class="language-MYSQL">#查询email中不为空的数据
-select count( email)&#x2F;count(*) from tb_user;
-#查询email中不重复的数据
-select count(distinct email) from tb_user;
-#查询emai中不重复数据的选择性 &#x2F;不重复数据&#x2F;总条目数
-select count(distinct email)&#x2F;count(*) from tb_user;
-#查询emai中不重复数据的选择性 &#x2F;不重复数据&#x2F;总条目数的前5个字符(降低索引的体积)
-select count(distinct substring(email,1,5))&#x2F;count(*) from tb_user;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v3t7zuj20xu0fjwh6.jpg" alt="image-20220510212318350"></p>
-<h1 id="单列索引与联合索引"><a href="#单列索引与联合索引" class="headerlink" title="单列索引与联合索引"></a>单列索引与联合索引</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v95x4hj20wb0e4dij.jpg" alt="image-20220510220527020"></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5v9t2zpj20xb0f2q50.jpg" alt="image-20220510220551724"></p>
-<h1 id="索引设计原则"><a href="#索引设计原则" class="headerlink" title="索引设计原则"></a>索引设计原则</h1><p>1.针对数据量大,且查询比较频繁的表建立索引</p>
-<p>2.针对常作为查询条件(where),排序(order by),分组(group by)操作的字段建立索引</p>
-<p>3.尽量选择区分度高的列作为索引,尽量建立唯一索引,区分度越高,使用的效率就越高.</p>
-<p>4.如果是字符串类型的字段,字段的长度较长,可以针对于字段的特点,建立前缀索引</p>
-<p>5.尽量使用联合索引,减少单例索引,查询时,联合索引很多时候可以覆盖索引,节省存储空间,避免回表,提高查询效率.</p>
-<p>6.要控制索引的数量,索引并不是多多益善,索引越多,维护索引结构的代价就越大,会影响增删改的效率</p>
-<p>7.如果索引列不能存储NULL值,请再创建表使用NOT NULL约束它.当优化器知道每列是否包含NULL值时,可以更好的确定那个索引最有效的用于查询.</p>
-<h1 id="索引总结"><a href="#索引总结" class="headerlink" title="索引总结"></a>索引总结</h1><p>1.索引概述</p>
-<blockquote>
-<p>索引是高效获取数据的数据结构,它是有序的</p>
-</blockquote>
-<p>2.索引结构</p>
-<blockquote>
-<p>B+Tree:所有的数据都会出现在叶子节点,而且叶子节点形成了一个双向链表</p>
-<p>Hash:检索性能高,直接算出哈希值定位到检索数据,如果存在哈希碰撞,则会形成链表,在寻着链表找对应的值,检索性能比较高,但是缺点就是只能进行等值(精确)匹配,不支持范围查询,和索引的排序—-&gt;(memory引擎使用)</p>
-</blockquote>
-<p>3.索引分类</p>
-<blockquote>
-<p>主键索引,唯一索引,常规索引,全文索引</p>
-<p>在innodb引擎中,根据索引的存储结构分为两类:聚集索引,二级索引</p>
-<p>聚集索引:必须存在,且只能有一个,最大特点就是这个B+Tree叶子节点的数据是这一行的数据,默认主键索引就是聚集索引,没有主键会选择第一个唯一索引作为聚集索引</p>
-<p>二级索引:B+Tree叶子节点的底下挂的是主键</p>
-</blockquote>
-<p>4.索引语法</p>
-<blockquote>
-<p>create [unique] index xxx on xxx(xxx);</p>
-<p>Show index from xxxx;</p>
-<p>Drop index xxx on xxx;</p>
-</blockquote>
-<p>5.SQL性能分析</p>
-<blockquote>
-<p>执行频次,慢查询日志,profile,explain</p>
-</blockquote>
-<p>6.索引使用</p>
-<blockquote>
-<p> 联合索引:必须严格遵守最左前缀法则</p>
-<p>索引失效</p>
-<p>SQL提示</p>
-<p>覆盖索引</p>
-<p>前缀索引</p>
-<p>单例&#x2F;联合索引</p>
-</blockquote>
-
-                
-            </div>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2022/05/10/Mysql%E5%AD%98%E5%82%A8%E7%B4%A2%E5%BC%95/">Mysql存储引擎</a>
-            </div>
-            <p class="sub">5月 10 2022</p>
-            <div class="post-content">
-                
-                    <h1 id="MYSQL体系结构-连接层"><a href="#MYSQL体系结构-连接层" class="headerlink" title="MYSQL体系结构:连接层"></a>MYSQL体系结构:连接层</h1><p>最上层是一些客户端的链接服务,主要完成一些类似于链接处理,授权认证,及相关的安全方案.服务器也会安全接入的每个客户端验证它所具有的操作权限</p>
-<h1 id="MYSQL体系结构-服务层"><a href="#MYSQL体系结构-服务层" class="headerlink" title="MYSQL体系结构:服务层"></a>MYSQL体系结构:服务层</h1><p>第二层架构主要完成大多数的核心服务功能,如SQL接口,并完成缓存查询,Sql的分析和优化,部分内置函数的执行.所有跨存储引擎的功能也是在这一层实现的,如过程,函数等</p>
-<h1 id="MYSQL体系结构-引擎层"><a href="#MYSQL体系结构-引擎层" class="headerlink" title="MYSQL体系结构:引擎层"></a>MYSQL体系结构:引擎层</h1><p>存储引擎真正的负责了Mysql中数据的存储和提取,服务器通过API和存储引擎进行通信.不同的存储引擎距有不同的功能,这样我们可以根据自己的需要,来选取核实的存储引擎.存储引擎是可插拔式的</p>
-<h1 id="MYSQL体系结构-存储层"><a href="#MYSQL体系结构-存储层" class="headerlink" title="MYSQL体系结构:存储层"></a>MYSQL体系结构:存储层</h1><p>主要是将数据存储在文件系统上,并且完成与存储引擎的交互</p>
-<h1 id="存储引擎简介"><a href="#存储引擎简介" class="headerlink" title="存储引擎简介"></a>存储引擎简介</h1><p>存储引擎就是存储数据,建立索引,更新&#x2F;查询数据等技术的实现方式.</p>
-<p>指定存储引擎的语句:ENGINE&#x3D;INNODB &lt;—-可替换</p>
-<p>查看当前数据库支持的存储引擎:SHOW ENGINES</p>
-<p>没有指定存储引擎时,默认为InnoDB</p>
-<p><strong>存储引擎是基于表的么人不是基于库的,所以存储引擎也被称为表类型</strong></p>
-<h1 id="InnoDB存储引擎的特点"><a href="#InnoDB存储引擎的特点" class="headerlink" title="InnoDB存储引擎的特点"></a>InnoDB存储引擎的特点</h1><p>InnoDB介绍:</p>
-<p>InnoDB是一种兼顾高可靠性的高性能的通用存储引擎,在Mysql5.5之后,InnoDB是默认的MYSQL存储引擎</p>
-<p>InnoDB特点:</p>
-<p>DML(增删改操作)操作遵循ACID模型,支持事务</p>
-<p>行级锁,提高并发访问性能</p>
-<p>支持外检Foreign key约束,保证数据的完整性和正确性</p>
-<p>InnoDB文件:</p>
-<p>xxx.ibd:xxx代表的是表名,innoDB引擎的每张表都会对应这样的一个表空间文件,存储该表的表结构(frm 8.0前  ,sdi 8.0后),数据和索引. 参数:innodb_flie_per_table如果打开,代表 每一张表都代表一个表空间</p>
-<h1 id="查看ibd文件"><a href="#查看ibd文件" class="headerlink" title="查看ibd文件"></a>查看ibd文件</h1><p>idb文件是不能直接打开的,里面记录的都是二进制数据,如果非要打开看可以使用cmd输入—–&gt;   ibd2sdi xxx.idb</p>
-<h1 id="ibd文件存储结构"><a href="#ibd文件存储结构" class="headerlink" title="ibd文件存储结构"></a>ibd文件存储结构</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq7wjv0rj20pw0ccq4e.jpg" alt="image-20220510095308222"></p>
-<h1 id="MyISAM存储引擎的特点"><a href="#MyISAM存储引擎的特点" class="headerlink" title="MyISAM存储引擎的特点"></a>MyISAM存储引擎的特点</h1><p>介绍:</p>
-<p>MyISAM是MySQL早期默认的存储引擎</p>
-<p>特点:</p>
-<p>不支持事务,不支持外键</p>
-<p>支持表锁,不支持行锁</p>
-<p>访问速度快 </p>
-<p>文件:</p>
-<p>xxx.sdi:存储表结构信息(存储的json格式数据)</p>
-<p>xxx.MYD:存储数据</p>
-<p>xxx.MYI:存储索引</p>
-<h1 id="Memory存储引擎的特点"><a href="#Memory存储引擎的特点" class="headerlink" title="Memory存储引擎的特点"></a>Memory存储引擎的特点</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq80a7hfj20mg089jrl.jpg" alt=" "></p>
-<h1 id="三个存储引擎的区别"><a href="#三个存储引擎的区别" class="headerlink" title="三个存储引擎的区别"></a>三个存储引擎的区别</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2iq7sxlvrj20ni09eaaq.jpg" alt="image-20220510100124777"></p>
 
                 
             </div>

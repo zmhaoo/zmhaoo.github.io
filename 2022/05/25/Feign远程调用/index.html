@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>Feign远程调用 | Zmhaoo&#39;s Blog</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 6.1.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Zmhaoo&#39;s Blog</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">主页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">关于</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        Feign远程调用
+    </div>
+    <p class="sub">5月 25 2022</p>
+    <div class="post-content">
+        <h1 id="1-Feign远程调用"><a href="#1-Feign远程调用" class="headerlink" title="1.Feign远程调用"></a><strong>1.Feign远程调用</strong></h1><p>先来看我们以前利用RestTemplate发起远程调用的代码：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174814204.png?lastModify=1653489702" alt="image-20210714174814204"></p>
+<p>存在下面的问题：</p>
+<p>•代码可读性差，编程体验不统一</p>
+<p>•参数复杂URL难以维护</p>
+<p>Feign是一个声明式的http客户端，官方地址：<a target="_blank" rel="noopener" href="https://github.com/OpenFeign/feign">https://github.com/OpenFeign/feign</a></p>
+<p>其作用就是帮助我们优雅的实现http请求的发送，解决上面提到的问题。</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174918088.png?lastModify=1653489702" alt="image-20210714174918088"></p>
+<h2 id="1-1-Feign替代RestTemplate"><a href="#1-1-Feign替代RestTemplate" class="headerlink" title="1.1.Feign替代RestTemplate"></a><strong>1.1.Feign替代RestTemplate</strong></h2><p>Fegin的使用步骤如下：</p>
+<h3 id="1）引入依赖"><a href="#1）引入依赖" class="headerlink" title="1）引入依赖"></a>1）引入依赖</h3><p>我们在order-service服务的pom文件中引入feign的依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="2）添加注解"><a href="#2）添加注解" class="headerlink" title="2）添加注解"></a>2）添加注解</h3><p>在order-service的启动类添加注解开启Feign的功能：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714175102524.png?lastModify=1653489702" alt="image-20210714175102524"></p>
+<h3 id="3）编写Feign的客户端"><a href="#3）编写Feign的客户端" class="headerlink" title="3）编写Feign的客户端"></a>3）编写Feign的客户端</h3><p>在order-service中新建一个接口，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.order.client;
+
+import cn.itcast.order.pojo.User;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(&quot;userservice&quot;)
+public interface UserClient &#123;
+    @GetMapping(&quot;&#x2F;user&#x2F;&#123;id&#125;&quot;)
+    User findById(@PathVariable(&quot;id&quot;) Long id);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>这个客户端主要是基于SpringMVC的注解来声明远程调用的信息，比如：</p>
+<ul>
+<li>服务名称：userservice</li>
+<li>请求方式：GET</li>
+<li>请求路径：&#x2F;user&#x2F;{id}</li>
+<li>请求参数：Long id</li>
+<li>返回值类型：User</li>
+</ul>
+<p>这样，Feign就可以帮助我们发送http请求，无需自己使用RestTemplate来发送了。</p>
+<h3 id="4）测试"><a href="#4）测试" class="headerlink" title="4）测试"></a>4）测试</h3><p>修改order-service中的OrderService类中的queryOrderById方法，使用Feign客户端代替RestTemplate：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16dc9z2j20jy0br403.jpg" alt="image-20210714175415087"></p>
+<p>是不是看起来优雅多了。</p>
+<h3 id="5）总结"><a href="#5）总结" class="headerlink" title="5）总结"></a>5）总结</h3><p>使用Feign的步骤：</p>
+<p>① 引入依赖</p>
+<p>② 添加@EnableFeignClients注解</p>
+<p>③ 编写FeignClient接口</p>
+<p>④ 使用FeignClient中定义的方法代替RestTemplate</p>
+<h2 id="1-2-自定义配置"><a href="#1-2-自定义配置" class="headerlink" title="1.2.自定义配置"></a><strong>1.2.自定义配置</strong></h2><p>Feign可以支持很多的自定义配置，如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">作用</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>feign.Logger.Level</strong></td>
+<td align="left">修改日志级别</td>
+<td align="left">包含四种不同的级别：NONE、BASIC、HEADERS、FULL</td>
+</tr>
+<tr>
+<td align="left">feign.codec.Decoder</td>
+<td align="left">响应结果的解析器</td>
+<td align="left">http远程调用的结果做解析，例如解析json字符串为java对象</td>
+</tr>
+<tr>
+<td align="left">feign.codec.Encoder</td>
+<td align="left">请求参数编码</td>
+<td align="left">将请求参数编码，便于通过http请求发送</td>
+</tr>
+<tr>
+<td align="left">feign. Contract</td>
+<td align="left">支持的注解格式</td>
+<td align="left">默认是SpringMVC的注解</td>
+</tr>
+<tr>
+<td align="left">feign. Retryer</td>
+<td align="left">失败重试机制</td>
+<td align="left">请求失败的重试机制，默认是没有，不过会使用Ribbon的重试</td>
+</tr>
+</tbody></table>
+<p>一般情况下，默认值就能满足我们使用，如果要自定义时，只需要创建自定义的@Bean覆盖默认Bean即可。</p>
+<p>下面以日志为例来演示如何自定义配置。</p>
+<h3 id="1-2-1-配置文件方式"><a href="#1-2-1-配置文件方式" class="headerlink" title="1.2.1.配置文件方式"></a>1.2.1.配置文件方式</h3><p>基于配置文件修改feign的日志级别可以针对单个服务：</p>
+<pre class="line-numbers language-none"><code class="language-none">feign:  
+  client:
+    config: 
+      userservice: # 针对某个微服务的配置
+        loggerLevel: FULL #  日志级别 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>也可以针对所有服务：</p>
+<pre class="line-numbers language-none"><code class="language-none">feign:  
+  client:
+    config: 
+      default: # 这里用default就是全局配置，如果是写服务名称，则是针对某个微服务的配置
+        loggerLevel: FULL #  日志级别 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>而日志的级别分为四种：</p>
+<ul>
+<li>NONE：不记录任何日志信息，这是默认值。</li>
+<li>BASIC：仅记录请求的方法，URL以及响应状态码和执行时间</li>
+<li>HEADERS：在BASIC的基础上，额外记录了请求和响应的头信息</li>
+<li>FULL：记录所有请求和响应的明细，包括头信息、请求体、元数据。</li>
+</ul>
+<h3 id="1-2-2-Java代码方式"><a href="#1-2-2-Java代码方式" class="headerlink" title="1.2.2.Java代码方式"></a>1.2.2.Java代码方式</h3><p>也可以基于Java代码来修改日志级别，先声明一个类，然后声明一个Logger.Level的对象：</p>
+<pre class="line-numbers language-none"><code class="language-none">public class DefaultFeignConfiguration  &#123;
+    @Bean
+    public Logger.Level feignLogLevel()&#123;
+        return Logger.Level.BASIC; &#x2F;&#x2F; 日志级别为BASIC
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>如果要<strong>全局生效</strong>，将其放到启动类的@EnableFeignClients这个注解中：</p>
+<pre class="line-numbers language-none"><code class="language-none">@EnableFeignClients(defaultConfiguration &#x3D; DefaultFeignConfiguration .class) <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>如果是<strong>局部生效</strong>，则把它放到对应的@FeignClient这个注解中：</p>
+<pre class="line-numbers language-none"><code class="language-none">@FeignClient(value &#x3D; &quot;userservice&quot;, configuration &#x3D; DefaultFeignConfiguration .class) <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+
+
+<h2 id="1-3-Feign使用优化"><a href="#1-3-Feign使用优化" class="headerlink" title="1.3.Feign使用优化"></a><strong>1.3.Feign使用优化</strong></h2><p>Feign底层发起http请求，依赖于其它的框架。其底层客户端实现包括：</p>
+<p>•URLConnection：默认实现，不支持连接池</p>
+<p>•Apache HttpClient ：支持连接池</p>
+<p>•OKHttp：支持连接池</p>
+<p>因此提高Feign的性能主要手段就是使用<strong>连接池</strong>代替默认的URLConnection。</p>
+<p>这里我们用Apache的HttpClient来演示。</p>
+<p>1）引入依赖</p>
+<p>在order-service的pom文件中引入Apache的HttpClient依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;!--httpClient的依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.github.openfeign&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;feign-httpclient&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>2）配置连接池</p>
+<p>在order-service的application.yml中添加配置：</p>
+<pre class="line-numbers language-none"><code class="language-none">feign:
+  client:
+    config:
+      default: # default全局的配置
+        loggerLevel: BASIC # 日志级别，BASIC就是基本的请求和响应信息
+  httpclient:
+    enabled: true # 开启feign对HttpClient的支持
+    max-connections: 200 # 最大的连接数
+    max-connections-per-route: 50 # 每个路径的最大连接数<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>接下来进行debug调试来查看请求方式使用的是不是HttpClient</p>
+<p>第一步，断点，查看userFeign接口</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l15ygnihj214a0jjwj9.jpg" alt="1653318270375"></p>
+<p>全局搜索FeginInvocationHandler</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653318395262.png?lastModify=1653489702" alt="1653318395262"></p>
+<p>进去找到invoke代理</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l15z8g97j20sy0endhx.jpg" alt="1653318794674"></p>
+<p>在 return dispatch.get(method).invoke(args)这行打断点，然后当debug走到这的时候，执行F7或者<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16g2rgbj20ci01w744.jpg" alt="1653318856129">该按钮</p>
+<p>然后进入</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653318900374.png?lastModify=1653489702" alt="1653318900374"></p>
+<p>然后debug走到 return executeAndDecode(template, options);的时候进入到当前方法中</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653319052336.png?lastModify=1653489702" alt="1653319052336"></p>
+<p>然后执行F7或者<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16g2rgbj20ci01w744.jpg" alt="1653318856129">按钮执行下一步</p>
+<p>走过了response &#x3D; client.execute(request, options);这一步，可以看到</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1621a9oj21040m2te5.jpg" alt="1653319122374"></p>
+<p>可以看到client中使用的是ApacheHttpClient</p>
+<p>总结，Feign的优化：</p>
+<p>1.日志级别尽量用basic</p>
+<p>2.使用HttpClient或OKHttp代替URLConnection</p>
+<p>①  引入feign-httpClient依赖</p>
+<p>②  配置文件开启httpClient功能，设置连接池参数</p>
+<h2 id="1-4-最佳实践"><a href="#1-4-最佳实践" class="headerlink" title="1.4.最佳实践"></a><strong>1.4.最佳实践</strong></h2><p>所谓最佳实践，就是使用过程中总结的经验，最好的一种使用方式。</p>
+<p>自习观察可以发现，Feign的客户端与服务提供者的controller代码非常相似：</p>
+<p>feign客户端：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l169g71hj20j104zmxs.jpg" alt="image-20210714190542730"></p>
+<p>UserController：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l162kktxj20rv0bmta0.jpg" alt="image-20210714190528450"></p>
+<p>有没有一种办法简化这种重复的代码编写呢？</p>
+<h3 id="1-4-1-继承方式"><a href="#1-4-1-继承方式" class="headerlink" title="1.4.1.继承方式"></a>1.4.1.继承方式</h3><p>一样的代码可以通过继承来共享：</p>
+<p>1）定义一个API接口，利用定义方法，并基于SpringMVC注解做声明。</p>
+<p>2）Feign客户端和Controller都集成改接口</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l167827zj20xx0b9jsk.jpg" alt="image-20210714190640857"></p>
+<p>优点：</p>
+<ul>
+<li>简单</li>
+<li>实现了代码共享</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>服务提供方、服务消费方紧耦合</li>
+<li>参数列表中的注解映射并不会继承，因此Controller中必须再次声明方法、参数列表、注解</li>
+</ul>
+<h3 id="1-4-2-抽取方式"><a href="#1-4-2-抽取方式" class="headerlink" title="1.4.2.抽取方式"></a>1.4.2.抽取方式</h3><p>将Feign的Client抽取为独立模块，并且把接口有关的POJO、默认的Feign配置都放到这个模块中，提供给所有消费者使用。</p>
+<p>例如，将UserClient、User、Feign的默认配置都抽取到一个feign-api包中，所有微服务引用该依赖包，即可直接使用。</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714214041796.png?lastModify=1653489702" alt="image-20210714214041796"></p>
+<h3 id="1-4-3-实现基于抽取的最佳实践"><a href="#1-4-3-实现基于抽取的最佳实践" class="headerlink" title="1.4.3.实现基于抽取的最佳实践"></a>1.4.3.实现基于抽取的最佳实践</h3><h4 id="1）抽取"><a href="#1）抽取" class="headerlink" title="1）抽取"></a>1）抽取</h4><p>首先创建一个module，命名为feign-api：</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714204557771.png?lastModify=1653489702" alt="image-20210714204557771"></p>
+<p>项目结构：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1659i8zj209p0520sx.jpg" alt="image-20210714204656214"></p>
+<p>在feign-api中然后引入feign的starter依赖</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;&#x2F;artifactId&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>然后，order-service中编写的UserClient、User、DefaultFeignConfiguration都复制到feign-api项目中</p>
+<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714205221970.png?lastModify=1653489702" alt="image-20210714205221970"></p>
+<h4 id="2）在order-service中使用feign-api"><a href="#2）在order-service中使用feign-api" class="headerlink" title="2）在order-service中使用feign-api"></a>2）在order-service中使用feign-api</h4><p>首先，删除order-service中的UserClient、User、DefaultFeignConfiguration等类或接口。</p>
+<p>在order-service的pom文件中中引入feign-api的依赖：</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
+    &lt;groupId&gt;cn.itcast.demo&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;feign-api&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;1.0&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>修改order-service中的所有与上述三个组件有关的导包部分，改成导入feign-api中的包</p>
+<h4 id="3）重启测试"><a href="#3）重启测试" class="headerlink" title="3）重启测试"></a>3）重启测试</h4><p>重启后，发现服务报错了：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16aulhlj20wn064dgx.jpg" alt="image-20210714205623048"></p>
+<p>这是因为UserClient现在在cn.itcast.feign.clients包下，</p>
+<p>而order-service的@EnableFeignClients注解是在cn.itcast.order包下，不在同一个包，无法扫描到UserClient。</p>
+<h4 id="4）解决扫描包问题"><a href="#4）解决扫描包问题" class="headerlink" title="4）解决扫描包问题"></a>4）解决扫描包问题</h4><p>方式一：</p>
+<p>指定Feign应该扫描的包：</p>
+<pre class="line-numbers language-none"><code class="language-none">@EnableFeignClients(basePackages &#x3D; &quot;cn.itcast.feign.clients&quot;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>方式二：</p>
+<p>指定需要加载的Client接口：</p>
+<pre class="line-numbers language-none"><code class="language-none">@EnableFeignClients(clients &#x3D; &#123;UserClient.class&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8"><span class="toc-text">1.Feign远程调用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Feign%E6%9B%BF%E4%BB%A3RestTemplate"><span class="toc-text">1.1.Feign替代RestTemplate</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%EF%BC%89%E5%BC%95%E5%85%A5%E4%BE%9D%E8%B5%96"><span class="toc-text">1）引入依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%EF%BC%89%E6%B7%BB%E5%8A%A0%E6%B3%A8%E8%A7%A3"><span class="toc-text">2）添加注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%EF%BC%89%E7%BC%96%E5%86%99Feign%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">3）编写Feign的客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%EF%BC%89%E6%B5%8B%E8%AF%95"><span class="toc-text">4）测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%EF%BC%89%E6%80%BB%E7%BB%93"><span class="toc-text">5）总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE"><span class="toc-text">1.2.自定义配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%96%B9%E5%BC%8F"><span class="toc-text">1.2.1.配置文件方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-2-Java%E4%BB%A3%E7%A0%81%E6%96%B9%E5%BC%8F"><span class="toc-text">1.2.2.Java代码方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-Feign%E4%BD%BF%E7%94%A8%E4%BC%98%E5%8C%96"><span class="toc-text">1.3.Feign使用优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-text">1.4.最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-1-%E7%BB%A7%E6%89%BF%E6%96%B9%E5%BC%8F"><span class="toc-text">1.4.1.继承方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-2-%E6%8A%BD%E5%8F%96%E6%96%B9%E5%BC%8F"><span class="toc-text">1.4.2.抽取方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-3-%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%8A%BD%E5%8F%96%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-text">1.4.3.实现基于抽取的最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%89%E6%8A%BD%E5%8F%96"><span class="toc-text">1）抽取</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%89%E5%9C%A8order-service%E4%B8%AD%E4%BD%BF%E7%94%A8feign-api"><span class="toc-text">2）在order-service中使用feign-api</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%BC%89%E9%87%8D%E5%90%AF%E6%B5%8B%E8%AF%95"><span class="toc-text">3）重启测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%BC%89%E8%A7%A3%E5%86%B3%E6%89%AB%E6%8F%8F%E5%8C%85%E9%97%AE%E9%A2%98"><span class="toc-text">4）解决扫描包问题</span></a></li></ol></li></ol></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2022/05/25/Gateway%E7%BD%91%E5%85%B3/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">Gateway网关</span>
+            </a>
+        
+        
+            <a class="next" href="/2022/05/25/nacos%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
+                
+                <span class="prev-text">Nacos集群搭建</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Zmhaoo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
