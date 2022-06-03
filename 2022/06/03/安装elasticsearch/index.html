@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Elasticsearch, Zmhaoo&#39;s Blog">
+    <meta name="keywords" content="安装和集群Elasticsearch, Zmhaoo&#39;s Blog">
     <meta name="description" content="安装elasticsearch1.部署单点es1.1.创建网络因为我们还需要部署kibana容器，因此需要让es和kibana容器互联。这里先创建一个网络：
 docker network create es-net
 
@@ -24,7 +24,7 @@ docker network create es-net
 
     
 
-    <title>Elasticsearch | Zmhaoo&#39;s Blog</title>
+    <title>安装和集群Elasticsearch | Zmhaoo&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +314,12 @@ docker network create es-net
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Elasticsearch</h1>
+                    <h1 class="description center-align post-title">安装和集群Elasticsearch</h1>
                 </div>
             </div>
         </div>
@@ -487,18 +487,13 @@ docker network create es-net
 
 <h2 id="1-2-加载镜像"><a href="#1-2-加载镜像" class="headerlink" title="1.2.加载镜像"></a>1.2.加载镜像</h2><p>这里我们采用elasticsearch的7.12.1版本的镜像，这个镜像体积非常大，接近1G。不建议大家自己pull。</p>
 <p>课前资料提供了镜像的tar包：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uujnhqh3j20da085js6.jpg" alt="image-20210510165308064"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7omds7j20da085js6.jpg" alt="image-20210510165308064"></p>
 <p>大家将其上传到虚拟机中，然后运行命令加载即可：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 导入数据
 docker load -i es.tar<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p>同理还有<code>kibana</code>的tar包也需要这样做。</p>
-<h2 id="1-3-运行"><a href="#1-3-运行" class="headerlink" title="1.3.运行"></a>1.3.运行</h2><p>拉取镜像的命令</p>
-<pre class="line-numbers language-none"><code class="language-none">docker pull elasticsearch:7.12.1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<p>运行docker命令，部署单点es：</p>
+<h2 id="1-3-运行"><a href="#1-3-运行" class="headerlink" title="1.3.运行"></a>1.3.运行</h2><p>运行docker命令，部署单点es：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker run -d \
 	--name es \
     -e &quot;ES_JAVA_OPTS&#x3D;-Xms512m -Xmx512m&quot; \
@@ -525,14 +520,9 @@ elasticsearch:7.12.1<span aria-hidden="true" class="line-numbers-rows"><span></s
 <li><code>-p 9200:9200</code>：端口映射配置</li>
 </ul>
 <p>在浏览器中输入：<a target="_blank" rel="noopener" href="http://192.168.150.101:9200/">http://192.168.150.101:9200</a> 即可看到elasticsearch的响应结果：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uujpaojbj20kx0gfwgz.jpg" alt="image-20210506101053676"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7nacafj20kx0gfwgz.jpg" alt="image-20210506101053676"></p>
 <h1 id="2-部署kibana"><a href="#2-部署kibana" class="headerlink" title="2.部署kibana"></a>2.部署kibana</h1><p>kibana可以给我们提供一个elasticsearch的可视化界面，便于我们学习。</p>
-<h2 id="2-1-部署"><a href="#2-1-部署" class="headerlink" title="2.1.部署"></a>2.1.部署</h2><p>拉取镜像命令</p>
-<pre class="line-numbers language-none"><code class="language-none">docker pull kibana:7.12.1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<p>运行docker命令，部署kibana</p>
+<h2 id="2-1-部署"><a href="#2-1-部署" class="headerlink" title="2.1.部署"></a>2.1.部署</h2><p>运行docker命令，部署kibana</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker run -d \
 --name kibana \
 -e ELASTICSEARCH_HOSTS&#x3D;http:&#x2F;&#x2F;es:9200 \
@@ -549,16 +539,16 @@ kibana:7.12.1<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker logs -f kibana<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>查看运行日志，当查看到下面的日志，说明成功：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uujr22jhj215s0a0aeu.jpg" alt="image-20210109105135812"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7lx07xj215s0a0aeu.jpg" alt="image-20210109105135812"></p>
 <p>此时，在浏览器输入地址访问：<a href="http://192.168.150.101:5601，即可看到结果">http://192.168.150.101:5601，即可看到结果</a></p>
 <h2 id="2-2-DevTools"><a href="#2-2-DevTools" class="headerlink" title="2.2.DevTools"></a>2.2.DevTools</h2><p>kibana中提供了一个DevTools界面：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uujvcz1yj20v60et0uz.jpg" alt="image-20210506102630393"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7kgei6j20v60et76j.jpg" alt="image-20210506102630393"></p>
 <p>这个界面中可以编写DSL来操作elasticsearch。并且对DSL语句有自动补全功能。</p>
 <h1 id="3-安装IK分词器"><a href="#3-安装IK分词器" class="headerlink" title="3.安装IK分词器"></a>3.安装IK分词器</h1><h2 id="3-1-在线安装ik插件（较慢）"><a href="#3-1-在线安装ik插件（较慢）" class="headerlink" title="3.1.在线安装ik插件（较慢）"></a>3.1.在线安装ik插件（较慢）</h2><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 进入容器内部
 docker exec -it elasticsearch &#x2F;bin&#x2F;bash
 
 # 在线下载并安装
-.&#x2F;bin&#x2F;elasticsearch-plugin  install https:&#x2F;&#x2F;github.com&#x2F;medcl&#x2F;elasticsearch-analysis-ik&#x2F;releases&#x2F;download&#x2F;v7.16.2&#x2F;elasticsearch-analysis-ik-7.16.2.zip
+.&#x2F;bin&#x2F;elasticsearch-plugin  install https:&#x2F;&#x2F;github.com&#x2F;medcl&#x2F;elasticsearch-analysis-ik&#x2F;releases&#x2F;download&#x2F;v7.12.1&#x2F;elasticsearch-analysis-ik-7.12.1.zip
 
 #退出
 exit
@@ -583,9 +573,9 @@ docker restart elasticsearch<span aria-hidden="true" class="line-numbers-rows"><
 
 <p>说明plugins目录被挂载到了：<code>/var/lib/docker/volumes/es-plugins/_data </code>这个目录中。</p>
 <h3 id="2）解压缩分词器安装包"><a href="#2）解压缩分词器安装包" class="headerlink" title="2）解压缩分词器安装包"></a>2）解压缩分词器安装包</h3><p>下面我们需要把课前资料中的ik分词器解压缩，重命名为ik</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uujxnwwkj20di06074p.jpg" alt="image-20210506110249144"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7ijiokj20di06074p.jpg" alt="image-20210506110249144"></p>
 <h3 id="3）上传到es容器的插件数据卷中"><a href="#3）上传到es容器的插件数据卷中" class="headerlink" title="3）上传到es容器的插件数据卷中"></a>3）上传到es容器的插件数据卷中</h3><p>也就是<code>/var/lib/docker/volumes/es-plugins/_data </code>：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uujyy230j20y209tq4p.jpg" alt="image-20210506110704293"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7h6xosj20y209tq4p.jpg" alt="image-20210506110704293"></p>
 <h3 id="4）重启容器"><a href="#4）重启容器" class="headerlink" title="4）重启容器"></a>4）重启容器</h3><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 4、重启容器
 docker restart es<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
@@ -681,7 +671,7 @@ docker logs -f es<span aria-hidden="true" class="line-numbers-rows"><span></span
 <h2 id="3-3-扩展词词典"><a href="#3-3-扩展词词典" class="headerlink" title="3.3 扩展词词典"></a>3.3 扩展词词典</h2><p>随着互联网的发展，“造词运动”也越发的频繁。出现了很多新的词语，在原有的词汇列表中并不存在。比如：“奥力给”，“传智播客” 等。</p>
 <p>所以我们的词汇也需要不断的更新，IK分词器提供了扩展词汇的功能。</p>
 <p>1）打开IK分词器config目录：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uuk1f400j20kx0a5tbe.jpg" alt="image-20210506112225508"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7ex5a8j20kx0a5tbe.jpg" alt="image-20210506112225508"></p>
 <p>2）在IKAnalyzer.cfg.xml配置文件内容添加：</p>
 <pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
 <span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">properties</span> <span class="token name">SYSTEM</span> <span class="token string">"http://java.sun.com/dtd/properties.dtd"</span><span class="token punctuation">></span></span>
@@ -701,7 +691,7 @@ docker logs -f es<span aria-hidden="true" class="line-numbers-rows"><span></span
 # 查看 日志
 docker logs -f elasticsearch<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uuk344opj22lk0lcgw8.jpg" alt="image-20201115230900504"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7dpygpj22lk0lcgw8.jpg" alt="image-20201115230900504"></p>
 <p>日志中已经成功加载ext.dic配置文件</p>
 <p>5）测试效果：</p>
 <pre class="line-numbers language-json" data-language="json"><code class="language-json">GET /_analyze
@@ -748,24 +738,20 @@ docker logs -f elasticsearch<span aria-hidden="true" class="line-numbers-rows"><
 <blockquote>
 <p>注意当前文件的编码必须是 UTF-8 格式，严禁使用Windows记事本编辑</p>
 </blockquote>
-<h1 id="4-部署es集群"><a href="#4-部署es集群" class="headerlink" title="4.部署es集群"></a>4.部署es集群</h1><p>部署es集群可以直接使用docker-compose来完成，不过要求你的Linux虚拟机至少有<strong>4G</strong>的内存空间</p>
-<p>首先编写一个docker-compose文件，内容如下：</p>
+<h1 id="4-部署es集群"><a href="#4-部署es集群" class="headerlink" title="4.部署es集群"></a>4.部署es集群</h1><p>我们会在单机上利用docker容器运行多个es实例来模拟es集群。不过生产环境推荐大家每一台服务节点仅部署一个es的实例。</p>
+<p>部署es集群可以直接使用docker-compose来完成，但这要求你的Linux虚拟机至少有<strong>4G</strong>的内存空间</p>
+<h2 id="4-1-创建es集群"><a href="#4-1-创建es集群" class="headerlink" title="4.1.创建es集群"></a>4.1.创建es集群</h2><p>首先编写一个docker-compose文件，内容如下：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">version: &#39;2.2&#39;
 services:
   es01:
-    image: docker.elastic.co&#x2F;elasticsearch&#x2F;elasticsearch:7.12.1
+    image: elasticsearch:7.12.1
     container_name: es01
     environment:
       - node.name&#x3D;es01
       - cluster.name&#x3D;es-docker-cluster
       - discovery.seed_hosts&#x3D;es02,es03
       - cluster.initial_master_nodes&#x3D;es01,es02,es03
-      - bootstrap.memory_lock&#x3D;true
       - &quot;ES_JAVA_OPTS&#x3D;-Xms512m -Xmx512m&quot;
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
       - data01:&#x2F;usr&#x2F;share&#x2F;elasticsearch&#x2F;data
     ports:
@@ -773,42 +759,35 @@ services:
     networks:
       - elastic
   es02:
-    image: docker.elastic.co&#x2F;elasticsearch&#x2F;elasticsearch:7.12.1
+    image: elasticsearch:7.12.1
     container_name: es02
     environment:
       - node.name&#x3D;es02
       - cluster.name&#x3D;es-docker-cluster
       - discovery.seed_hosts&#x3D;es01,es03
       - cluster.initial_master_nodes&#x3D;es01,es02,es03
-      - bootstrap.memory_lock&#x3D;true
       - &quot;ES_JAVA_OPTS&#x3D;-Xms512m -Xmx512m&quot;
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
       - data02:&#x2F;usr&#x2F;share&#x2F;elasticsearch&#x2F;data
+    ports:
+      - 9201:9200
     networks:
       - elastic
   es03:
-    image: docker.elastic.co&#x2F;elasticsearch&#x2F;elasticsearch:7.12.1
+    image: elasticsearch:7.12.1
     container_name: es03
     environment:
       - node.name&#x3D;es03
       - cluster.name&#x3D;es-docker-cluster
       - discovery.seed_hosts&#x3D;es01,es02
       - cluster.initial_master_nodes&#x3D;es01,es02,es03
-      - bootstrap.memory_lock&#x3D;true
       - &quot;ES_JAVA_OPTS&#x3D;-Xms512m -Xmx512m&quot;
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
       - data03:&#x2F;usr&#x2F;share&#x2F;elasticsearch&#x2F;data
     networks:
       - elastic
-
+    ports:
+      - 9202:9200
 volumes:
   data01:
     driver: local
@@ -819,10 +798,73 @@ volumes:
 
 networks:
   elastic:
-    driver: bridge<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    driver: bridge<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>Run <code>docker-compose</code> to bring up the cluster:</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker-compose up<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+<p>es运行需要修改一些linux系统权限，修改<code>/etc/sysctl.conf</code>文件</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">vi &#x2F;etc&#x2F;sysctl.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>添加下面的内容：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">vm.max_map_count&#x3D;262144<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后执行命令，让配置生效：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sysctl -p<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>通过docker-compose启动集群：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker-compose up -d<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+<h2 id="4-2-集群状态监控"><a href="#4-2-集群状态监控" class="headerlink" title="4.2.集群状态监控"></a>4.2.集群状态监控</h2><p>kibana可以监控es集群，不过新版本需要依赖es的x-pack 功能，配置比较复杂。</p>
+<p>这里推荐使用cerebro来监控es集群状态，官方网址：<a target="_blank" rel="noopener" href="https://github.com/lmenezes/cerebro">https://github.com/lmenezes/cerebro</a></p>
+<p>课前资料已经提供了安装包：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7b3ogmj20bb04wq39.jpg" alt="image-20210602220751081"></p>
+<p>解压即可使用，非常方便。</p>
+<p>解压好的目录如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv79nom6j20ao04qa9y.jpg" alt="image-20210602220824668"></p>
+<p>进入对应的bin目录：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv78pllnj20b504rq2y.jpg" alt="image-20210602220846137"></p>
+<p>双击其中的cerebro.bat文件即可启动服务。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv77m4szj20u50av0vt.jpg" alt="image-20210602220941101"></p>
+<p>访问<a target="_blank" rel="noopener" href="http://localhost:9000/">http://localhost:9000</a> 即可进入管理界面：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv76agfxj20hz0fzdg6.jpg" alt="image-20210602221115763"></p>
+<p>输入你的elasticsearch的任意节点的地址和端口，点击connect即可：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv75fwimj21c70klgog.jpg" alt="image-20210109181106866"></p>
+<p>绿色的条，代表集群处于绿色（健康状态）。</p>
+<h2 id="4-3-创建索引库"><a href="#4-3-创建索引库" class="headerlink" title="4.3.创建索引库"></a>4.3.创建索引库</h2><h3 id="1）利用kibana的DevTools创建索引库"><a href="#1）利用kibana的DevTools创建索引库" class="headerlink" title="1）利用kibana的DevTools创建索引库"></a>1）利用kibana的DevTools创建索引库</h3><p>在DevTools中输入指令：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">PUT /itcast
+<span class="token punctuation">&#123;</span>
+  <span class="token property">"settings"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"number_of_shards"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token comment">// 分片数量</span>
+    <span class="token property">"number_of_replicas"</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token comment">// 副本数量</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token property">"mappings"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"properties"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// mapping映射定义 ...</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+<h3 id="2）利用cerebro创建索引库"><a href="#2）利用cerebro创建索引库" class="headerlink" title="2）利用cerebro创建索引库"></a>2）利用cerebro创建索引库</h3><p>利用cerebro还可以创建索引库：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv742tdcj20gi05974p.jpg" alt="image-20210602221409524"></p>
+<p>填写索引库信息：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv733od7j20eq0ac3yy.jpg" alt="image-20210602221520629"></p>
+<p>点击右下角的create按钮：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv72517bj20hi078jra.jpg" alt="image-20210602221542745"></p>
+<h2 id="4-4-查看分片效果"><a href="#4-4-查看分片效果" class="headerlink" title="4.4.查看分片效果"></a>4.4.查看分片效果</h2><p>回到首页，即可查看索引库分片效果：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv71d4yej20qt0jv0ut.jpg" alt="image-20210602221914483"></p>
+
                 
             </div>
             <hr/>
@@ -1105,7 +1147,7 @@ gitment.render('gitment-content');
     disqus_config = function () {
         this.page.url = 'https://zmhaoo.github.io/2022/06/03/%E5%AE%89%E8%A3%85elasticsearch/';
         this.page.identifier = '/2022/06/03/%E5%AE%89%E8%A3%85elasticsearch/';
-        this.page.title = 'Elasticsearch';
+        this.page.title = '安装和集群Elasticsearch';
     };
     let disqus_shortname = '';
 
@@ -1163,13 +1205,13 @@ gitment.render('gitment-content');
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/06/03/Redis%E9%9B%86%E7%BE%A4/">
+                <a href="/2022/06/03/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Redis集群">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="Redis集群分布式缓存">
                         
-                        <span class="card-title">Redis集群</span>
+                        <span class="card-title">Redis集群分布式缓存</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1204,13 +1246,13 @@ gitment.render('gitment-content');
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/06/02/Elasticsearch%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
+                <a href="/2022/06/03/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E02/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Elasticsearch学习总结">
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="Elasticsearch使用02">
                         
-                        <span class="card-title">Elasticsearch学习总结</span>
+                        <span class="card-title">Elasticsearch使用02</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1221,7 +1263,7 @@ gitment.render('gitment-content');
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-02
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
                             </span>
                         <span class="publish-author">
                             
