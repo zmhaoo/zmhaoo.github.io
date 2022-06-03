@@ -4,8 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Gateway网关, Zmhaoo&#39;s Blog">
-    <meta name="description" content="1.Gateway服务网关Spring Cloud Gateway 是 Spring Cloud 的一个全新项目，该项目是基于 Spring 5.0，Spring Boot 2.0 和 Project Reactor 等响应式编程和事件流技">
+    <meta name="keywords" content="Redis集群, Zmhaoo&#39;s Blog">
+    <meta name="description" content="Redis集群本章是基于CentOS7下的Redis集群教程，包括：
+
+单机安装Redis
+Redis主从
+Redis分片集群
+
+1.单机安装RedisLinux版安装首先需要安装Redis所需要的依赖：
+yum install -y gc">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +26,7 @@
 
     
 
-    <title>Gateway网关 | Zmhaoo&#39;s Blog</title>
+    <title>Redis集群 | Zmhaoo&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +316,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Gateway网关</h1>
+                    <h1 class="description center-align post-title">Redis集群</h1>
                 </div>
             </div>
         </div>
@@ -438,8 +445,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8A%80%E6%9C%AF/" class="post-category">
-                                SpringCloud微服务技术
+                            <a href="/categories/Redis%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                Redis相关技术
                             </a>
                         
                     </div>
@@ -451,7 +458,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-05-25
+                    2022-06-03
                 </div>
                 
 
@@ -475,370 +482,461 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="1-Gateway服务网关"><a href="#1-Gateway服务网关" class="headerlink" title="1.Gateway服务网关"></a><strong>1.Gateway服务网关</strong></h1><p>Spring Cloud Gateway 是 Spring Cloud 的一个全新项目，该项目是基于 Spring 5.0，Spring Boot 2.0 和 Project Reactor 等响应式编程和事件流技术开发的网关，它旨在为微服务架构提供一种简单有效的统一的 API 路由管理方式。</p>
-<h2 id="1-1-为什么需要网关"><a href="#1-1-为什么需要网关" class="headerlink" title="1.1.为什么需要网关"></a><strong>1.1.为什么需要网关</strong></h2><p>Gateway网关是我们服务的守门神，所有微服务的统一入口。</p>
-<p>网关的<strong>核心功能特性</strong>：</p>
+                <h1 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h1><p>本章是基于CentOS7下的Redis集群教程，包括：</p>
 <ul>
-<li>请求路由</li>
-<li>权限控制</li>
-<li>限流</li>
+<li>单机安装Redis</li>
+<li>Redis主从</li>
+<li>Redis分片集群</li>
 </ul>
-<p>架构图：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714210131152.png?lastModify=1653489702" alt="image-20210714210131152"></p>
-<p><strong>权限控制</strong>：网关作为微服务入口，需要校验用户是是否有请求资格，如果没有则进行拦截。</p>
-<p><strong>路由和负载均衡</strong>：一切请求都必须先经过gateway，但网关不处理业务，而是根据某种规则，把请求转发到某个微服务，这个过程叫做路由。当然路由的目标服务有多个时，还需要做负载均衡。</p>
-<p><strong>限流</strong>：当请求流量过高时，在网关中按照下流的微服务能够接受的速度来放行请求，避免服务压力过大。</p>
-<p>在SpringCloud中网关的实现包括两种：</p>
-<ul>
-<li>gateway</li>
-<li>zuul</li>
-</ul>
-<p>Zuul是基于Servlet的实现，属于阻塞式编程。而SpringCloudGateway则是基于Spring5中提供的WebFlux，属于响应式编程的实现，具备更好的性能。</p>
-<h2 id="1-2-gateway快速入门"><a href="#1-2-gateway快速入门" class="headerlink" title="1.2.gateway快速入门"></a><strong>1.2.gateway快速入门</strong></h2><p>下面，我们就演示下网关的基本路由功能。基本步骤如下：</p>
-<ol>
-<li>创建SpringBoot工程gateway，引入网关依赖</li>
-<li>编写启动类</li>
-<li>编写基础配置和路由规则</li>
-<li>启动网关服务进行测试</li>
-</ol>
-<h3 id="1）创建gateway服务，引入依赖"><a href="#1）创建gateway服务，引入依赖" class="headerlink" title="1）创建gateway服务，引入依赖"></a>1）创建gateway服务，引入依赖</h3><p>创建服务：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1631tktj20pa0ajq40.jpg" alt="image-20210714210919458"></p>
-<p>引入依赖：</p>
-<pre class="line-numbers language-none"><code class="language-none">&lt;!--网关--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-gateway&lt;&#x2F;artifactId&gt;
-&lt;&#x2F;dependency&gt;
-&lt;!--nacos服务发现依赖--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;com.alibaba.cloud&lt;&#x2F;groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;&#x2F;artifactId&gt;
-&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="1-单机安装Redis"><a href="#1-单机安装Redis" class="headerlink" title="1.单机安装Redis"></a>1.单机安装Redis</h1><h2 id="Linux版安装"><a href="#Linux版安装" class="headerlink" title="Linux版安装"></a>Linux版安装</h2><p>首先需要安装Redis所需要的依赖：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">yum install -y gcc tcl<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 
 
-<h3 id="2）编写启动类"><a href="#2）编写启动类" class="headerlink" title="2）编写启动类"></a>2）编写启动类</h3><pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway;
+<p>然后将课前资料提供的Redis安装包上传到虚拟机的任意目录：</p>
+<p><img src="/assets/image-20210629114325516.png" alt="image-20210629114325516"></p>
+<p>例如，我放到了&#x2F;tmp目录：</p>
+<p><img src="/assets/image-20210629114830642.png" alt="image-20210629114830642"></p>
+<p>解压缩：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">tar -xvf redis-6.2.4.tar.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class GatewayApplication &#123;
-
-  public static void main(String[] args) &#123;
-    SpringApplication.run(GatewayApplication.class, args);
-  &#125;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<h3 id="3）编写基础配置和路由规则"><a href="#3）编写基础配置和路由规则" class="headerlink" title="3）编写基础配置和路由规则"></a>3）编写基础配置和路由规则</h3><p>创建application.yml文件，内容如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">server:
-  port: 10010 # 网关端口
-spring:
-  application:
-    name: gateway # 服务名称
-  cloud:
-    nacos:
-      server-addr: localhost:8848 # nacos地址
-    gateway:
-      routes: # 网关路由配置
-        - id: user-service # 路由id，自定义，只要唯一即可
-          # uri: http:&#x2F;&#x2F;127.0.0.1:8081 # 路由的目标地址 http就是固定地址
-          uri: lb:&#x2F;&#x2F;userservice # 路由的目标地址 lb就是负载均衡，后面跟服务名称
-          predicates: # 路由断言，也就是判断请求是否符合路由规则的条件
-            - Path&#x3D;&#x2F;user&#x2F;** # 这个是按照路径匹配，只要以&#x2F;user&#x2F;开头就符合要求<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>解压后：</p>
+<p><img src="/assets/image-20210629114941810.png" alt="image-20210629114941810"></p>
+<p>进入redis目录：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">cd redis-6.2.4<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 
 
-<p>我们将符合<code>Path</code> 规则的一切请求，都代理到 <code>uri</code>参数指定的地址。</p>
-<p>本例中，我们将 <code>/user/**</code>开头的请求，代理到<code>lb://userservice</code>，lb是负载均衡，根据服务名拉取服务列表，实现负载均衡。</p>
-<h3 id="4）重启测试"><a href="#4）重启测试" class="headerlink" title="4）重启测试"></a>4）重启测试</h3><p>重启网关，访问<a target="_blank" rel="noopener" href="http://localhost:10010/user/1%E6%97%B6%EF%BC%8C%E7%AC%A6%E5%90%88%60/user/**%60%E8%A7%84%E5%88%99%EF%BC%8C%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%88%B0uri%EF%BC%9Ahttp://userservice/user/1%EF%BC%8C%E5%BE%97%E5%88%B0%E4%BA%86%E7%BB%93%E6%9E%9C%EF%BC%9A">http://localhost:10010/user/1时，符合`/user/**`规则，请求转发到uri：http://userservice/user/1，得到了结果：</a></p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714211908341.png?lastModify=1653489702" alt="image-20210714211908341"></p>
-<h3 id="5）网关路由的流程图"><a href="#5）网关路由的流程图" class="headerlink" title="5）网关路由的流程图"></a>5）网关路由的流程图</h3><p>整个访问的流程如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16f2lupj20zl0hnwg3.jpg" alt="image-20210714211742956"></p>
-<p>总结：</p>
-<p>网关搭建步骤：</p>
-<ol>
-<li>创建项目，引入nacos服务发现和gateway依赖</li>
-<li>配置application.yml，包括服务基本信息、nacos地址、路由</li>
-</ol>
-<p>路由配置包括：</p>
-<ol>
-<li>路由id：路由的唯一标示</li>
-<li>路由目标（uri）：路由的目标地址，http代表固定地址，lb代表根据服务名负载均衡</li>
-<li>路由断言（predicates）：判断路由的规则，</li>
-<li>路由过滤器（filters）：对请求或响应做处理</li>
-</ol>
-<p>接下来，就重点来学习路由断言和路由过滤器的详细知识</p>
-<h2 id="1-3-断言工厂"><a href="#1-3-断言工厂" class="headerlink" title="1.3.断言工厂"></a><strong>1.3.断言工厂</strong></h2><p>我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件</p>
-<p>例如Path&#x3D;&#x2F;user&#x2F;**是按照路径匹配，这个规则是由</p>
-<p><code>org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory</code>类来</p>
-<p>处理的，像这样的断言工厂在SpringCloudGateway还有十几个:</p>
+<p>运行编译命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">make &amp;&amp; make install<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>如果没有出错，应该就安装成功了。</p>
+<p>然后修改redis.conf文件中的一些配置：</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 绑定地址，默认是127.0.0.1，会导致只能在本地访问。修改为0.0.0.0则可以在任意IP访问</span>
+<span class="token attr-name">bind</span> <span class="token attr-value">0.0.0.0</span>
+<span class="token comment"># 数据库数量，设置为1</span>
+<span class="token attr-name">databases</span> <span class="token attr-value">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>启动Redis：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-server redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>停止redis服务：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h1 id="2-Redis主从集群"><a href="#2-Redis主从集群" class="headerlink" title="2.Redis主从集群"></a>2.Redis主从集群</h1><h2 id="2-1-集群结构"><a href="#2-1-集群结构" class="headerlink" title="2.1.集群结构"></a>2.1.集群结构</h2><p>我们搭建的主从集群结构如图：</p>
+<p><img src="/assets/image-20210630111505799.png" alt="image-20210630111505799"></p>
+<p>共包含三个节点，一个主节点，两个从节点。</p>
+<p>这里我们会在同一台虚拟机中开启3个redis实例，模拟主从集群，信息如下：</p>
 <table>
 <thead>
 <tr>
-<th align="left"><strong>名称</strong></th>
-<th align="left"><strong>说明</strong></th>
-<th align="left"><strong>示例</strong></th>
+<th align="center">IP</th>
+<th align="center">PORT</th>
+<th align="center">角色</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="left">After</td>
-<td align="left">是某个时间点后的请求</td>
-<td align="left">-  After&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver]</td>
+<td align="center">192.168.150.101</td>
+<td align="center">7001</td>
+<td align="center">master</td>
 </tr>
 <tr>
-<td align="left">Before</td>
-<td align="left">是某个时间点之前的请求</td>
-<td align="left">-  Before&#x3D;2031-04-13T15:14:47.433+08:00[Asia&#x2F;Shanghai]</td>
+<td align="center">192.168.150.101</td>
+<td align="center">7002</td>
+<td align="center">slave</td>
 </tr>
 <tr>
-<td align="left">Between</td>
-<td align="left">是某两个时间点之前的请求</td>
-<td align="left">-  Between&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver],  2037-01-21T17:42:47.789-07:00[America&#x2F;Denver]</td>
-</tr>
-<tr>
-<td align="left">Cookie</td>
-<td align="left">请求必须包含某些cookie</td>
-<td align="left">- Cookie&#x3D;chocolate, ch.p</td>
-</tr>
-<tr>
-<td align="left">Header</td>
-<td align="left">请求必须包含某些header</td>
-<td align="left">- Header&#x3D;X-Request-Id, \d+</td>
-</tr>
-<tr>
-<td align="left">Host</td>
-<td align="left">请求必须是访问某个host（域名）</td>
-<td align="left">-  Host&#x3D;<strong>.somehost.org,</strong>.anotherhost.org</td>
-</tr>
-<tr>
-<td align="left">Method</td>
-<td align="left">请求方式必须是指定方式</td>
-<td align="left">- Method&#x3D;GET,POST</td>
-</tr>
-<tr>
-<td align="left">Path</td>
-<td align="left">请求路径必须符合指定规则</td>
-<td align="left">- Path&#x3D;&#x2F;red&#x2F;{segment},&#x2F;blue&#x2F;**</td>
-</tr>
-<tr>
-<td align="left">Query</td>
-<td align="left">请求参数必须包含指定参数</td>
-<td align="left">- Query&#x3D;name, Jack或者-  Query&#x3D;name</td>
-</tr>
-<tr>
-<td align="left">RemoteAddr</td>
-<td align="left">请求者的ip必须是指定范围</td>
-<td align="left">- RemoteAddr&#x3D;192.168.1.1&#x2F;24</td>
-</tr>
-<tr>
-<td align="left">Weight</td>
-<td align="left">权重处理</td>
-<td align="left"></td>
+<td align="center">192.168.150.101</td>
+<td align="center">7003</td>
+<td align="center">slave</td>
 </tr>
 </tbody></table>
-<p>我们只需要掌握Path这种路由工程就可以了。</p>
-<h2 id="1-4-过滤器工厂"><a href="#1-4-过滤器工厂" class="headerlink" title="1.4.过滤器工厂"></a><strong>1.4.过滤器工厂</strong></h2><p>GatewayFilter是网关中提供的一种过滤器，可以对进入网关的请求和微服务返回的响应做处理：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714212312871.png?lastModify=1653489702" alt="image-20210714212312871"></p>
-<h3 id="1-4-1-路由过滤器的种类"><a href="#1-4-1-路由过滤器的种类" class="headerlink" title="1.4.1.路由过滤器的种类"></a>1.4.1.路由过滤器的种类</h3><p>Spring提供了31种不同的路由过滤器工厂。例如：</p>
+<h2 id="2-2-准备实例和配置"><a href="#2-2-准备实例和配置" class="headerlink" title="2.2.准备实例和配置"></a>2.2.准备实例和配置</h2><p>要在同一台虚拟机开启3个实例，必须准备三份不同的配置文件和目录，配置文件所在目录也就是工作目录。</p>
+<p>1）创建目录</p>
+<p>我们创建三个文件夹，名字分别叫7001、7002、7003：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
+cd &#x2F;tmp
+# 创建目录
+mkdir 7001 7002 7003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如图：</p>
+<p><img src="/assets/image-20210630113929868.png" alt="image-20210630113929868"></p>
+<p>2）恢复原始配置</p>
+<p>修改redis-6.2.4&#x2F;redis.conf文件，将其中的持久化模式改为默认的RDB模式，AOF保持关闭状态。</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 开启RDB</span>
+<span class="token comment"># save ""</span>
+<span class="token attr-name">save</span> <span class="token attr-value">3600 1</span>
+<span class="token attr-name">save</span> <span class="token attr-value">300 100</span>
+<span class="token attr-name">save</span> <span class="token attr-value">60 10000</span>
+
+<span class="token comment"># 关闭AOF</span>
+<span class="token attr-name">appendonly</span> <span class="token attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>3）拷贝配置文件到每个实例目录</p>
+<p>然后将redis-6.2.4&#x2F;redis.conf文件拷贝到三个目录中（在&#x2F;tmp目录执行下列命令）：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 方式一：逐个拷贝
+cp redis-6.2.4&#x2F;redis.conf 7001
+cp redis-6.2.4&#x2F;redis.conf 7002
+cp redis-6.2.4&#x2F;redis.conf 7003
+# 方式二：管道组合命令，一键拷贝
+echo 7001 7002 7003 | xargs -t -n 1 cp redis-6.2.4&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>4）修改每个实例的端口、工作目录</p>
+<p>修改每个文件夹内的配置文件，将端口分别修改为7001、7002、7003，将rdb文件保存位置都修改为自己所在目录（在&#x2F;tmp目录执行下列命令）：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s&#x2F;6379&#x2F;7001&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7001\&#x2F;&#x2F;g&#39; 7001&#x2F;redis.conf
+sed -i -e &#39;s&#x2F;6379&#x2F;7002&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7002\&#x2F;&#x2F;g&#39; 7002&#x2F;redis.conf
+sed -i -e &#39;s&#x2F;6379&#x2F;7003&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7003\&#x2F;&#x2F;g&#39; 7003&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>5）修改每个实例的声明IP</p>
+<p>虚拟机本身有多个IP，为了避免将来混乱，我们需要在redis.conf文件中指定每一个实例的绑定ip信息，格式如下：</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># redis实例的声明 IP</span>
+<span class="token attr-name">replica-announce-ip</span> <span class="token attr-value">192.168.200.137</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+<p>每个目录都要改，我们一键完成修改（在&#x2F;tmp目录执行下列命令）：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 逐一执行
+sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7001&#x2F;redis.conf
+sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7002&#x2F;redis.conf
+sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7003&#x2F;redis.conf
+
+# 或者一键修改
+printf &#39;%s\n&#39; 7001 7002 7003 | xargs -I&#123;&#125; -t sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; &#123;&#125;&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
+
+
+<h2 id="2-3-启动"><a href="#2-3-启动" class="headerlink" title="2.3.启动"></a>2.3.启动</h2><p>为了方便查看日志，我们打开3个ssh窗口，分别启动3个redis实例，启动命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 第1个
+redis-server 7001&#x2F;redis.conf
+# 第2个
+redis-server 7002&#x2F;redis.conf
+# 第3个
+redis-server 7003&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>启动后：</p>
+<p><img src="/assets/image-20210630183914491.png" alt="image-20210630183914491"></p>
+<p>如果要一键停止，可以运行下面命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">printf &#39;%s\n&#39; 7001 7002 7003 | xargs -I&#123;&#125; -t redis-cli -p &#123;&#125; shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+<h2 id="2-4-开启主从关系"><a href="#2-4-开启主从关系" class="headerlink" title="2.4.开启主从关系"></a>2.4.开启主从关系</h2><p>现在三个实例还没有任何关系，要配置主从可以使用replicaof 或者slaveof（5.0以前）命令。</p>
+<p>有临时和永久两种模式：</p>
+<ul>
+<li><p>修改配置文件（永久生效）</p>
+<ul>
+<li>在redis.conf中添加一行配置：<code>slaveof &lt;masterip&gt; &lt;masterport&gt;</code></li>
+</ul>
+</li>
+<li><p>使用redis-cli客户端连接到redis服务，执行slaveof命令（重启后失效）：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">slaveof &lt;masterip&gt; &lt;masterport&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ul>
+<p><strong><font color='red'>注意</font></strong>：在5.0以后新增命令replicaof，与salveof效果一致。</p>
+<p>这里我们为了演示方便，使用方式二。</p>
+<p>通过redis-cli命令连接7002，执行下面命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接 7002
+redis-cli -p 7002
+# 执行slaveof
+slaveof 192.168.150.101 7001<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>通过redis-cli命令连接7003，执行下面命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接 7003
+redis-cli -p 7003
+# 执行slaveof
+slaveof 192.168.150.101 7001<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>然后连接 7001节点，查看集群状态：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接 7001
+redis-cli -p 7001
+# 查看状态
+info replication<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>结果：</p>
+<p><img src="/assets/image-20210630201258802.png" alt="image-20210630201258802"></p>
+<h2 id="2-5-测试"><a href="#2-5-测试" class="headerlink" title="2.5.测试"></a>2.5.测试</h2><p>执行下列操作以测试：</p>
+<ul>
+<li><p>利用redis-cli连接7001，执行<code>set num 123</code></p>
+</li>
+<li><p>利用redis-cli连接7002，执行<code>get num</code>，再执行<code>set num 666</code></p>
+</li>
+<li><p>利用redis-cli连接7003，执行<code>get num</code>，再执行<code>set num 888</code></p>
+</li>
+</ul>
+<p>可以发现，只有在7001这个master节点上可以执行写操作，7002和7003这两个slave节点只能执行读操作。</p>
+<h1 id="3-搭建哨兵集群"><a href="#3-搭建哨兵集群" class="headerlink" title="3.搭建哨兵集群"></a>3.搭建哨兵集群</h1><h2 id="3-1-集群结构"><a href="#3-1-集群结构" class="headerlink" title="3.1.集群结构"></a>3.1.集群结构</h2><p>这里我们搭建一个三节点形成的Sentinel集群，来监管之前的Redis主从集群。如图：</p>
+<p><img src="/assets/image-20210701215227018.png" alt="image-20210701215227018"></p>
+<p>三个sentinel实例信息如下：</p>
 <table>
 <thead>
 <tr>
-<th align="left"><strong>名称</strong></th>
-<th align="left"><strong>说明</strong></th>
+<th>节点</th>
+<th align="center">IP</th>
+<th align="center">PORT</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="left">AddRequestHeader</td>
-<td align="left">给当前请求添加一个请求头</td>
+<td>s1</td>
+<td align="center">192.168.150.101</td>
+<td align="center">27001</td>
 </tr>
 <tr>
-<td align="left">RemoveRequestHeader</td>
-<td align="left">移除请求中的一个请求头</td>
+<td>s2</td>
+<td align="center">192.168.150.101</td>
+<td align="center">27002</td>
 </tr>
 <tr>
-<td align="left">AddResponseHeader</td>
-<td align="left">给响应结果中添加一个响应头</td>
-</tr>
-<tr>
-<td align="left">RemoveResponseHeader</td>
-<td align="left">从响应结果中移除有一个响应头</td>
-</tr>
-<tr>
-<td align="left">RequestRateLimiter</td>
-<td align="left">限制请求的流量</td>
+<td>s3</td>
+<td align="center">192.168.150.101</td>
+<td align="center">27003</td>
 </tr>
 </tbody></table>
-<h3 id="1-4-2-请求头过滤器"><a href="#1-4-2-请求头过滤器" class="headerlink" title="1.4.2.请求头过滤器"></a>1.4.2.请求头过滤器</h3><p>下面我们以AddRequestHeader 为例来讲解。</p>
-<blockquote>
-<p><strong>需求</strong>：给所有进入userservice的请求添加一个请求头：Truth&#x3D;itcast is freaking awesome!</p>
-</blockquote>
-<p>第一步，只需要修改gateway服务的application.yml文件，添加路由过滤即可：</p>
-<pre class="line-numbers language-none"><code class="language-none">spring:
-  cloud:
-    gateway:
-      routes:
-      - id: user-service 
-        uri: lb:&#x2F;&#x2F;userservice 
-        predicates: 
-        - Path&#x3D;&#x2F;user&#x2F;** 
-        filters: # 过滤器
-        - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! # 添加请求头<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="3-2-准备实例和配置"><a href="#3-2-准备实例和配置" class="headerlink" title="3.2.准备实例和配置"></a>3.2.准备实例和配置</h2><p>要在同一台虚拟机开启3个实例，必须准备三份不同的配置文件和目录，配置文件所在目录也就是工作目录。</p>
+<p>我们创建三个文件夹，名字分别叫s1、s2、s3：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
+cd &#x2F;tmp
+# 创建目录
+mkdir s1 s2 s3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>当前过滤器写在userservice路由下，因此仅仅对访问userservice的请求有效。</p>
-<p>第二步，在userController中修改方法</p>
-<pre class="line-numbers language-none"><code class="language-none">&#x2F;**
- * 路径： &#x2F;user&#x2F;110
- *
- * @param id 用户id
- * @return 用户
- *&#x2F;
-@GetMapping(&quot;&#x2F;&#123;id&#125;&quot;)
-public User queryById(@PathVariable(&quot;id&quot;) Long id,
-                      @RequestHeader(&quot;Truth&quot;) String truth) &#123;
-    System.out.println(truth);
-    return userService.queryById(id);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如图：</p>
+<p><img src="/assets/image-20210701215534714.png" alt="image-20210701215534714"></p>
+<p>然后我们在s1目录创建一个sentinel.conf文件，添加下面的内容：</p>
+<pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">port 27001
+sentinel announce-ip 192.168.200.137
+sentinel monitor mymaster 192.168.200.137 7001 2
+sentinel down-after-milliseconds mymaster 5000
+sentinel failover-timeout mymaster 60000
+dir "/tmp/s1"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>第三步，重启网关服务和user服务，并通过网关访问user用户信息 <a target="_blank" rel="noopener" href="http://localhost:10010/user/3">http://localhost:10010/user/3</a></p>
-<p>查看控制台信息，发现可以得到请求头中的信息的</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653321682110.png?lastModify=1653489702" alt="1653321682110"></p>
-<h3 id="1-4-3-默认过滤器"><a href="#1-4-3-默认过滤器" class="headerlink" title="1.4.3.默认过滤器"></a>1.4.3.默认过滤器</h3><p>如果要对所有的路由都生效，则可以将过滤器工厂写到default下。格式如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">spring:
-  cloud:
-    gateway:
-      routes:
-      - id: user-service 
-        uri: lb:&#x2F;&#x2F;userservice 
-        predicates: 
-        - Path&#x3D;&#x2F;user&#x2F;**
-      default-filters: # 默认过滤项
-      - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<h3 id="1-4-4-总结"><a href="#1-4-4-总结" class="headerlink" title="1.4.4.总结"></a>1.4.4.总结</h3><p>过滤器的作用是什么？</p>
-<p>① 对路由的请求或响应做加工处理，比如添加请求头</p>
-<p>② 配置在路由下的过滤器只对当前路由的请求生效</p>
-<p>defaultFilters的作用是什么？</p>
-<p>① 对所有路由都生效的过滤器</p>
-<h2 id="1-5-全局过滤器"><a href="#1-5-全局过滤器" class="headerlink" title="1.5.全局过滤器"></a><strong>1.5.全局过滤器</strong></h2><p>上一节学习的过滤器，网关提供了31种，但每一种过滤器的作用都是固定的。如果我们希望拦截请求，做自己的业务逻辑则没办法实现。</p>
-<h3 id="1-5-1-全局过滤器作用"><a href="#1-5-1-全局过滤器作用" class="headerlink" title="1.5.1.全局过滤器作用"></a>1.5.1.全局过滤器作用</h3><p>全局过滤器的作用也是处理一切进入网关的请求和微服务响应，与GatewayFilter的作用一样。区别在于GatewayFilter通过配置定义，处理逻辑是固定的；而GlobalFilter的逻辑需要自己写代码实现。</p>
-<p>定义方式是实现GlobalFilter接口。</p>
-<pre class="line-numbers language-none"><code class="language-none">public interface GlobalFilter &#123;
-    &#x2F;**
-     *  处理当前请求，有必要的话通过&#123;@link GatewayFilterChain&#125;将请求交给下一个过滤器处理
-     *
-     * @param exchange 请求上下文，里面可以获取Request、Response等信息
-     * @param chain 用来把请求委托给下一个过滤器 
-     * @return &#123;@code Mono&lt;Void&gt;&#125; 返回标示当前过滤器业务结束
-     *&#x2F;
-    Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>在filter中编写自定义逻辑，可以实现下列功能：</p>
+<p>解读：</p>
 <ul>
-<li>登录状态判断</li>
-<li>权限校验</li>
-<li>请求限流等</li>
+<li><code>port 27001</code>：是当前sentinel实例的端口</li>
+<li><code>sentinel monitor mymaster 192.168.150.101 7001 2</code>：指定主节点信息<ul>
+<li><code>mymaster</code>：主节点名称，自定义，任意写</li>
+<li><code>192.168.150.101 7001</code>：主节点的ip和端口</li>
+<li><code>2</code>：选举master时的quorum值</li>
 </ul>
-<h3 id="1-5-2-自定义全局过滤器"><a href="#1-5-2-自定义全局过滤器" class="headerlink" title="1.5.2.自定义全局过滤器"></a>1.5.2.自定义全局过滤器</h3><p>需求：定义全局过滤器，拦截请求，判断请求的参数是否满足下面条件：</p>
+</li>
+</ul>
+<p>然后将s1&#x2F;sentinel.conf文件拷贝到s2、s3两个目录中（在&#x2F;tmp目录执行下列命令）：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 方式一：逐个拷贝
+cp s1&#x2F;sentinel.conf s2
+cp s1&#x2F;sentinel.conf s3
+# 方式二：管道组合命令，一键拷贝
+echo s2 s3 | xargs -t -n 1 cp s1&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>修改s2、s3两个文件夹内的配置文件，将端口分别修改为27002、27003：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s&#x2F;27001&#x2F;27002&#x2F;g&#39; -e &#39;s&#x2F;s1&#x2F;s2&#x2F;g&#39; s2&#x2F;sentinel.conf
+sed -i -e &#39;s&#x2F;27001&#x2F;27003&#x2F;g&#39; -e &#39;s&#x2F;s1&#x2F;s3&#x2F;g&#39; s3&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="3-3-启动"><a href="#3-3-启动" class="headerlink" title="3.3.启动"></a>3.3.启动</h2><p>为了方便查看日志，我们打开3个ssh窗口，分别启动3个redis实例，启动命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 第1个
+redis-sentinel s1&#x2F;sentinel.conf
+# 第2个
+redis-sentinel s2&#x2F;sentinel.conf
+# 第3个
+redis-sentinel s3&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>启动后：</p>
+<p><img src="/assets/image-20210701220714104.png" alt="image-20210701220714104"></p>
+<h2 id="3-4-测试"><a href="#3-4-测试" class="headerlink" title="3.4.测试"></a>3.4.测试</h2><p>尝试让master节点7001宕机，查看sentinel日志：</p>
+<p><img src="/assets/image-20210701222857997.png" alt="image-20210701222857997"></p>
+<p>查看7003的日志：</p>
+<p><img src="/assets/image-20210701223025709.png" alt="image-20210701223025709"></p>
+<p>查看7002的日志：</p>
+<p><img src="/assets/image-20210701223131264.png" alt="image-20210701223131264"></p>
+<h1 id="4-搭建分片集群"><a href="#4-搭建分片集群" class="headerlink" title="4.搭建分片集群"></a>4.搭建分片集群</h1><h2 id="4-1-集群结构"><a href="#4-1-集群结构" class="headerlink" title="4.1.集群结构"></a>4.1.集群结构</h2><p>分片集群需要的节点数量较多，这里我们搭建一个最小的分片集群，包含3个master节点，每个master包含一个slave节点，结构如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5i3p82j20ee0gjq3n.jpg" alt="image-20210702164116027"></p>
+<p>这里我们会在同一台虚拟机中开启6个redis实例，模拟分片集群，信息如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">IP</th>
+<th align="center">PORT</th>
+<th align="center">角色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">192.168.150.101</td>
+<td align="center">7001</td>
+<td align="center">master</td>
+</tr>
+<tr>
+<td align="center">192.168.150.101</td>
+<td align="center">7002</td>
+<td align="center">master</td>
+</tr>
+<tr>
+<td align="center">192.168.150.101</td>
+<td align="center">7003</td>
+<td align="center">master</td>
+</tr>
+<tr>
+<td align="center">192.168.150.101</td>
+<td align="center">8001</td>
+<td align="center">slave</td>
+</tr>
+<tr>
+<td align="center">192.168.150.101</td>
+<td align="center">8002</td>
+<td align="center">slave</td>
+</tr>
+<tr>
+<td align="center">192.168.150.101</td>
+<td align="center">8003</td>
+<td align="center">slave</td>
+</tr>
+</tbody></table>
+<h2 id="4-2-准备实例和配置"><a href="#4-2-准备实例和配置" class="headerlink" title="4.2.准备实例和配置"></a>4.2.准备实例和配置</h2><p>删除之前的7001、7002、7003这几个目录，重新创建出7001、7002、7003、8001、8002、8003目录：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
+cd &#x2F;tmp
+# 删除旧的，避免配置干扰
+rm -rf 7001 7002 7003
+# 创建目录
+mkdir 7001 7002 7003 8001 8002 8003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>在&#x2F;tmp下准备一个新的redis.conf文件，内容如下：</p>
+<pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">port 6379
+<span class="token comment"># 开启集群功能</span>
+cluster-enabled yes
+<span class="token comment"># 集群的配置文件名称，不需要我们创建，由redis自己维护</span>
+cluster-config-file /tmp/6379/nodes.conf
+<span class="token comment"># 节点心跳失败的超时时间</span>
+cluster-node-timeout 5000
+<span class="token comment"># 持久化文件存放目录</span>
+dir /tmp/6379
+<span class="token comment"># 绑定地址</span>
+bind 0.0.0.0
+<span class="token comment"># 让redis后台运行</span>
+daemonize yes
+<span class="token comment"># 注册的实例ip</span>
+replica-announce-ip 192.168.200.137
+<span class="token comment"># 保护模式</span>
+protected-mode no
+<span class="token comment"># 数据库数量</span>
+databases 1
+<span class="token comment"># 日志</span>
+logfile /tmp/6379/run.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>将这个文件拷贝到每个目录下：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
+cd &#x2F;tmp
+# 执行拷贝
+echo 7001 7002 7003 8001 8002 8003 | xargs -t -n 1 cp redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>修改每个目录下的redis.conf，将其中的6379修改为与所在目录一致：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
+cd &#x2F;tmp
+# 修改配置文件
+printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t sed -i &#39;s&#x2F;6379&#x2F;&#123;&#125;&#x2F;g&#39; &#123;&#125;&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="4-3-启动"><a href="#4-3-启动" class="headerlink" title="4.3.启动"></a>4.3.启动</h2><p>因为已经配置了后台启动模式，所以可以直接启动服务：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
+cd &#x2F;tmp
+# 一键启动所有服务
+printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t redis-server &#123;&#125;&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>通过ps查看状态：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">ps -ef | grep redis<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>发现服务都已经正常启动：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5j8oofj20xz05pgnz.jpg" alt="image-20210702174255799"></p>
+<p>如果要关闭所有进程，可以执行命令：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">ps -ef | grep redis | awk &#39;&#123;print $2&#125;&#39; | xargs kill<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>或者（推荐这种方式）：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t redis-cli -p &#123;&#125; shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+<h2 id="4-4-创建集群"><a href="#4-4-创建集群" class="headerlink" title="4.4.创建集群"></a>4.4.创建集群</h2><p>虽然服务启动了，但是目前每个服务之间都是独立的，没有任何关联。</p>
+<p>我们需要执行命令来创建集群，在Redis5.0之前创建集群比较麻烦，5.0之后集群管理命令都集成到了redis-cli中。</p>
+<p>1）Redis5.0之前</p>
+<p>Redis5.0之前集群命令都是用redis安装包下的src&#x2F;redis-trib.rb来实现的。因为redis-trib.rb是有ruby语言编写的所以需要安装ruby环境。</p>
+ <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 安装依赖
+yum -y install zlib ruby rubygems
+gem install redis<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>然后通过命令来管理集群：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入redis的src目录
+cd &#x2F;tmp&#x2F;redis-6.2.4&#x2F;src
+# 创建集群
+.&#x2F;redis-trib.rb create --replicas 1 192.168.150.101:7001 192.168.150.101:7002 192.168.150.101:7003 192.168.150.101:8001 192.168.150.101:8002 192.168.150.101:8003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>2）Redis5.0以后</p>
+<p>我们使用的是Redis6.2.4版本，集群管理以及集成到了redis-cli中，格式如下：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli --cluster create --cluster-replicas 1 192.168.200.137:7001 192.168.200.137:7002 192.168.200.137:7003 192.168.200.137:8001 192.168.200.137:8002 192.168.200.137:8003<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>命令说明：</p>
 <ul>
-<li>参数中是否有authorization，</li>
-<li>authorization参数值是否为admin</li>
+<li><code>redis-cli --cluster</code>或者<code>./redis-trib.rb</code>：代表集群操作命令</li>
+<li><code>create</code>：代表是创建集群</li>
+<li><code>--replicas 1</code>或者<code>--cluster-replicas 1</code> ：指定集群中每个master的副本个数为1，此时<code>节点总数 ÷ (replicas + 1)</code> 得到的就是master的数量。因此节点列表中的前n个就是master，其它节点都是slave节点，随机分配到不同master</li>
 </ul>
-<p>如果同时满足则放行，否则拦截</p>
-<p>实现：</p>
-<p>在gateway中定义一个过滤器：</p>
-<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway.filters;
+<p>运行后的样子：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5lqnkaj217b0jqgul.jpg" alt="image-20210702181101969"></p>
+<p>这里输入yes，则集群开始创建：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5mkum9j20qw0mudnn.jpg" alt="image-20210702181215705"></p>
+<p>通过命令可以查看集群状态：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli -p 7001 cluster nodes<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5pxms7j218504ln0t.jpg" alt="image-20210702181922809"></p>
+<h2 id="4-5-测试"><a href="#4-5-测试" class="headerlink" title="4.5.测试"></a>4.5.测试</h2><p>尝试连接7001节点，存储一个数据：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接
+redis-cli -p 7001
+# 存储数据
+set num 123
+# 读取数据
+get num
+# 再次存储
+set a 1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-@Order(-1)
-@Component
-public class AuthorizeFilter implements GlobalFilter &#123;
-    @Override
-    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;
-        &#x2F;&#x2F; 1.获取请求参数
-        MultiValueMap&lt;String, String&gt; params &#x3D; exchange.getRequest().getQueryParams();
-        &#x2F;&#x2F; 2.获取authorization参数
-        String auth &#x3D; params.getFirst(&quot;authorization&quot;);
-        &#x2F;&#x2F; 3.校验
-        if (&quot;admin&quot;.equals(auth)) &#123;
-            &#x2F;&#x2F; 放行
-            return chain.filter(exchange);
-        &#125;
-        &#x2F;&#x2F; 4.拦截
-        &#x2F;&#x2F; 4.1.禁止访问，设置状态码
-        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        &#x2F;&#x2F; 4.2.结束处理
-        return exchange.getResponse().setComplete();
-    &#125;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>结果悲剧了：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5rblk7j20fm051mxs.jpg" alt="image-20210702182343979"></p>
+<p>集群操作时，需要给<code>redis-cli</code>加上<code>-c</code>参数才可以：</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli -c -p 7001<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-
-
-
-
-<h3 id="1-5-3-过滤器执行顺序"><a href="#1-5-3-过滤器执行顺序" class="headerlink" title="1.5.3.过滤器执行顺序"></a>1.5.3.过滤器执行顺序</h3><p>请求进入网关会碰到三类过滤器：当前路由的过滤器、DefaultFilter、GlobalFilter</p>
-<p>请求路由后，会将当前路由过滤器和DefaultFilter、GlobalFilter，合并到一个过滤器链（集合）中，排序后依次执行每个过滤器：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16c9jpqj21200d7gna.jpg" alt="image-20210714214228409"></p>
-<p>排序的规则是什么呢？</p>
-<ul>
-<li>每一个过滤器都必须指定一个int类型的order值，<strong>order值越小，优先级越高，执行顺序越靠前</strong>。</li>
-<li>GlobalFilter通过实现Ordered接口，或者添加@Order注解来指定order值，由我们自己指定</li>
-<li>路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增。</li>
-<li>当过滤器的order值一样时，会按照 defaultFilter &gt; 路由过滤器 &gt; GlobalFilter的顺序执行。</li>
-</ul>
-<p>详细内容，可以查看源码：</p>
-<p><code>org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator#getFilters()</code>方法是先加载defaultFilters，然后再加载某个route的filters，然后合并。</p>
-<p><code>org.springframework.cloud.gateway.handler.FilteringWebHandler#handle()</code>方法会加载全局过滤器，与前面的过滤器合并后根据order排序，组织过滤器链</p>
-<h2 id="1-6-跨域问题"><a href="#1-6-跨域问题" class="headerlink" title="1.6.跨域问题"></a><strong>1.6.跨域问题</strong></h2><h3 id="1-6-1-什么是跨域问题"><a href="#1-6-1-什么是跨域问题" class="headerlink" title="1.6.1.什么是跨域问题"></a>1.6.1.什么是跨域问题</h3><p>跨域：域名不一致就是跨域，主要包括：</p>
-<ul>
-<li>域名不同： <a href="www.taobao.com">www.taobao.com</a> 和 <a href="www.taobao.org">www.taobao.org</a> 和 <a href="www.jd.com">www.jd.com</a> 和 miaosha.jd.com</li>
-<li>域名相同，端口不同：localhost:8080和localhost8081</li>
-</ul>
-<p>跨域问题：浏览器禁止请求的发起者与服务端发生跨域ajax请求，请求被浏览器拦截的问题</p>
-<p>解决方案：CORS，这个以前应该学习过，这里不再赘述了。不知道的小伙伴可以查看<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/04/cors.html">https://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
-<h3 id="1-6-2-模拟跨域问题"><a href="#1-6-2-模拟跨域问题" class="headerlink" title="1.6.2.模拟跨域问题"></a>1.6.2.模拟跨域问题</h3><p>找到课前资料的页面文件：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l164rshjj20gm05v3z7.jpg" alt="image-20210714215713563"></p>
-<p>放入idea的resource下，然后打开index.html点击右上角的谷歌浏览器</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16bfxlaj21eo0lzn1p.jpg" alt="1653322918256"></p>
-<p>点击执行谷歌浏览器展示页面效果</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l165qv67j20te0c0myt.jpg" alt="1653322945983"></p>
-<p>F12可以在浏览器控制台看到下面的错误：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714215832675.png?lastModify=1653489702" alt="image-20210714215832675"></p>
-<p>从localhost:63342访问localhost:10010，端口不同，显然是跨域的请求。</p>
-<h3 id="1-6-3-解决跨域问题"><a href="#1-6-3-解决跨域问题" class="headerlink" title="1.6.3.解决跨域问题"></a>1.6.3.解决跨域问题</h3><p>在gateway服务的application.yml文件中，添加下面的配置：</p>
-<pre class="line-numbers language-none"><code class="language-none">spring:
-  cloud:
-    gateway:
-      # 。。。
-      globalcors: # 全局的跨域处理
-        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
-        corsConfigurations:
-          &#39;[&#x2F;**]&#39;:
-            allowedOrigins: # 允许哪些网站的跨域请求 
-              - &quot;http:&#x2F;&#x2F;localhost:63342&quot;
-            allowedMethods: # 允许的跨域ajax的请求方式
-              - &quot;GET&quot;
-              - &quot;POST&quot;
-              - &quot;DELETE&quot;
-              - &quot;PUT&quot;
-              - &quot;OPTIONS&quot;
-            allowedHeaders: &quot;*&quot; # 允许在请求中携带的头信息
-            allowCredentials: true # 是否允许携带cookie
-            maxAge: 360000 # 这次跨域检测的有效期<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这次可以了：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5sms7qj20k0078jsg.jpg" alt="image-20210702182602145"></p>
 
                 
             </div>
@@ -865,7 +963,7 @@ public class AuthorizeFilter implements GlobalFilter &#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://zmhaoo.github.io/2022/05/25/Gateway%E7%BD%91%E5%85%B3/">https://zmhaoo.github.io/2022/05/25/Gateway%E7%BD%91%E5%85%B3/</a>
+                    <a href="https://zmhaoo.github.io/2022/06/03/Redis%E9%9B%86%E7%BE%A4/">https://zmhaoo.github.io/2022/06/03/Redis%E9%9B%86%E7%BE%A4/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1071,7 +1169,7 @@ public class AuthorizeFilter implements GlobalFilter &#123;
         repo: '',
         owner: '',
         admin: null,
-        id: '2022-05-25T22-31-43',
+        id: '2022-06-03T22-31-43',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -1095,7 +1193,7 @@ public class AuthorizeFilter implements GlobalFilter &#123;
 <script src="/libs/gitment/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-    id: 'Wed May 25 2022 22:31:43 GMT+0800',
+    id: 'Fri Jun 03 2022 22:31:43 GMT+0800',
     owner: '',
     repo: '',
     oauth: {
@@ -1120,9 +1218,9 @@ gitment.render('gitment-content');
 
 <script type="text/javascript">
     disqus_config = function () {
-        this.page.url = 'https://zmhaoo.github.io/2022/05/25/Gateway%E7%BD%91%E5%85%B3/';
-        this.page.identifier = '/2022/05/25/Gateway%E7%BD%91%E5%85%B3/';
-        this.page.title = 'Gateway网关';
+        this.page.url = 'https://zmhaoo.github.io/2022/06/03/Redis%E9%9B%86%E7%BE%A4/';
+        this.page.identifier = '/2022/06/03/Redis%E9%9B%86%E7%BE%A4/';
+        this.page.title = 'Redis集群';
     };
     let disqus_shortname = '';
 
@@ -1176,58 +1274,18 @@ gitment.render('gitment-content');
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/05/26/Centos7%E5%AE%89%E8%A3%85Docker/">
+                <a href="/2022/06/03/Redis%E9%9B%86%E7%BE%A4/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Centos7安装Docker">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Redis集群">
                         
-                        <span class="card-title">Centos7安装Docker</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-05-26
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Docker%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    Docker相关技术
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/05/25/Feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Feign远程调用">
-                        
-                        <span class="card-title">Feign远程调用</span>
+                        <span class="card-title">Redis集群</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1238,14 +1296,56 @@ gitment.render('gitment-content');
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-25
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    SpringCloud微服务技术
+                            <a href="/categories/Redis%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    Redis相关技术
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/06/03/%E5%AE%89%E8%A3%85elasticsearch/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="Elasticsearch">
+                        
+                        <span class="card-title">Elasticsearch</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/ElasticSearch%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    ElasticSearch相关技术
                                 </a>
                             
                             

@@ -4,8 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Gateway网关, Zmhaoo&#39;s Blog">
-    <meta name="description" content="1.Gateway服务网关Spring Cloud Gateway 是 Spring Cloud 的一个全新项目，该项目是基于 Spring 5.0，Spring Boot 2.0 和 Project Reactor 等响应式编程和事件流技">
+    <meta name="keywords" content="Es集群脑裂情况, Zmhaoo&#39;s Blog">
+    <meta name="description" content="1.集群脑裂是什么？    所谓脑裂问题，就是同一个集群中的不同节点，对于集群的状态有了不一样的理解，比如集群中存在两个master，正常情况下我们集群中只能有一个master节点。
+
+2.集群脑裂场景举例如果因为网络的故障，导致一个集群被">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +21,7 @@
 
     
 
-    <title>Gateway网关 | Zmhaoo&#39;s Blog</title>
+    <title>Es集群脑裂情况 | Zmhaoo&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +311,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Gateway网关</h1>
+                    <h1 class="description center-align post-title">Es集群脑裂情况</h1>
                 </div>
             </div>
         </div>
@@ -435,15 +437,6 @@
                 </div>
                 <div class="col s5 right-align">
                     
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8A%80%E6%9C%AF/" class="post-category">
-                                SpringCloud微服务技术
-                            </a>
-                        
-                    </div>
-                    
                 </div>
             </div>
 
@@ -451,7 +444,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-05-25
+                    2022-06-02
                 </div>
                 
 
@@ -475,370 +468,14 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="1-Gateway服务网关"><a href="#1-Gateway服务网关" class="headerlink" title="1.Gateway服务网关"></a><strong>1.Gateway服务网关</strong></h1><p>Spring Cloud Gateway 是 Spring Cloud 的一个全新项目，该项目是基于 Spring 5.0，Spring Boot 2.0 和 Project Reactor 等响应式编程和事件流技术开发的网关，它旨在为微服务架构提供一种简单有效的统一的 API 路由管理方式。</p>
-<h2 id="1-1-为什么需要网关"><a href="#1-1-为什么需要网关" class="headerlink" title="1.1.为什么需要网关"></a><strong>1.1.为什么需要网关</strong></h2><p>Gateway网关是我们服务的守门神，所有微服务的统一入口。</p>
-<p>网关的<strong>核心功能特性</strong>：</p>
-<ul>
-<li>请求路由</li>
-<li>权限控制</li>
-<li>限流</li>
-</ul>
-<p>架构图：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714210131152.png?lastModify=1653489702" alt="image-20210714210131152"></p>
-<p><strong>权限控制</strong>：网关作为微服务入口，需要校验用户是是否有请求资格，如果没有则进行拦截。</p>
-<p><strong>路由和负载均衡</strong>：一切请求都必须先经过gateway，但网关不处理业务，而是根据某种规则，把请求转发到某个微服务，这个过程叫做路由。当然路由的目标服务有多个时，还需要做负载均衡。</p>
-<p><strong>限流</strong>：当请求流量过高时，在网关中按照下流的微服务能够接受的速度来放行请求，避免服务压力过大。</p>
-<p>在SpringCloud中网关的实现包括两种：</p>
-<ul>
-<li>gateway</li>
-<li>zuul</li>
-</ul>
-<p>Zuul是基于Servlet的实现，属于阻塞式编程。而SpringCloudGateway则是基于Spring5中提供的WebFlux，属于响应式编程的实现，具备更好的性能。</p>
-<h2 id="1-2-gateway快速入门"><a href="#1-2-gateway快速入门" class="headerlink" title="1.2.gateway快速入门"></a><strong>1.2.gateway快速入门</strong></h2><p>下面，我们就演示下网关的基本路由功能。基本步骤如下：</p>
-<ol>
-<li>创建SpringBoot工程gateway，引入网关依赖</li>
-<li>编写启动类</li>
-<li>编写基础配置和路由规则</li>
-<li>启动网关服务进行测试</li>
-</ol>
-<h3 id="1）创建gateway服务，引入依赖"><a href="#1）创建gateway服务，引入依赖" class="headerlink" title="1）创建gateway服务，引入依赖"></a>1）创建gateway服务，引入依赖</h3><p>创建服务：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1631tktj20pa0ajq40.jpg" alt="image-20210714210919458"></p>
-<p>引入依赖：</p>
-<pre class="line-numbers language-none"><code class="language-none">&lt;!--网关--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-gateway&lt;&#x2F;artifactId&gt;
-&lt;&#x2F;dependency&gt;
-&lt;!--nacos服务发现依赖--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;com.alibaba.cloud&lt;&#x2F;groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;&#x2F;artifactId&gt;
-&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<h3 id="2）编写启动类"><a href="#2）编写启动类" class="headerlink" title="2）编写启动类"></a>2）编写启动类</h3><pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class GatewayApplication &#123;
-
-  public static void main(String[] args) &#123;
-    SpringApplication.run(GatewayApplication.class, args);
-  &#125;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<h3 id="3）编写基础配置和路由规则"><a href="#3）编写基础配置和路由规则" class="headerlink" title="3）编写基础配置和路由规则"></a>3）编写基础配置和路由规则</h3><p>创建application.yml文件，内容如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">server:
-  port: 10010 # 网关端口
-spring:
-  application:
-    name: gateway # 服务名称
-  cloud:
-    nacos:
-      server-addr: localhost:8848 # nacos地址
-    gateway:
-      routes: # 网关路由配置
-        - id: user-service # 路由id，自定义，只要唯一即可
-          # uri: http:&#x2F;&#x2F;127.0.0.1:8081 # 路由的目标地址 http就是固定地址
-          uri: lb:&#x2F;&#x2F;userservice # 路由的目标地址 lb就是负载均衡，后面跟服务名称
-          predicates: # 路由断言，也就是判断请求是否符合路由规则的条件
-            - Path&#x3D;&#x2F;user&#x2F;** # 这个是按照路径匹配，只要以&#x2F;user&#x2F;开头就符合要求<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>我们将符合<code>Path</code> 规则的一切请求，都代理到 <code>uri</code>参数指定的地址。</p>
-<p>本例中，我们将 <code>/user/**</code>开头的请求，代理到<code>lb://userservice</code>，lb是负载均衡，根据服务名拉取服务列表，实现负载均衡。</p>
-<h3 id="4）重启测试"><a href="#4）重启测试" class="headerlink" title="4）重启测试"></a>4）重启测试</h3><p>重启网关，访问<a target="_blank" rel="noopener" href="http://localhost:10010/user/1%E6%97%B6%EF%BC%8C%E7%AC%A6%E5%90%88%60/user/**%60%E8%A7%84%E5%88%99%EF%BC%8C%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%88%B0uri%EF%BC%9Ahttp://userservice/user/1%EF%BC%8C%E5%BE%97%E5%88%B0%E4%BA%86%E7%BB%93%E6%9E%9C%EF%BC%9A">http://localhost:10010/user/1时，符合`/user/**`规则，请求转发到uri：http://userservice/user/1，得到了结果：</a></p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714211908341.png?lastModify=1653489702" alt="image-20210714211908341"></p>
-<h3 id="5）网关路由的流程图"><a href="#5）网关路由的流程图" class="headerlink" title="5）网关路由的流程图"></a>5）网关路由的流程图</h3><p>整个访问的流程如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16f2lupj20zl0hnwg3.jpg" alt="image-20210714211742956"></p>
-<p>总结：</p>
-<p>网关搭建步骤：</p>
-<ol>
-<li>创建项目，引入nacos服务发现和gateway依赖</li>
-<li>配置application.yml，包括服务基本信息、nacos地址、路由</li>
-</ol>
-<p>路由配置包括：</p>
-<ol>
-<li>路由id：路由的唯一标示</li>
-<li>路由目标（uri）：路由的目标地址，http代表固定地址，lb代表根据服务名负载均衡</li>
-<li>路由断言（predicates）：判断路由的规则，</li>
-<li>路由过滤器（filters）：对请求或响应做处理</li>
-</ol>
-<p>接下来，就重点来学习路由断言和路由过滤器的详细知识</p>
-<h2 id="1-3-断言工厂"><a href="#1-3-断言工厂" class="headerlink" title="1.3.断言工厂"></a><strong>1.3.断言工厂</strong></h2><p>我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件</p>
-<p>例如Path&#x3D;&#x2F;user&#x2F;**是按照路径匹配，这个规则是由</p>
-<p><code>org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory</code>类来</p>
-<p>处理的，像这样的断言工厂在SpringCloudGateway还有十几个:</p>
-<table>
-<thead>
-<tr>
-<th align="left"><strong>名称</strong></th>
-<th align="left"><strong>说明</strong></th>
-<th align="left"><strong>示例</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">After</td>
-<td align="left">是某个时间点后的请求</td>
-<td align="left">-  After&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver]</td>
-</tr>
-<tr>
-<td align="left">Before</td>
-<td align="left">是某个时间点之前的请求</td>
-<td align="left">-  Before&#x3D;2031-04-13T15:14:47.433+08:00[Asia&#x2F;Shanghai]</td>
-</tr>
-<tr>
-<td align="left">Between</td>
-<td align="left">是某两个时间点之前的请求</td>
-<td align="left">-  Between&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver],  2037-01-21T17:42:47.789-07:00[America&#x2F;Denver]</td>
-</tr>
-<tr>
-<td align="left">Cookie</td>
-<td align="left">请求必须包含某些cookie</td>
-<td align="left">- Cookie&#x3D;chocolate, ch.p</td>
-</tr>
-<tr>
-<td align="left">Header</td>
-<td align="left">请求必须包含某些header</td>
-<td align="left">- Header&#x3D;X-Request-Id, \d+</td>
-</tr>
-<tr>
-<td align="left">Host</td>
-<td align="left">请求必须是访问某个host（域名）</td>
-<td align="left">-  Host&#x3D;<strong>.somehost.org,</strong>.anotherhost.org</td>
-</tr>
-<tr>
-<td align="left">Method</td>
-<td align="left">请求方式必须是指定方式</td>
-<td align="left">- Method&#x3D;GET,POST</td>
-</tr>
-<tr>
-<td align="left">Path</td>
-<td align="left">请求路径必须符合指定规则</td>
-<td align="left">- Path&#x3D;&#x2F;red&#x2F;{segment},&#x2F;blue&#x2F;**</td>
-</tr>
-<tr>
-<td align="left">Query</td>
-<td align="left">请求参数必须包含指定参数</td>
-<td align="left">- Query&#x3D;name, Jack或者-  Query&#x3D;name</td>
-</tr>
-<tr>
-<td align="left">RemoteAddr</td>
-<td align="left">请求者的ip必须是指定范围</td>
-<td align="left">- RemoteAddr&#x3D;192.168.1.1&#x2F;24</td>
-</tr>
-<tr>
-<td align="left">Weight</td>
-<td align="left">权重处理</td>
-<td align="left"></td>
-</tr>
-</tbody></table>
-<p>我们只需要掌握Path这种路由工程就可以了。</p>
-<h2 id="1-4-过滤器工厂"><a href="#1-4-过滤器工厂" class="headerlink" title="1.4.过滤器工厂"></a><strong>1.4.过滤器工厂</strong></h2><p>GatewayFilter是网关中提供的一种过滤器，可以对进入网关的请求和微服务返回的响应做处理：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714212312871.png?lastModify=1653489702" alt="image-20210714212312871"></p>
-<h3 id="1-4-1-路由过滤器的种类"><a href="#1-4-1-路由过滤器的种类" class="headerlink" title="1.4.1.路由过滤器的种类"></a>1.4.1.路由过滤器的种类</h3><p>Spring提供了31种不同的路由过滤器工厂。例如：</p>
-<table>
-<thead>
-<tr>
-<th align="left"><strong>名称</strong></th>
-<th align="left"><strong>说明</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">AddRequestHeader</td>
-<td align="left">给当前请求添加一个请求头</td>
-</tr>
-<tr>
-<td align="left">RemoveRequestHeader</td>
-<td align="left">移除请求中的一个请求头</td>
-</tr>
-<tr>
-<td align="left">AddResponseHeader</td>
-<td align="left">给响应结果中添加一个响应头</td>
-</tr>
-<tr>
-<td align="left">RemoveResponseHeader</td>
-<td align="left">从响应结果中移除有一个响应头</td>
-</tr>
-<tr>
-<td align="left">RequestRateLimiter</td>
-<td align="left">限制请求的流量</td>
-</tr>
-</tbody></table>
-<h3 id="1-4-2-请求头过滤器"><a href="#1-4-2-请求头过滤器" class="headerlink" title="1.4.2.请求头过滤器"></a>1.4.2.请求头过滤器</h3><p>下面我们以AddRequestHeader 为例来讲解。</p>
-<blockquote>
-<p><strong>需求</strong>：给所有进入userservice的请求添加一个请求头：Truth&#x3D;itcast is freaking awesome!</p>
-</blockquote>
-<p>第一步，只需要修改gateway服务的application.yml文件，添加路由过滤即可：</p>
-<pre class="line-numbers language-none"><code class="language-none">spring:
-  cloud:
-    gateway:
-      routes:
-      - id: user-service 
-        uri: lb:&#x2F;&#x2F;userservice 
-        predicates: 
-        - Path&#x3D;&#x2F;user&#x2F;** 
-        filters: # 过滤器
-        - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! # 添加请求头<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>当前过滤器写在userservice路由下，因此仅仅对访问userservice的请求有效。</p>
-<p>第二步，在userController中修改方法</p>
-<pre class="line-numbers language-none"><code class="language-none">&#x2F;**
- * 路径： &#x2F;user&#x2F;110
- *
- * @param id 用户id
- * @return 用户
- *&#x2F;
-@GetMapping(&quot;&#x2F;&#123;id&#125;&quot;)
-public User queryById(@PathVariable(&quot;id&quot;) Long id,
-                      @RequestHeader(&quot;Truth&quot;) String truth) &#123;
-    System.out.println(truth);
-    return userService.queryById(id);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>第三步，重启网关服务和user服务，并通过网关访问user用户信息 <a target="_blank" rel="noopener" href="http://localhost:10010/user/3">http://localhost:10010/user/3</a></p>
-<p>查看控制台信息，发现可以得到请求头中的信息的</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653321682110.png?lastModify=1653489702" alt="1653321682110"></p>
-<h3 id="1-4-3-默认过滤器"><a href="#1-4-3-默认过滤器" class="headerlink" title="1.4.3.默认过滤器"></a>1.4.3.默认过滤器</h3><p>如果要对所有的路由都生效，则可以将过滤器工厂写到default下。格式如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">spring:
-  cloud:
-    gateway:
-      routes:
-      - id: user-service 
-        uri: lb:&#x2F;&#x2F;userservice 
-        predicates: 
-        - Path&#x3D;&#x2F;user&#x2F;**
-      default-filters: # 默认过滤项
-      - AddRequestHeader&#x3D;Truth, Itcast is freaking awesome! <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<h3 id="1-4-4-总结"><a href="#1-4-4-总结" class="headerlink" title="1.4.4.总结"></a>1.4.4.总结</h3><p>过滤器的作用是什么？</p>
-<p>① 对路由的请求或响应做加工处理，比如添加请求头</p>
-<p>② 配置在路由下的过滤器只对当前路由的请求生效</p>
-<p>defaultFilters的作用是什么？</p>
-<p>① 对所有路由都生效的过滤器</p>
-<h2 id="1-5-全局过滤器"><a href="#1-5-全局过滤器" class="headerlink" title="1.5.全局过滤器"></a><strong>1.5.全局过滤器</strong></h2><p>上一节学习的过滤器，网关提供了31种，但每一种过滤器的作用都是固定的。如果我们希望拦截请求，做自己的业务逻辑则没办法实现。</p>
-<h3 id="1-5-1-全局过滤器作用"><a href="#1-5-1-全局过滤器作用" class="headerlink" title="1.5.1.全局过滤器作用"></a>1.5.1.全局过滤器作用</h3><p>全局过滤器的作用也是处理一切进入网关的请求和微服务响应，与GatewayFilter的作用一样。区别在于GatewayFilter通过配置定义，处理逻辑是固定的；而GlobalFilter的逻辑需要自己写代码实现。</p>
-<p>定义方式是实现GlobalFilter接口。</p>
-<pre class="line-numbers language-none"><code class="language-none">public interface GlobalFilter &#123;
-    &#x2F;**
-     *  处理当前请求，有必要的话通过&#123;@link GatewayFilterChain&#125;将请求交给下一个过滤器处理
-     *
-     * @param exchange 请求上下文，里面可以获取Request、Response等信息
-     * @param chain 用来把请求委托给下一个过滤器 
-     * @return &#123;@code Mono&lt;Void&gt;&#125; 返回标示当前过滤器业务结束
-     *&#x2F;
-    Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>在filter中编写自定义逻辑，可以实现下列功能：</p>
-<ul>
-<li>登录状态判断</li>
-<li>权限校验</li>
-<li>请求限流等</li>
-</ul>
-<h3 id="1-5-2-自定义全局过滤器"><a href="#1-5-2-自定义全局过滤器" class="headerlink" title="1.5.2.自定义全局过滤器"></a>1.5.2.自定义全局过滤器</h3><p>需求：定义全局过滤器，拦截请求，判断请求的参数是否满足下面条件：</p>
-<ul>
-<li>参数中是否有authorization，</li>
-<li>authorization参数值是否为admin</li>
-</ul>
-<p>如果同时满足则放行，否则拦截</p>
-<p>实现：</p>
-<p>在gateway中定义一个过滤器：</p>
-<pre class="line-numbers language-none"><code class="language-none">package cn.itcast.gateway.filters;
-
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
-
-@Order(-1)
-@Component
-public class AuthorizeFilter implements GlobalFilter &#123;
-    @Override
-    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;
-        &#x2F;&#x2F; 1.获取请求参数
-        MultiValueMap&lt;String, String&gt; params &#x3D; exchange.getRequest().getQueryParams();
-        &#x2F;&#x2F; 2.获取authorization参数
-        String auth &#x3D; params.getFirst(&quot;authorization&quot;);
-        &#x2F;&#x2F; 3.校验
-        if (&quot;admin&quot;.equals(auth)) &#123;
-            &#x2F;&#x2F; 放行
-            return chain.filter(exchange);
-        &#125;
-        &#x2F;&#x2F; 4.拦截
-        &#x2F;&#x2F; 4.1.禁止访问，设置状态码
-        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        &#x2F;&#x2F; 4.2.结束处理
-        return exchange.getResponse().setComplete();
-    &#125;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-
-
-<h3 id="1-5-3-过滤器执行顺序"><a href="#1-5-3-过滤器执行顺序" class="headerlink" title="1.5.3.过滤器执行顺序"></a>1.5.3.过滤器执行顺序</h3><p>请求进入网关会碰到三类过滤器：当前路由的过滤器、DefaultFilter、GlobalFilter</p>
-<p>请求路由后，会将当前路由过滤器和DefaultFilter、GlobalFilter，合并到一个过滤器链（集合）中，排序后依次执行每个过滤器：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16c9jpqj21200d7gna.jpg" alt="image-20210714214228409"></p>
-<p>排序的规则是什么呢？</p>
-<ul>
-<li>每一个过滤器都必须指定一个int类型的order值，<strong>order值越小，优先级越高，执行顺序越靠前</strong>。</li>
-<li>GlobalFilter通过实现Ordered接口，或者添加@Order注解来指定order值，由我们自己指定</li>
-<li>路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增。</li>
-<li>当过滤器的order值一样时，会按照 defaultFilter &gt; 路由过滤器 &gt; GlobalFilter的顺序执行。</li>
-</ul>
-<p>详细内容，可以查看源码：</p>
-<p><code>org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator#getFilters()</code>方法是先加载defaultFilters，然后再加载某个route的filters，然后合并。</p>
-<p><code>org.springframework.cloud.gateway.handler.FilteringWebHandler#handle()</code>方法会加载全局过滤器，与前面的过滤器合并后根据order排序，组织过滤器链</p>
-<h2 id="1-6-跨域问题"><a href="#1-6-跨域问题" class="headerlink" title="1.6.跨域问题"></a><strong>1.6.跨域问题</strong></h2><h3 id="1-6-1-什么是跨域问题"><a href="#1-6-1-什么是跨域问题" class="headerlink" title="1.6.1.什么是跨域问题"></a>1.6.1.什么是跨域问题</h3><p>跨域：域名不一致就是跨域，主要包括：</p>
-<ul>
-<li>域名不同： <a href="www.taobao.com">www.taobao.com</a> 和 <a href="www.taobao.org">www.taobao.org</a> 和 <a href="www.jd.com">www.jd.com</a> 和 miaosha.jd.com</li>
-<li>域名相同，端口不同：localhost:8080和localhost8081</li>
-</ul>
-<p>跨域问题：浏览器禁止请求的发起者与服务端发生跨域ajax请求，请求被浏览器拦截的问题</p>
-<p>解决方案：CORS，这个以前应该学习过，这里不再赘述了。不知道的小伙伴可以查看<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/04/cors.html">https://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
-<h3 id="1-6-2-模拟跨域问题"><a href="#1-6-2-模拟跨域问题" class="headerlink" title="1.6.2.模拟跨域问题"></a>1.6.2.模拟跨域问题</h3><p>找到课前资料的页面文件：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l164rshjj20gm05v3z7.jpg" alt="image-20210714215713563"></p>
-<p>放入idea的resource下，然后打开index.html点击右上角的谷歌浏览器</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16bfxlaj21eo0lzn1p.jpg" alt="1653322918256"></p>
-<p>点击执行谷歌浏览器展示页面效果</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l165qv67j20te0c0myt.jpg" alt="1653322945983"></p>
-<p>F12可以在浏览器控制台看到下面的错误：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714215832675.png?lastModify=1653489702" alt="image-20210714215832675"></p>
-<p>从localhost:63342访问localhost:10010，端口不同，显然是跨域的请求。</p>
-<h3 id="1-6-3-解决跨域问题"><a href="#1-6-3-解决跨域问题" class="headerlink" title="1.6.3.解决跨域问题"></a>1.6.3.解决跨域问题</h3><p>在gateway服务的application.yml文件中，添加下面的配置：</p>
-<pre class="line-numbers language-none"><code class="language-none">spring:
-  cloud:
-    gateway:
-      # 。。。
-      globalcors: # 全局的跨域处理
-        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
-        corsConfigurations:
-          &#39;[&#x2F;**]&#39;:
-            allowedOrigins: # 允许哪些网站的跨域请求 
-              - &quot;http:&#x2F;&#x2F;localhost:63342&quot;
-            allowedMethods: # 允许的跨域ajax的请求方式
-              - &quot;GET&quot;
-              - &quot;POST&quot;
-              - &quot;DELETE&quot;
-              - &quot;PUT&quot;
-              - &quot;OPTIONS&quot;
-            allowedHeaders: &quot;*&quot; # 允许在请求中携带的头信息
-            allowCredentials: true # 是否允许携带cookie
-            maxAge: 360000 # 这次跨域检测的有效期<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+                <h1 id="1-集群脑裂是什么？"><a href="#1-集群脑裂是什么？" class="headerlink" title="1.集群脑裂是什么？"></a>1.集群脑裂是什么？</h1><pre><code>    所谓脑裂问题，就是同一个集群中的不同节点，对于集群的状态有了不一样的理解，比如集群中存在两个master，正常情况下我们集群中只能有一个master节点。
+</code></pre>
+<h1 id="2-集群脑裂场景举例"><a href="#2-集群脑裂场景举例" class="headerlink" title="2.集群脑裂场景举例"></a>2.集群脑裂场景举例</h1><p>如果因为网络的故障，导致一个集群被划分成了两片，每片都有多个node，以及一个master，那么集群中就出现了两个master了。但是因为master是集群中非常重要的一个角色，主宰了集群状态的维护，以及shard的分配，因此如果有两个master，可能会导致数据异常。<br>如：</p>
+<p>节点1在启动时被选举为主节点并保存主分片标记为0P，而节点2保存副本分片标记为0R。<br>现在，如果在两个节点之间的通讯中断了，会发生什么？由于网络问题或只是因为其中一个节点无响应,这是有可能发生的。</p>
+<p>两个节点都相信对方已经挂了。节点1不需要做什么，因为它本来就被选举为主节点。但是节点2会自动选举它自己为主节点，因为它相信集群的一部分没有主节点了。<br>在elasticsearch集群，是有主节点来决定将分片平均的分布到节点上的。节点2保存的是复制分片，但它相信主节点不可用了。所以它会自动提升Node2节点为主节点。</p>
+<p>现在我们的集群在一个不一致的状态了。打在节点1上的索引请求会将索引数据分配在主节点，同时打在节点2的请求会将索引数据放在分片上。在这种情况下，分片的两份数据分开了，如果不做一个全量的重索引很难对它们进行重排序。在更坏的情况下，一个对集群无感知的索引客户端（例如，使用REST接口的）,这个问题非常透明难以发现，无论哪个节点被命中索引请求仍然在每次都会成功完成。问题只有在搜索数据时才会被隐约发现：取决于搜索请求命中了哪个节点，结果都会不同。</p>
+<h1 id="3-脑裂解决方案"><a href="#3-脑裂解决方案" class="headerlink" title="3.脑裂解决方案"></a>3.脑裂解决方案</h1><p>在elasticsearch.yml中配置属性：discovery.zen.minimum_master_nodes，它的值默认是1，这个参数的作用，就是告诉es直到有足够的master候选节点支持时，才可以选举出一个master，否则就不要选举出一个master。<br>这个参数设置有个算法就是：master候选资格节点数量 &#x2F; 2 + 1，所有有资格成为master的节点都需要加上这个配置。<br>假设我们有10个节点，都能维护数据，也都有资格成为master节点，那么quorum就是10 &#x2F; 2 + 1 &#x3D; 6；假设我们有5个节点，那么quorum就是5&#x2F;2 + 1 &#x3D; 3。</p>
+<h1 id="4-分析：为什么master候选节点最少三个（minimum-master-nodes是如何避免脑裂问题产生的）"><a href="#4-分析：为什么master候选节点最少三个（minimum-master-nodes是如何避免脑裂问题产生的）" class="headerlink" title="4.分析：为什么master候选节点最少三个（minimum_master_nodes是如何避免脑裂问题产生的）"></a>4.分析：为什么master候选节点最少三个（minimum_master_nodes是如何避免脑裂问题产生的）</h1><p>思考一下，如果你只有两台节点，那么是无法使用官方的这个配置公式的，（这也就是为什么我们之前建议最少要三台机器能成为主节点），两台的话会出现各种各样的问题，为什么呢？<br>思考一下假设集群中共有2个节点，discovery.zen.minimum_master_nodes分别设置成2和1会怎么样？<br>如果我们有2个节点，都可以是master候选节点，那么quorum是2 &#x2F; 2 + 1 &#x3D; 2。此时就有问题了，因为如果一个node挂掉了，这么这时节点发生变更，那么只剩下一个master候选节点，是无法满足quorum数量的，也就无法选举出新的master，集群就彻底挂掉了。此时就只能将这个参数设置为1，但是这就无法阻止脑裂的发生了。<br>那么思考一下三台行不行呢？<br>node1为主节点 node2、3是数据节点，3&#x2F;2+1 &#x3D; 2，也是至少两台支持才能成为master。<br>1）如果主节点和两个数据节点因为网络不稳定失去联系，两个数据节点是可以正常通信的，那么此时那个单独的master节点因为没有指定数量的候选master node在自己当前所在的集群内，因此就会取消当前master的角色，尝试重新选举，但是无法选举成功。然后另外一个网络区域内的node因为无法连接到master，就会发起重新选举，因为有两个master候选节点，满足了quorum，因此可以成功选举出一个master。此时集群中就会还是只有一个master，不会出现脑裂。<br>2）如果master和另外一个node在一个网络区域内，然后一个node单独在一个网络区域内。那么此时那个单独的node因为连接不上master，会尝试发起选举，但是因为master候选节点数量不到quorum，因此无法选举出master。而另外一个网络区域内，原先的那个master还会继续工作。这也可以保证集群内只有一个master节点。<br>3）如果三台相互之间都无法通信，同上分析，则也不会出现脑裂问题。<br>综上所述，一个生产环境的es集群，至少要有3个节点，三台主节点通过在elasticsearch.yml中配置discovery.zen.minimum_master_nodes: 2，就可以避免脑裂问题的产生。</p>
 
                 
             </div>
@@ -865,7 +502,7 @@ public class AuthorizeFilter implements GlobalFilter &#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://zmhaoo.github.io/2022/05/25/Gateway%E7%BD%91%E5%85%B3/">https://zmhaoo.github.io/2022/05/25/Gateway%E7%BD%91%E5%85%B3/</a>
+                    <a href="https://zmhaoo.github.io/2022/06/02/Es%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E6%83%85%E5%86%B5/">https://zmhaoo.github.io/2022/06/02/Es%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E6%83%85%E5%86%B5/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1071,7 +708,7 @@ public class AuthorizeFilter implements GlobalFilter &#123;
         repo: '',
         owner: '',
         admin: null,
-        id: '2022-05-25T22-31-43',
+        id: '2022-06-02T20-04-22',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -1095,7 +732,7 @@ public class AuthorizeFilter implements GlobalFilter &#123;
 <script src="/libs/gitment/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-    id: 'Wed May 25 2022 22:31:43 GMT+0800',
+    id: 'Thu Jun 02 2022 20:04:22 GMT+0800',
     owner: '',
     repo: '',
     oauth: {
@@ -1120,9 +757,9 @@ gitment.render('gitment-content');
 
 <script type="text/javascript">
     disqus_config = function () {
-        this.page.url = 'https://zmhaoo.github.io/2022/05/25/Gateway%E7%BD%91%E5%85%B3/';
-        this.page.identifier = '/2022/05/25/Gateway%E7%BD%91%E5%85%B3/';
-        this.page.title = 'Gateway网关';
+        this.page.url = 'https://zmhaoo.github.io/2022/06/02/Es%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E6%83%85%E5%86%B5/';
+        this.page.identifier = '/2022/06/02/Es%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E6%83%85%E5%86%B5/';
+        this.page.title = 'Es集群脑裂情况';
     };
     let disqus_shortname = '';
 
@@ -1180,13 +817,13 @@ gitment.render('gitment-content');
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/05/26/Centos7%E5%AE%89%E8%A3%85Docker/">
+                <a href="/2022/06/02/RabbitMQ/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Centos7安装Docker">
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="RbbitMq的使用">
                         
-                        <span class="card-title">Centos7安装Docker</span>
+                        <span class="card-title">RbbitMq的使用</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1197,14 +834,14 @@ gitment.render('gitment-content');
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-05-26
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-06-02
                         </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Docker%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    Docker相关技术
+                            <a href="/categories/RabbitMq%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    RabbitMq相关技术
                                 </a>
                             
                             
@@ -1221,13 +858,13 @@ gitment.render('gitment-content');
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/05/25/Feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8/">
+                <a href="/2022/05/26/Docker%E5%AE%9E%E7%94%A8%E7%AF%87/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Feign远程调用">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Docker安装及使用">
                         
-                        <span class="card-title">Feign远程调用</span>
+                        <span class="card-title">Docker安装及使用</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1238,14 +875,14 @@ gitment.render('gitment-content');
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-25
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-26
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    SpringCloud微服务技术
+                            <a href="/categories/Docker%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    Docker相关技术
                                 </a>
                             
                             

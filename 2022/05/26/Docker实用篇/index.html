@@ -438,6 +438,15 @@
                 </div>
                 <div class="col s5 right-align">
                     
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Docker%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                Docker相关技术
+                            </a>
+                        
+                    </div>
+                    
                 </div>
             </div>
 
@@ -481,7 +490,7 @@
 <li><p>开发、测试、生产环境有差异</p>
 </li>
 </ul>
-<p><img src="/assets/image-20210731141907366.png" alt="image-20210731141907366"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltn82vyzj213t0u0gqt.jpg" alt="image-20210731141907366"></p>
 <p>例如一个项目中，部署时需要依赖于node.js、Redis、RabbitMQ、MySQL等，这些服务部署时所需要的函数库、依赖项各不相同，甚至会有冲突。给部署带来了极大的困难。</p>
 <h3 id="1-1-2-Docker解决依赖兼容问题"><a href="#1-1-2-Docker解决依赖兼容问题" class="headerlink" title="1.1.2.Docker解决依赖兼容问题"></a>1.1.2.Docker解决依赖兼容问题</h3><p>而Docker确巧妙的解决了这些问题，Docker是如何实现的呢？</p>
 <p>Docker为了解决依赖的兼容问题的，采用了两个手段：</p>
@@ -491,11 +500,11 @@
 <li><p>将每个应用放到一个隔离<strong>容器</strong>去运行，避免互相干扰</p>
 </li>
 </ul>
-<p><img src="/assets/image-20210731142219735.png" alt="image-20210731142219735"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltn8w7vtj215x0u0793.jpg" alt="image-20210731142219735"></p>
 <p>这样打包好的应用包中，既包含应用本身，也保护应用所需要的Libs、Deps，无需再操作系统上安装这些，自然就不存在不同应用之间的兼容问题了。</p>
 <p>虽然解决了不同应用的兼容问题，但是开发、测试等环境会存在差异，操作系统版本也会有差异，怎么解决这些问题呢？</p>
 <h3 id="1-1-3-Docker解决操作系统环境差异"><a href="#1-1-3-Docker解决操作系统环境差异" class="headerlink" title="1.1.3.Docker解决操作系统环境差异"></a>1.1.3.Docker解决操作系统环境差异</h3><p>要解决不同操作系统环境差异问题，必须先了解操作系统结构。以一个Ubuntu操作系统为例，结构如下：</p>
-<p><img src="/assets/image-20210731143401460.png" alt="image-20210731143401460"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731143401460.png" alt="image-20210731143401460"></p>
 <p>结构包括：</p>
 <ul>
 <li>计算机硬件：例如CPU、内存、磁盘等</li>
@@ -507,16 +516,16 @@
 <p>2）系统函数库是对内核指令集的封装，会调用内核指令</p>
 <p>3）内核指令操作计算机硬件</p>
 <p>Ubuntu和CentOSpringBoot都是基于Linux内核，无非是系统应用不同，提供的函数库有差异：</p>
-<p><img src="/assets/image-20210731144304990.png" alt="image-20210731144304990"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731144304990.png" alt="image-20210731144304990"></p>
 <p>此时，如果将一个Ubuntu版本的MySQL应用安装到CentOS系统，MySQL在调用Ubuntu函数库时，会发现找不到或者不匹配，就会报错了：</p>
-<p><img src="/assets/image-20210731144458680.png" alt="image-20210731144458680"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731144458680.png" alt="image-20210731144458680"></p>
 <p>Docker如何解决不同系统环境的问题？</p>
 <ul>
 <li>Docker将用户程序与所需要调用的系统(比如Ubuntu)函数库一起打包</li>
 <li>Docker运行到不同操作系统时，直接基于打包的函数库，借助于操作系统的Linux内核来运行</li>
 </ul>
 <p>如图：</p>
-<p><img src="/assets/image-20210731144820638.png" alt="image-20210731144820638"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731144820638.png" alt="image-20210731144820638"></p>
 <h3 id="1-1-4-小结"><a href="#1-1-4-小结" class="headerlink" title="1.1.4.小结"></a>1.1.4.小结</h3><p>Docker如何解决大型项目依赖关系复杂，不同组件依赖的兼容性问题？</p>
 <ul>
 <li>Docker允许开发中将应用、依赖、函数库、配置一起<strong>打包</strong>，形成可移植镜像</li>
@@ -536,9 +545,9 @@
 <p>两者有什么差异呢？</p>
 <p><strong>虚拟机</strong>（virtual machine）是在操作系统中<strong>模拟</strong>硬件设备，然后运行另一个操作系统，比如在 Windows 系统里面运行 Ubuntu 系统，这样就可以运行任意的Ubuntu应用了。</p>
 <p><strong>Docker</strong>仅仅是封装函数库，并没有模拟完整的操作系统，如图：</p>
-<p><img src="/assets/image-20210731145914960.png" alt="image-20210731145914960"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731145914960.png" alt="image-20210731145914960"></p>
 <p>对比来看：</p>
-<p><img src="/assets/image-20210731152243765.png" alt="image-20210731152243765"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731152243765.png" alt="image-20210731152243765"></p>
 <p>小结：</p>
 <p>Docker和虚拟机的差异：</p>
 <ul>
@@ -553,7 +562,7 @@
 <p>一切应用最终都是代码组成，都是硬盘中的一个个的字节形成的<strong>文件</strong>。只有运行时，才会加载到内存，形成进程。</p>
 <p>而<strong>镜像</strong>，就是把一个应用在硬盘上的文件、及其运行环境、部分系统函数库文件一起打包形成的文件包。这个文件包是只读的。</p>
 <p><strong>容器</strong>呢，就是将这些文件中编写的程序、函数加载到内存中允许，形成进程，只不过要隔离起来。因此一个镜像可以启动多次，形成多个容器进程。</p>
-<p><img src="/assets/image-20210731153059464.png" alt="image-20210731153059464"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731153059464.png" alt="image-20210731153059464"></p>
 <p>例如你下载了一个QQ，如果我们将QQ在磁盘上的运行<strong>文件</strong>及其运行的操作系统依赖打包，形成QQ镜像。然后你可以启动多次，双开、甚至三开QQ，跟多个妹子聊天。</p>
 <blockquote>
 </blockquote>
@@ -565,7 +574,7 @@
 </li>
 </ul>
 <p>我们一方面可以将自己的镜像共享到DockerHub，另一方面也可以从DockerHub拉取镜像：</p>
-<p><img src="/assets/image-20210731153743354.png" alt="image-20210731153743354"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731153743354.png" alt="image-20210731153743354"></p>
 <h3 id="1-3-3-Docker架构"><a href="#1-3-3-Docker架构" class="headerlink" title="1.3.3.Docker架构"></a>1.3.3.Docker架构</h3><p>我们要使用Docker来操作镜像、容器，就必须要安装Docker。</p>
 <p>Docker是一个CS架构的程序，由两部分组成：</p>
 <ul>
@@ -575,10 +584,10 @@
 </li>
 </ul>
 <p>如图：</p>
-<p><img src="/assets/image-20210731154257653.png" alt="image-20210731154257653"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731154257653.png" alt="image-20210731154257653"></p>
 <blockquote>
 <p>总结:</p>
-<p> 第一步，当我们客户端发起指令，去dockerhub或者私有仓库去拉取指定的镜像，把该镜像存储在当前Linux系统中的本地镜像中</p>
+<p>第一步，当我们客户端发起指令，去dockerhub或者私有仓库去拉取指定的镜像，把该镜像存储在当前Linux系统中的本地镜像中</p>
 <p>第二不，由客户端发起指令，创建容器的指令，去基于本地镜像中的指定镜像，然后通过创建容器的命令，从而生成指定的容器，</p>
 </blockquote>
 <h3 id="1-3-4-小结"><a href="#1-3-4-小结" class="headerlink" title="1.3.4.小结"></a>1.3.4.小结</h3><p>镜像：</p>
@@ -604,11 +613,11 @@
 <p>Docker CE 支持 64 位版本 CentOS 7，并且要求内核版本不低于 3.10， CentOS 7 满足最低内核的要求，所以我们在CentOS 7安装Docker。</p>
 <h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><h4 id="1-4-1-检查centos7的内核命令"><a href="#1-4-1-检查centos7的内核命令" class="headerlink" title="1.4.1 检查centos7的内核命令"></a>1.4.1 检查centos7的内核命令</h4><pre class="line-numbers language-none"><code class="language-none">uname -r <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/assets/1567261735176.png" alt="1567261735176"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2lto06f4pj21ka0u0ag6.jpg" alt="1567261735176"></p>
 <h4 id="1-4-2-centos7的ip地址"><a href="#1-4-2-centos7的ip地址" class="headerlink" title="1.4.2 centos7的ip地址"></a>1.4.2 centos7的ip地址</h4><p>查看ip地址命令</p>
 <pre class="line-numbers language-none"><code class="language-none">ip addr<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/assets/1567262080798.png" alt="1567262080798"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/1567262080798.png" alt="1567262080798"></p>
 <h4 id="1-4-3-更改静态ip地址"><a href="#1-4-3-更改静态ip地址" class="headerlink" title="1.4.3 更改静态ip地址"></a>1.4.3 更改静态ip地址</h4><pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">1、找到配置文件
 	cd &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;
 	vi ifcfg-ens33
@@ -705,10 +714,10 @@ ping www.baidu.com 如果有字节输出，则表示网络正常<span aria-hidde
 <li>在没有指定tag时，默认是latest，代表最新版本的镜像</li>
 </ul>
 <p>如图：</p>
-<p><img src="/assets/image-20210731155141362.png" alt="image-20210731155141362"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731155141362.png" alt="image-20210731155141362"></p>
 <p>这里的mysql就是repository，5.7就是tag，合一起就是镜像名称，代表5.7版本的MySQL镜像。</p>
 <h3 id="2-1-2-镜像命令"><a href="#2-1-2-镜像命令" class="headerlink" title="2.1.2.镜像命令"></a>2.1.2.镜像命令</h3><p>常见的镜像操作命令如图：</p>
-<p><img src="/assets/image-20210731155649535.png" alt="image-20210731155649535"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731155649535.png" alt="image-20210731155649535"></p>
 <h4 id="常用镜像命令集："><a href="#常用镜像命令集：" class="headerlink" title="常用镜像命令集："></a>常用镜像命令集：</h4><pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment">#查看本地镜像</span>
 <span class="token attr-name">docker</span> <span class="token attr-value">images </span>
 <span class="token comment"># 如果你需要从网络中查找需要的镜像，可以通过以下命令搜索</span>
@@ -748,18 +757,18 @@ ping www.baidu.com 如果有字节输出，则表示网络正常<span aria-hidde
 
 <h3 id="2-1-3-案例1-拉取、查看镜像"><a href="#2-1-3-案例1-拉取、查看镜像" class="headerlink" title="2.1.3.案例1-拉取、查看镜像"></a>2.1.3.案例1-拉取、查看镜像</h3><p>需求：从DockerHub中拉取一个nginx镜像并查看</p>
 <p>1）首先去镜像仓库搜索nginx镜像，比如<a target="_blank" rel="noopener" href="https://hub.docker.com/">DockerHub</a>:</p>
-<p><img src="/assets/image-20210731155844368.png" alt="image-20210731155844368"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731155844368.png" alt="image-20210731155844368"></p>
 <p>2）根据查看到的镜像名称，拉取自己需要的镜像，通过命令：docker pull nginx</p>
-<p><img src="/assets/image-20210731155856199.png" alt="image-20210731155856199"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731155856199.png" alt="image-20210731155856199"></p>
 <p>3）通过命令：docker images 查看拉取到的镜像</p>
-<p><img src="/assets/image-20210731155903037.png" alt="image-20210731155903037"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731155903037.png" alt="image-20210731155903037"></p>
 <h3 id="2-1-4-案例2-保存、导入镜像"><a href="#2-1-4-案例2-保存、导入镜像" class="headerlink" title="2.1.4.案例2-保存、导入镜像"></a>2.1.4.案例2-保存、导入镜像</h3><p>需求：利用docker save将nginx镜像导出磁盘，然后再通过load加载回来</p>
 <p>1）利用docker xx –help命令查看docker save和docker load的语法</p>
 <p>例如，查看save命令用法，可以输入命令：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker save --help<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>结果：</p>
-<p><img src="/assets/image-20210731161104732.png" alt="image-20210731161104732"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731161104732.png" alt="image-20210731161104732"></p>
 <p>命令格式：</p>
 <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">docker save -o [保存的目标文件名称] [镜像名称]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
@@ -770,7 +779,7 @@ ping www.baidu.com 如果有字节输出，则表示网络正常<span aria-hidde
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker save -o nginx.tar nginx:latest<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>结果如图：</p>
-<p><img src="/assets/image-20210731161354344.png" alt="image-20210731161354344"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731161354344.png" alt="image-20210731161354344"></p>
 <p>3）使用docker load加载镜像</p>
 <p>先删除本地的nginx镜像：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker rmi nginx:latest<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -781,7 +790,7 @@ ping www.baidu.com 如果有字节输出，则表示网络正常<span aria-hidde
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker load -i nginx.tar<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>结果：</p>
-<p><img src="/assets/image-20210731161746245.png" alt="image-20210731161746245"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731161746245.png" alt="image-20210731161746245"></p>
 <h3 id="2-1-5-练习"><a href="#2-1-5-练习" class="headerlink" title="2.1.5.练习"></a>2.1.5.练习</h3><p>需求：去DockerHub搜索并拉取一个Redis镜像</p>
 <p>目标：</p>
 <p>1）去DockerHub搜索Redis镜像</p>
@@ -791,7 +800,7 @@ ping www.baidu.com 如果有字节输出，则表示网络正常<span aria-hidde
 <p>5）利用docker rmi 删除本地的redis:latest</p>
 <p>6）利用docker load 重新加载 redis.tar文件</p>
 <h2 id="2-2-容器操作"><a href="#2-2-容器操作" class="headerlink" title="2.2.容器操作"></a>2.2.容器操作</h2><h3 id="2-2-1-容器相关命令"><a href="#2-2-1-容器相关命令" class="headerlink" title="2.2.1.容器相关命令"></a>2.2.1.容器相关命令</h3><p>容器操作的命令如图：</p>
-<p><img src="/assets/image-20210731161950495.png" alt="image-20210731161950495"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731161950495.png" alt="image-20210731161950495"></p>
 <p>容器保护三个状态：</p>
 <ul>
 <li>运行：进程正常运行</li>
@@ -849,7 +858,7 @@ exit
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 在linux宿主机下查看 nginx 的ip </span>
 <span class="token attr-name">docker</span> <span class="token attr-value">inspect nginxclear</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
-<p>​        <img src="/assets/1653489681946.png" alt="1653489681946"></p>
+<p>​        <img src="/Users/zhangminghao/BLOG/source/_posts/assets/1653489681946.png" alt="1653489681946"></p>
 <p>删除容器</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment">#删除指定的容器：</span>
 <span class="token attr-name">docker</span> <span class="token attr-value">rm 容器名称（容器ID） </span>
@@ -889,7 +898,7 @@ exit
 
 <p>默认情况下，容器是隔离环境，我们直接访问宿主机的80端口，肯定访问不到容器中的nginx。</p>
 <p>现在，将容器的80与宿主机的80关联起来，当我们访问宿主机的80端口时，就会被映射到容器的80，这样就能访问到nginx了：</p>
-<p><img src="/assets/image-20210731163255863.png" alt="image-20210731163255863"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731163255863.png" alt="image-20210731163255863"></p>
 <blockquote>
 <p>宿主机和容器的关系解析</p>
 <p>1、window系统和虚拟机中的centos系统：<br>   在window系统上安装了虚拟机vmware，在vmware中安装了centos系统。<br>宿主机就是window系统电脑， 虚拟机就是centos<br>2、docker容器和linux(centos)：<br>   linux是宿主机，docker是容器，也就是说docker寄存在linux系统上</p>
@@ -913,14 +922,14 @@ exit
 </ul>
 <p>2）进入nginx的HTML所在目录 &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html</p>
 <p>容器内部会模拟一个独立的Linux文件系统，看起来如同一个linux服务器一样：</p>
-<p><img src="/assets/image-20210731164159811.png" alt="image-20210731164159811"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731164159811.png" alt="image-20210731164159811"></p>
 <p>nginx的环境、配置、运行文件全部都在这个文件系统中，包括我们要修改的html文件。</p>
 <p>查看DockerHub网站中的nginx页面，可以知道nginx的html目录位置在<code>/usr/share/nginx/html</code></p>
 <p>我们执行命令，进入该目录：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">cd &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p> 查看目录下文件：</p>
-<p><img src="/assets/image-20210731164455818.png" alt="image-20210731164455818"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltowvyu1j21ka0u0ag6.jpg" alt="image-20210731164455818"></p>
 <p>3）修改index.html的内容</p>
 <p>容器内没有vi命令，无法直接修改，我们用下面的命令来修改：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s#Welcome to nginx#传智教育欢迎您#g&#39; -e &#39;s#&lt;head&gt;#&lt;head&gt;&lt;meta charset&#x3D;&quot;utf-8&quot;&gt;#g&#39; index.html<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -928,7 +937,7 @@ exit
 
 
 <p>在浏览器访问自己的虚拟机地址，例如我的是：<a href="http://192.168.150.101，即可看到结果：">http://192.168.150.101，即可看到结果：</a></p>
-<p><img src="/assets/image-20210731164717604.png" alt="image-20210731164717604"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731164717604.png" alt="image-20210731164717604"></p>
 <h3 id="2-2-4-小结"><a href="#2-2-4-小结" class="headerlink" title="2.2.4.小结"></a>2.2.4.小结</h3><p>docker run命令的常见参数有哪些？</p>
 <ul>
 <li>–name：指定容器名称</li>
@@ -947,10 +956,24 @@ exit
 </ul>
 <h2 id="2-3-数据卷（容器数据管理）"><a href="#2-3-数据卷（容器数据管理）" class="headerlink" title="2.3.数据卷（容器数据管理）"></a>2.3.数据卷（容器数据管理）</h2><p>在之前的nginx案例中，修改nginx的html页面时，需要进入nginx内部。并且因为没有编辑器，修改文件也很麻烦。</p>
 <p>这就是因为容器与数据（容器内文件）耦合带来的后果。</p>
-<p><img src="/assets/image-20210731172440275.png" alt="image-20210731172440275"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731172440275.png" alt="image-20210731172440275"></p>
 <p>要解决这个问题，必须将数据与容器解耦，这就要用到数据卷了。</p>
+<pre class="line-numbers language-cmd" data-language="cmd"><code class="language-cmd">#创建数据卷
+docker volume create html
+#查看所有数据
+docker volume ls
+#查看数据卷详细信息卷
+docker volume inspect html
+#删除所有没有使用的数据卷
+docker volume prune
+#删除单个数据卷
+docker volume rm html
+
+#如果直接做数据卷挂载,挂载数据卷不存在,那么他会自动创建数据卷<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>数据卷作用:将容器与数据分离,解耦合,方便操作容器内数据,保证数据安全</strong></p>
 <h3 id="2-3-1-什么是数据卷"><a href="#2-3-1-什么是数据卷" class="headerlink" title="2.3.1.什么是数据卷"></a>2.3.1.什么是数据卷</h3><p><strong>数据卷（volume）</strong>是一个虚拟目录，指向宿主机文件系统中的某个目录。</p>
-<p><img src="/assets/image-20210731173541846.png" alt="image-20210731173541846"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731173541846.png" alt="image-20210731173541846"></p>
 <p>一旦完成数据卷挂载，对容器的一切操作都会作用在数据卷对应的宿主机目录了。</p>
 <p>这样，我们操作宿主机的&#x2F;var&#x2F;lib&#x2F;docker&#x2F;volumes&#x2F;html目录，就等于操作容器内的&#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html目录了</p>
 <h3 id="2-3-2-挂载数据卷"><a href="#2-3-2-挂载数据卷" class="headerlink" title="2.3.2.挂载数据卷"></a>2.3.2.挂载数据卷</h3><p>我们在创建容器时，可以通过 -v 参数来挂载一个数据卷到某个容器内目录，命令格式如下：</p>
@@ -977,13 +1000,13 @@ mkdir html
  docker run -di --name&#x3D;mn -v &#x2F;root&#x2F;html&#x2F;:&#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html -p 80:80 nginx<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>2、访问nginx</p>
-<p><img src="/assets/1653492155287.png" alt="1653492155287"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/1653492155287.png" alt="1653492155287"></p>
 <p>发现展示的页面是403，这不是报错，而是因为我们nginx容器中的&#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html中并没有任何html文件导致的。所以我们要执行第三步</p>
 <p>3、从本地的nginx中找一个index.html存储到Linux系统中的&#x2F;root&#x2F;html文件夹中即可</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">#上传index.html到&#x2F;root&#x2F;html中<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>4、再访问nginx</p>
-<p><img src="/assets/1653492416335.png" alt="1653492416335"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/1653492416335.png" alt="1653492416335"></p>
 <h3 id="2-3-6-案例-给MySQL挂载本地目录"><a href="#2-3-6-案例-给MySQL挂载本地目录" class="headerlink" title="2.3.6.案例-给MySQL挂载本地目录"></a>2.3.6.案例-给MySQL挂载本地目录</h3><p><strong>需求</strong>：创建并运行一个MySQL容器，将宿主机目录直接挂载到容器</p>
 <p>实现思路如下：</p>
 <p>1）在将课前资料中的mysql.tar文件上传到虚拟机，通过load命令加载为镜像</p>
@@ -1002,13 +1025,22 @@ mkdir html
  --name=mysql2 \
  -e MYSQL_ROOT_PASSWORD=root \
  -p 3306:3306 \
- -v  /tmp/mysql/data:/var/lib/mysql \
- -v  /tmp/mysql/conf:/etc/mysql/conf.d \
- -di \
- mysql:5.7</span>
+ --platform linux/amd64 \
+ -v  /tmp/mysql/data:/var/lib/mysql \      </span>
+<span class="token attr-name"> -v</span> <span class="token attr-value"> /tmp/mysql/conf:/etc/mysql/conf.d \ </span>
+<span class="token attr-name"> -di</span> <span class="token attr-value">\
+ mysql:5.7.25</span>
 <span class="token comment">#上传资料中的hmy.cnf到mysql容器中的/etc/mysql/conf.d文件夹下</span>
 
-<span class="token comment">#最后测试mysql</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">#最后测试mysql</span>
+
+
+
+<span class="token comment">#启动mysql时mac本有可能出现不兼容问题,只要在启动命令加上以下命令就可以或者用mysql:8-oracle</span>
+
+<span class="token attr-name">--platform</span> <span class="token attr-value">linux/amd64</span>
+<span class="token attr-name">docker</span> <span class="token attr-value">run --name mysql1 -e MYSQL_ROOT_PASSWORD=root -v /tmp/mysql/conf/hmy.cnf:/etc/mysql/conf.d/hm.cnf -v /tmp/mysql/data/:/var/lib/mysql -d mysql:8-oracle</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
@@ -1016,28 +1048,28 @@ mkdir html
 <p>而要自定义镜像，就必须先了解镜像的结构才行。</p>
 <h2 id="3-1-镜像结构"><a href="#3-1-镜像结构" class="headerlink" title="3.1.镜像结构"></a>3.1.镜像结构</h2><p>镜像是将应用程序及其需要的系统函数库、环境、配置、依赖打包而成。</p>
 <p>我们以MySQL为例，来看看镜像的组成结构：</p>
-<p><img src="/assets/image-20210731175806273.png" alt="image-20210731175806273"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731175806273.png" alt="image-20210731175806273"></p>
 <p>简单来说，镜像就是在系统函数库、运行环境基础上，添加应用程序文件、配置文件、依赖文件等组合，然后编写好启动脚本打包在一起形成的文件。</p>
 <p>我们要构建镜像，其实就是实现上述打包的过程。</p>
 <h2 id="3-2-Dockerfile语法"><a href="#3-2-Dockerfile语法" class="headerlink" title="3.2.Dockerfile语法"></a>3.2.Dockerfile语法</h2><p>构建自定义的镜像时，并不需要一个个文件去拷贝，打包。</p>
 <p>我们只需要告诉Docker，我们的镜像的组成，需要哪些BaseImage、需要拷贝什么文件、需要安装什么依赖、启动脚本是什么，将来Docker会帮助我们构建镜像。</p>
 <p>而描述上述信息的文件就是Dockerfile文件。</p>
 <p><strong>Dockerfile</strong>就是一个文本文件，其中包含一个个的**指令(Instruction)**，用指令来说明要执行什么操作来构建镜像。每一个指令都会形成一层Layer。</p>
-<p><img src="/assets/image-20210731180321133.png" alt="image-20210731180321133"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731180321133.png" alt="image-20210731180321133"></p>
 <p>更新详细语法说明，请参考官网文档： <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/builder">https://docs.docker.com/engine/reference/builder</a></p>
 <h2 id="3-3-构建Java项目"><a href="#3-3-构建Java项目" class="headerlink" title="3.3.构建Java项目"></a>3.3.构建Java项目</h2><h3 id="3-3-1-基于Ubuntu构建Java项目"><a href="#3-3-1-基于Ubuntu构建Java项目" class="headerlink" title="3.3.1.基于Ubuntu构建Java项目"></a>3.3.1.基于Ubuntu构建Java项目</h3><p>需求：基于Ubuntu镜像构建一个新镜像，运行一个java项目</p>
 <ul>
 <li><p>步骤1：新建一个空文件夹docker-demo</p>
-<p><img src="/assets/image-20210801101207444.png" alt="image-20210801101207444"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltp1x63dj21ka0u0ag6.jpg" alt="image-20210801101207444"></p>
 </li>
 <li><p>步骤2：拷贝课前资料中的docker-demo.jar文件到docker-demo这个目录</p>
-<p><img src="/assets/image-20210801101314816.png" alt="image-20210801101314816"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210801101314816.png" alt="image-20210801101314816"></p>
 </li>
 <li><p>步骤3：拷贝课前资料中的jdk8.tar.gz文件到docker-demo这个目录</p>
-<p><img src="/assets/image-20210801101410200.png" alt="image-20210801101410200"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltp6dtspj21ka0u0ag6.jpg" alt="image-20210801101410200"></p>
 </li>
 <li><p>步骤4：拷贝课前资料提供的Dockerfile到docker-demo这个目录</p>
-<p><img src="/assets/image-20210801101455590.png" alt="image-20210801101455590"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210801101455590.png" alt="image-20210801101455590"></p>
 <p>其中的内容如下：</p>
 <pre class="line-numbers language-dockerfile" data-language="dockerfile"><code class="language-dockerfile"># 指定基础镜像
 FROM ubuntu:16.04
@@ -1124,7 +1156,7 @@ ENTRYPOINT java -jar &#x2F;tmp&#x2F;app.jar<span aria-hidden="true" class="line-
 </li>
 </ol>
 <h1 id="4-Docker-Compose"><a href="#4-Docker-Compose" class="headerlink" title="4.Docker-Compose"></a>4.Docker-Compose</h1><p>Docker Compose可以基于Compose文件帮我们快速的部署分布式应用，而无需手动一个个创建和运行容器！</p>
-<p><img src="/assets/image-20210731180921742.png" alt="image-20210731180921742"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731180921742.png" alt="image-20210731180921742"></p>
 <h2 id="4-1-初识DockerCompose"><a href="#4-1-初识DockerCompose" class="headerlink" title="4.1.初识DockerCompose"></a>4.1.初识DockerCompose</h2><p>Compose文件是一个文本文件，通过指令定义集群中的每个容器如何运行。格式如下：</p>
 <pre class="line-numbers language-json" data-language="json"><code class="language-json">version<span class="token operator">:</span> <span class="token string">"3.8"</span>
  services<span class="token operator">:</span>
@@ -1169,7 +1201,7 @@ docker-compose -version<span aria-hidden="true" class="line-numbers-rows"><span>
 <p>④ 将打包好的app.jar拷贝到cloud-demo中的每一个对应的子目录中</p>
 <p>⑤ 将cloud-demo上传至虚拟机，利用 docker-compose up -d 来部署</p>
 <h3 id="4-3-1-compose文件"><a href="#4-3-1-compose文件" class="headerlink" title="4.3.1.compose文件"></a>4.3.1.compose文件</h3><p>查看课前资料提供的cloud-demo文件夹，里面已经编写好了docker-compose文件，而且每个微服务都准备了一个独立的目录：</p>
-<p><img src="/assets/image-20210731181341330.png" alt="image-20210731181341330"></p>
+<p><img src="/Users/zhangminghao/BLOG/source/_posts/assets/image-20210731181341330.png" alt="image-20210731181341330"></p>
 <p>内容如下：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">"3.2"</span>
 
@@ -1219,7 +1251,7 @@ docker-compose -version<span aria-hidden="true" class="line-numbers-rows"><span>
 <li><code>userservice</code>、<code>orderservice</code>、<code>gateway</code>：都是基于Dockerfile临时构建的</li>
 </ul>
 <p>查看mysql目录，可以看到其中已经准备好了cloud_order、cloud_user表：</p>
-<p><img src="/assets/image-20210801095205034.png" alt="image-20210801095205034"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltp94enoj21r30u0dmn.jpg" alt="image-20210801095205034"></p>
 <p>查看微服务目录，可以看到都包含Dockerfile文件：</p>
 <p><img src="/assets/image-20210801095320586.png" alt="image-20210801095320586"></p>
 <p>内容如下：</p>
@@ -1261,17 +1293,17 @@ ENTRYPOINT java -jar &#x2F;tmp&#x2F;app.jar<span aria-hidden="true" class="line-
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>build</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>打包后：</p>
-<p><img src="/assets/image-20210801095951030.png" alt="image-20210801095951030"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltpkbn6hj21ka0u0ag6.jpg" alt="image-20210801095951030"></p>
 <h3 id="4-3-4-拷贝jar包到部署目录"><a href="#4-3-4-拷贝jar包到部署目录" class="headerlink" title="4.3.4.拷贝jar包到部署目录"></a>4.3.4.拷贝jar包到部署目录</h3><p>编译打包好的app.jar文件，需要放到Dockerfile的同级目录中。注意：每个微服务的app.jar放到与服务名称对应的目录，别搞错了。</p>
 <p>user-service：</p>
-<p><img src="/assets/image-20210801100201253.png" alt="image-20210801100201253"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltppi3o5j21cq0bo0us.jpg" alt="image-20210801100201253"></p>
 <p>order-service：</p>
 <p><img src="/assets/image-20210801100231495.png" alt="image-20210801100231495"></p>
 <p>gateway：</p>
-<p><img src="/assets/image-20210801100308102.png" alt="image-20210801100308102"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltpl37kpj21ka0u0ag6.jpg" alt="image-20210801100308102"></p>
 <h3 id="4-3-5-部署"><a href="#4-3-5-部署" class="headerlink" title="4.3.5.部署"></a>4.3.5.部署</h3><p>最后，我们需要将文件整个cloud-demo文件夹上传到虚拟机中，理由DockerCompose部署。</p>
 <p>上传到任意目录：</p>
-<p><img src="/assets/image-20210801100955653.png" alt="image-20210801100955653"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltqacbmjj220o0smwkl.jpg" alt="image-20210801100955653"></p>
 <p>部署：</p>
 <p>进入cloud-demo目录，然后运行下面的命令：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker-compose up -d<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -1304,7 +1336,7 @@ ENTRYPOINT java -jar &#x2F;tmp&#x2F;app.jar<span aria-hidden="true" class="line-
 <p>访问私有仓库</p>
 <pre class="line-numbers language-none"><code class="language-none">http:&#x2F;&#x2F;IP:5000&#x2F;v2&#x2F;_catalog<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/assets/1653496365512.png" alt="1653496365512"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ltq73aorj220o0smwkl.jpg" alt="1653496365512"></p>
 <h2 id="5-2-推送、拉取镜像"><a href="#5-2-推送、拉取镜像" class="headerlink" title="5.2.推送、拉取镜像"></a>5.2.推送、拉取镜像</h2><p>推送镜像到私有镜像服务必须先tag，步骤如下：</p>
 <p>① 重新tag本地镜像，名称前缀为私有仓库的地址：192.168.150.101:8080&#x2F;</p>
  <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker tag nginx:latest 192.168.150.101:8080&#x2F;nginx:1.0 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -1656,18 +1688,17 @@ gitment.render('gitment-content');
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/05/26/Docker%E5%AE%9E%E7%94%A8%E7%AF%87/">
+                <a href="/2022/06/02/Es%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E6%83%85%E5%86%B5/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Docker安装及使用">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Es集群脑裂情况">
                         
-                        <span class="card-title">Docker安装及使用</span>
+                        <span class="card-title">Es集群脑裂情况</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1677,9 +1708,9 @@ gitment.render('gitment-content');
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-26
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-06-02
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -1688,7 +1719,6 @@ gitment.render('gitment-content');
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
