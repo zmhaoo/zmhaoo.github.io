@@ -5,9 +5,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="Es集群脑裂情况, Zmhaoo&#39;s Blog">
-    <meta name="description" content="1.集群脑裂是什么？    所谓脑裂问题，就是同一个集群中的不同节点，对于集群的状态有了不一样的理解，比如集群中存在两个master，正常情况下我们集群中只能有一个master节点。
+    <meta name="description" content="1.集群脑裂是什么？
+所谓脑裂问题，就是同一个集群中的不同节点，对于集群的状态有了不一样的理解，比如集群中存在两个master，正常情况下我们集群中只能有一个master节点。
 
-2.集群脑裂场景举例如果因为网络的故障，导致一个集群被">
+2.集群脑裂场景举例如果因为网络的故障，导致一个集群被划分成">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -437,6 +438,15 @@
                 </div>
                 <div class="col s5 right-align">
                     
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/ElasticSearch%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                ElasticSearch相关技术
+                            </a>
+                        
+                    </div>
+                    
                 </div>
             </div>
 
@@ -468,8 +478,9 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="1-集群脑裂是什么？"><a href="#1-集群脑裂是什么？" class="headerlink" title="1.集群脑裂是什么？"></a>1.集群脑裂是什么？</h1><pre><code>    所谓脑裂问题，就是同一个集群中的不同节点，对于集群的状态有了不一样的理解，比如集群中存在两个master，正常情况下我们集群中只能有一个master节点。
-</code></pre>
+                <h1 id="1-集群脑裂是什么？"><a href="#1-集群脑裂是什么？" class="headerlink" title="1.集群脑裂是什么？"></a>1.集群脑裂是什么？</h1><blockquote>
+<p>所谓脑裂问题，就是同一个集群中的不同节点，对于集群的状态有了不一样的理解，比如集群中存在两个master，正常情况下我们集群中只能有一个master节点。</p>
+</blockquote>
 <h1 id="2-集群脑裂场景举例"><a href="#2-集群脑裂场景举例" class="headerlink" title="2.集群脑裂场景举例"></a>2.集群脑裂场景举例</h1><p>如果因为网络的故障，导致一个集群被划分成了两片，每片都有多个node，以及一个master，那么集群中就出现了两个master了。但是因为master是集群中非常重要的一个角色，主宰了集群状态的维护，以及shard的分配，因此如果有两个master，可能会导致数据异常。<br>如：</p>
 <p>节点1在启动时被选举为主节点并保存主分片标记为0P，而节点2保存副本分片标记为0R。<br>现在，如果在两个节点之间的通讯中断了，会发生什么？由于网络问题或只是因为其中一个节点无响应,这是有可能发生的。</p>
 <p>两个节点都相信对方已经挂了。节点1不需要做什么，因为它本来就被选举为主节点。但是节点2会自动选举它自己为主节点，因为它相信集群的一部分没有主节点了。<br>在elasticsearch集群，是有主节点来决定将分片平均的分布到节点上的。节点2保存的是复制分片，但它相信主节点不可用了。所以它会自动提升Node2节点为主节点。</p>
