@@ -4,6 +4,32 @@
   
     
     <entry>
+      <title>Feign如何加请求头?</title>
+      <link href="/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/"/>
+      <url>/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/</url>
+      
+        <content type="html"><![CDATA[<p>Feign的拦截器RequestInterceptor</p><p>SpringCloud的微服务使用Feign进行服务间调用的时候可以使用RequestInterceptor统一拦截请求来完成设置header等相关请求，但RequestInterceptor和ClientHttpRequestInterceptor有点不同，它拿不到原本的请求，所以要通过其他方法来获取原本的请求</p><p>首先创建自定义的RequestInterceptor</p><p>这里通过RequestContextHolder获取到当前的request</p><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span><span class="token annotation punctuation">@Component</span><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyFeignInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">RequestInterceptor</span> <span class="token punctuation">&#123;</span>    <span class="token annotation punctuation">@Override</span>    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">apply</span><span class="token punctuation">(</span><span class="token class-name">RequestTemplate</span> template<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>        <span class="token class-name">ServletRequestAttributes</span> servletRequestAttributes <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ServletRequestAttributes</span><span class="token punctuation">)</span><span class="token class-name">RequestContextHolder</span><span class="token punctuation">.</span><span class="token function">getRequestAttributes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"===request: &#123;&#125;"</span><span class="token punctuation">,</span> template<span class="token punctuation">.</span><span class="token function">url</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>        template<span class="token punctuation">.</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token string">"authorization"</span><span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>但是Feign接口不是一个启动类,没有办法直接加载配置类,解决方法如下:</p><p>方式一:</p><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@FeignClient</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"itemservice"</span><span class="token punctuation">,</span>configuration <span class="token operator">=</span> <span class="token class-name">MyFeignInterceptor</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">ItemClient</span> <span class="token punctuation">&#123;</span>    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/item/list"</span><span class="token punctuation">)</span>    <span class="token class-name">PageResult</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Item</span><span class="token punctuation">></span></span> <span class="token function">getPageInfo</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"page"</span><span class="token punctuation">)</span> <span class="token class-name">Integer</span> page<span class="token punctuation">,</span> <span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"size"</span><span class="token punctuation">)</span> <span class="token class-name">Integer</span> size<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><blockquote><p>编写Feign接口时加上configuration &#x3D; MyFeignInterceptor.class参数</p></blockquote><p>方式二:</p><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h322ppjsosj20dk08gmxa.jpg" alt="image-20220609163003448"></p><pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">org.springframework.boot.autoconfigure.EnableAutoConfiguration=\ com.hmall.common.feignConfig.MyFeignInterceptor<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><blockquote><p>在resources下创建META-INF&#x2F;spring.factories实现自定义装配</p></blockquote>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis和数据库如何保证数据同步?</title>
+      <link href="/2022/06/06/Redis%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/"/>
+      <url>/2022/06/06/Redis%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Redis集群</title>
       <link href="/2022/06/03/Redis%E9%9B%86%E7%BE%A4/"/>
       <url>/2022/06/03/Redis%E9%9B%86%E7%BE%A4/</url>

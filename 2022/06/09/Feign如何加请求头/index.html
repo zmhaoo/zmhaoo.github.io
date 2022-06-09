@@ -4,15 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Redis集群, Zmhaoo&#39;s Blog">
-    <meta name="description" content="Redis集群本章是基于CentOS7下的Redis集群教程，包括：
-
-单机安装Redis
-Redis主从
-Redis分片集群
-
-1.单机安装RedisLinux版安装首先需要安装Redis所需要的依赖：
-yum install -y gc">
+    <meta name="keywords" content="Feign如何加请求头?, Zmhaoo&#39;s Blog">
+    <meta name="description" content="Feign的拦截器RequestInterceptor
+SpringCloud的微服务使用Feign进行服务间调用的时候可以使用RequestInterceptor统一拦截请求来完成设置header等相关请求，但RequestInterce">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -26,7 +20,7 @@ yum install -y gc">
 
     
 
-    <title>Redis集群 | Zmhaoo&#39;s Blog</title>
+    <title>Feign如何加请求头? | Zmhaoo&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -316,12 +310,12 @@ yum install -y gc">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Redis集群</h1>
+                    <h1 class="description center-align post-title">Feign如何加请求头?</h1>
                 </div>
             </div>
         </div>
@@ -442,15 +436,6 @@ yum install -y gc">
                 </div>
                 <div class="col s5 right-align">
                     
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/Redis%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
-                                Redis相关技术
-                            </a>
-                        
-                    </div>
-                    
                 </div>
             </div>
 
@@ -458,7 +443,7 @@ yum install -y gc">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-06-03
+                    2022-06-09
                 </div>
                 
 
@@ -482,461 +467,41 @@ yum install -y gc">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h1><p>本章是基于CentOS7下的Redis集群教程，包括：</p>
-<ul>
-<li>单机安装Redis</li>
-<li>Redis主从</li>
-<li>Redis分片集群</li>
-</ul>
-<h1 id="1-单机安装Redis"><a href="#1-单机安装Redis" class="headerlink" title="1.单机安装Redis"></a>1.单机安装Redis</h1><h2 id="Linux版安装"><a href="#Linux版安装" class="headerlink" title="Linux版安装"></a>Linux版安装</h2><p>首先需要安装Redis所需要的依赖：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">yum install -y gcc tcl<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<p>然后将课前资料提供的Redis安装包上传到虚拟机的任意目录：</p>
-<p><img src="/assets/image-20210629114325516.png" alt="image-20210629114325516"></p>
-<p>例如，我放到了&#x2F;tmp目录：</p>
-<p><img src="/assets/image-20210629114830642.png" alt="image-20210629114830642"></p>
-<p>解压缩：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">tar -xvf redis-6.2.4.tar.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>解压后：</p>
-<p><img src="/assets/image-20210629114941810.png" alt="image-20210629114941810"></p>
-<p>进入redis目录：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">cd redis-6.2.4<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<p>运行编译命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">make &amp;&amp; make install<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>如果没有出错，应该就安装成功了。</p>
-<p>然后修改redis.conf文件中的一些配置：</p>
-<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 绑定地址，默认是127.0.0.1，会导致只能在本地访问。修改为0.0.0.0则可以在任意IP访问</span>
-<span class="token attr-name">bind</span> <span class="token attr-value">0.0.0.0</span>
-<span class="token comment"># 数据库数量，设置为1</span>
-<span class="token attr-name">databases</span> <span class="token attr-value">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>启动Redis：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-server redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>停止redis服务：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<h1 id="2-Redis主从集群"><a href="#2-Redis主从集群" class="headerlink" title="2.Redis主从集群"></a>2.Redis主从集群</h1><h2 id="2-1-集群结构"><a href="#2-1-集群结构" class="headerlink" title="2.1.集群结构"></a>2.1.集群结构</h2><p>我们搭建的主从集群结构如图：</p>
-<p><img src="/assets/image-20210630111505799.png" alt="image-20210630111505799"></p>
-<p>共包含三个节点，一个主节点，两个从节点。</p>
-<p>这里我们会在同一台虚拟机中开启3个redis实例，模拟主从集群，信息如下：</p>
-<table>
-<thead>
-<tr>
-<th align="center">IP</th>
-<th align="center">PORT</th>
-<th align="center">角色</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">192.168.150.101</td>
-<td align="center">7001</td>
-<td align="center">master</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">7002</td>
-<td align="center">slave</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">7003</td>
-<td align="center">slave</td>
-</tr>
-</tbody></table>
-<h2 id="2-2-准备实例和配置"><a href="#2-2-准备实例和配置" class="headerlink" title="2.2.准备实例和配置"></a>2.2.准备实例和配置</h2><p>要在同一台虚拟机开启3个实例，必须准备三份不同的配置文件和目录，配置文件所在目录也就是工作目录。</p>
-<p>1）创建目录</p>
-<p>我们创建三个文件夹，名字分别叫7001、7002、7003：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
-cd &#x2F;tmp
-# 创建目录
-mkdir 7001 7002 7003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>如图：</p>
-<p><img src="/assets/image-20210630113929868.png" alt="image-20210630113929868"></p>
-<p>2）恢复原始配置</p>
-<p>修改redis-6.2.4&#x2F;redis.conf文件，将其中的持久化模式改为默认的RDB模式，AOF保持关闭状态。</p>
-<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 开启RDB</span>
-<span class="token comment"># save ""</span>
-<span class="token attr-name">save</span> <span class="token attr-value">3600 1</span>
-<span class="token attr-name">save</span> <span class="token attr-value">300 100</span>
-<span class="token attr-name">save</span> <span class="token attr-value">60 10000</span>
-
-<span class="token comment"># 关闭AOF</span>
-<span class="token attr-name">appendonly</span> <span class="token attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>3）拷贝配置文件到每个实例目录</p>
-<p>然后将redis-6.2.4&#x2F;redis.conf文件拷贝到三个目录中（在&#x2F;tmp目录执行下列命令）：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 方式一：逐个拷贝
-cp redis-6.2.4&#x2F;redis.conf 7001
-cp redis-6.2.4&#x2F;redis.conf 7002
-cp redis-6.2.4&#x2F;redis.conf 7003
-# 方式二：管道组合命令，一键拷贝
-echo 7001 7002 7003 | xargs -t -n 1 cp redis-6.2.4&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>4）修改每个实例的端口、工作目录</p>
-<p>修改每个文件夹内的配置文件，将端口分别修改为7001、7002、7003，将rdb文件保存位置都修改为自己所在目录（在&#x2F;tmp目录执行下列命令）：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s&#x2F;6379&#x2F;7001&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7001\&#x2F;&#x2F;g&#39; 7001&#x2F;redis.conf
-sed -i -e &#39;s&#x2F;6379&#x2F;7002&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7002\&#x2F;&#x2F;g&#39; 7002&#x2F;redis.conf
-sed -i -e &#39;s&#x2F;6379&#x2F;7003&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7003\&#x2F;&#x2F;g&#39; 7003&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>5）修改每个实例的声明IP</p>
-<p>虚拟机本身有多个IP，为了避免将来混乱，我们需要在redis.conf文件中指定每一个实例的绑定ip信息，格式如下：</p>
-<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># redis实例的声明 IP</span>
-<span class="token attr-name">replica-announce-ip</span> <span class="token attr-value">192.168.200.137</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-
-
-<p>每个目录都要改，我们一键完成修改（在&#x2F;tmp目录执行下列命令）：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 逐一执行
-sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7001&#x2F;redis.conf
-sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7002&#x2F;redis.conf
-sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7003&#x2F;redis.conf
-
-# 或者一键修改
-printf &#39;%s\n&#39; 7001 7002 7003 | xargs -I&#123;&#125; -t sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; &#123;&#125;&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-
-
-
-
-<h2 id="2-3-启动"><a href="#2-3-启动" class="headerlink" title="2.3.启动"></a>2.3.启动</h2><p>为了方便查看日志，我们打开3个ssh窗口，分别启动3个redis实例，启动命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 第1个
-redis-server 7001&#x2F;redis.conf
-# 第2个
-redis-server 7002&#x2F;redis.conf
-# 第3个
-redis-server 7003&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>启动后：</p>
-<p><img src="/assets/image-20210630183914491.png" alt="image-20210630183914491"></p>
-<p>如果要一键停止，可以运行下面命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">printf &#39;%s\n&#39; 7001 7002 7003 | xargs -I&#123;&#125; -t redis-cli -p &#123;&#125; shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-
-
-<h2 id="2-4-开启主从关系"><a href="#2-4-开启主从关系" class="headerlink" title="2.4.开启主从关系"></a>2.4.开启主从关系</h2><p>现在三个实例还没有任何关系，要配置主从可以使用replicaof 或者slaveof（5.0以前）命令。</p>
-<p>有临时和永久两种模式：</p>
-<ul>
-<li><p>修改配置文件（永久生效）</p>
-<ul>
-<li>在redis.conf中添加一行配置：<code>slaveof &lt;masterip&gt; &lt;masterport&gt;</code></li>
-</ul>
-</li>
-<li><p>使用redis-cli客户端连接到redis服务，执行slaveof命令（重启后失效）：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">slaveof &lt;masterip&gt; &lt;masterport&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
-</ul>
-<p><strong><font color='red'>注意</font></strong>：在5.0以后新增命令replicaof，与salveof效果一致。</p>
-<p>这里我们为了演示方便，使用方式二。</p>
-<p>通过redis-cli命令连接7002，执行下面命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接 7002
-redis-cli -p 7002
-# 执行slaveof
-slaveof 192.168.150.101 7001<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>通过redis-cli命令连接7003，执行下面命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接 7003
-redis-cli -p 7003
-# 执行slaveof
-slaveof 192.168.150.101 7001<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>然后连接 7001节点，查看集群状态：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接 7001
-redis-cli -p 7001
-# 查看状态
-info replication<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>结果：</p>
-<p><img src="/assets/image-20210630201258802.png" alt="image-20210630201258802"></p>
-<h2 id="2-5-测试"><a href="#2-5-测试" class="headerlink" title="2.5.测试"></a>2.5.测试</h2><p>执行下列操作以测试：</p>
-<ul>
-<li><p>利用redis-cli连接7001，执行<code>set num 123</code></p>
-</li>
-<li><p>利用redis-cli连接7002，执行<code>get num</code>，再执行<code>set num 666</code></p>
-</li>
-<li><p>利用redis-cli连接7003，执行<code>get num</code>，再执行<code>set num 888</code></p>
-</li>
-</ul>
-<p>可以发现，只有在7001这个master节点上可以执行写操作，7002和7003这两个slave节点只能执行读操作。</p>
-<h1 id="3-搭建哨兵集群"><a href="#3-搭建哨兵集群" class="headerlink" title="3.搭建哨兵集群"></a>3.搭建哨兵集群</h1><h2 id="3-1-集群结构"><a href="#3-1-集群结构" class="headerlink" title="3.1.集群结构"></a>3.1.集群结构</h2><p>这里我们搭建一个三节点形成的Sentinel集群，来监管之前的Redis主从集群。如图：</p>
-<p><img src="/assets/image-20210701215227018.png" alt="image-20210701215227018"></p>
-<p>三个sentinel实例信息如下：</p>
-<table>
-<thead>
-<tr>
-<th>节点</th>
-<th align="center">IP</th>
-<th align="center">PORT</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>s1</td>
-<td align="center">192.168.150.101</td>
-<td align="center">27001</td>
-</tr>
-<tr>
-<td>s2</td>
-<td align="center">192.168.150.101</td>
-<td align="center">27002</td>
-</tr>
-<tr>
-<td>s3</td>
-<td align="center">192.168.150.101</td>
-<td align="center">27003</td>
-</tr>
-</tbody></table>
-<h2 id="3-2-准备实例和配置"><a href="#3-2-准备实例和配置" class="headerlink" title="3.2.准备实例和配置"></a>3.2.准备实例和配置</h2><p>要在同一台虚拟机开启3个实例，必须准备三份不同的配置文件和目录，配置文件所在目录也就是工作目录。</p>
-<p>我们创建三个文件夹，名字分别叫s1、s2、s3：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
-cd &#x2F;tmp
-# 创建目录
-mkdir s1 s2 s3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>如图：</p>
-<p><img src="/assets/image-20210701215534714.png" alt="image-20210701215534714"></p>
-<p>然后我们在s1目录创建一个sentinel.conf文件，添加下面的内容：</p>
-<pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">port 27001
-sentinel announce-ip 192.168.200.137
-sentinel monitor mymaster 192.168.200.137 7001 2
-sentinel down-after-milliseconds mymaster 5000
-sentinel failover-timeout mymaster 60000
-dir "/tmp/s1"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>解读：</p>
-<ul>
-<li><code>port 27001</code>：是当前sentinel实例的端口</li>
-<li><code>sentinel monitor mymaster 192.168.150.101 7001 2</code>：指定主节点信息<ul>
-<li><code>mymaster</code>：主节点名称，自定义，任意写</li>
-<li><code>192.168.150.101 7001</code>：主节点的ip和端口</li>
-<li><code>2</code>：选举master时的quorum值</li>
-</ul>
-</li>
-</ul>
-<p>然后将s1&#x2F;sentinel.conf文件拷贝到s2、s3两个目录中（在&#x2F;tmp目录执行下列命令）：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 方式一：逐个拷贝
-cp s1&#x2F;sentinel.conf s2
-cp s1&#x2F;sentinel.conf s3
-# 方式二：管道组合命令，一键拷贝
-echo s2 s3 | xargs -t -n 1 cp s1&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>修改s2、s3两个文件夹内的配置文件，将端口分别修改为27002、27003：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s&#x2F;27001&#x2F;27002&#x2F;g&#39; -e &#39;s&#x2F;s1&#x2F;s2&#x2F;g&#39; s2&#x2F;sentinel.conf
-sed -i -e &#39;s&#x2F;27001&#x2F;27003&#x2F;g&#39; -e &#39;s&#x2F;s1&#x2F;s3&#x2F;g&#39; s3&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-
-
-<h2 id="3-3-启动"><a href="#3-3-启动" class="headerlink" title="3.3.启动"></a>3.3.启动</h2><p>为了方便查看日志，我们打开3个ssh窗口，分别启动3个redis实例，启动命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 第1个
-redis-sentinel s1&#x2F;sentinel.conf
-# 第2个
-redis-sentinel s2&#x2F;sentinel.conf
-# 第3个
-redis-sentinel s3&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>启动后：</p>
-<p><img src="/assets/image-20210701220714104.png" alt="image-20210701220714104"></p>
-<h2 id="3-4-测试"><a href="#3-4-测试" class="headerlink" title="3.4.测试"></a>3.4.测试</h2><p>尝试让master节点7001宕机，查看sentinel日志：</p>
-<p><img src="/assets/image-20210701222857997.png" alt="image-20210701222857997"></p>
-<p>查看7003的日志：</p>
-<p><img src="/assets/image-20210701223025709.png" alt="image-20210701223025709"></p>
-<p>查看7002的日志：</p>
-<p><img src="/assets/image-20210701223131264.png" alt="image-20210701223131264"></p>
-<h1 id="4-搭建分片集群"><a href="#4-搭建分片集群" class="headerlink" title="4.搭建分片集群"></a>4.搭建分片集群</h1><h2 id="4-1-集群结构"><a href="#4-1-集群结构" class="headerlink" title="4.1.集群结构"></a>4.1.集群结构</h2><p>分片集群需要的节点数量较多，这里我们搭建一个最小的分片集群，包含3个master节点，每个master包含一个slave节点，结构如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5i3p82j20ee0gjq3n.jpg" alt="image-20210702164116027"></p>
-<p>这里我们会在同一台虚拟机中开启6个redis实例，模拟分片集群，信息如下：</p>
-<table>
-<thead>
-<tr>
-<th align="center">IP</th>
-<th align="center">PORT</th>
-<th align="center">角色</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">192.168.150.101</td>
-<td align="center">7001</td>
-<td align="center">master</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">7002</td>
-<td align="center">master</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">7003</td>
-<td align="center">master</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">8001</td>
-<td align="center">slave</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">8002</td>
-<td align="center">slave</td>
-</tr>
-<tr>
-<td align="center">192.168.150.101</td>
-<td align="center">8003</td>
-<td align="center">slave</td>
-</tr>
-</tbody></table>
-<h2 id="4-2-准备实例和配置"><a href="#4-2-准备实例和配置" class="headerlink" title="4.2.准备实例和配置"></a>4.2.准备实例和配置</h2><p>删除之前的7001、7002、7003这几个目录，重新创建出7001、7002、7003、8001、8002、8003目录：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
-cd &#x2F;tmp
-# 删除旧的，避免配置干扰
-rm -rf 7001 7002 7003
-# 创建目录
-mkdir 7001 7002 7003 8001 8002 8003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>在&#x2F;tmp下准备一个新的redis.conf文件，内容如下：</p>
-<pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">port 6379
-<span class="token comment"># 开启集群功能</span>
-cluster-enabled yes
-<span class="token comment"># 集群的配置文件名称，不需要我们创建，由redis自己维护</span>
-cluster-config-file /tmp/6379/nodes.conf
-<span class="token comment"># 节点心跳失败的超时时间</span>
-cluster-node-timeout 5000
-<span class="token comment"># 持久化文件存放目录</span>
-dir /tmp/6379
-<span class="token comment"># 绑定地址</span>
-bind 0.0.0.0
-<span class="token comment"># 让redis后台运行</span>
-daemonize yes
-<span class="token comment"># 注册的实例ip</span>
-replica-announce-ip 192.168.200.137
-<span class="token comment"># 保护模式</span>
-protected-mode no
-<span class="token comment"># 数据库数量</span>
-databases 1
-<span class="token comment"># 日志</span>
-logfile /tmp/6379/run.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>将这个文件拷贝到每个目录下：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
-cd &#x2F;tmp
-# 执行拷贝
-echo 7001 7002 7003 8001 8002 8003 | xargs -t -n 1 cp redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>修改每个目录下的redis.conf，将其中的6379修改为与所在目录一致：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
-cd &#x2F;tmp
-# 修改配置文件
-printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t sed -i &#39;s&#x2F;6379&#x2F;&#123;&#125;&#x2F;g&#39; &#123;&#125;&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<h2 id="4-3-启动"><a href="#4-3-启动" class="headerlink" title="4.3.启动"></a>4.3.启动</h2><p>因为已经配置了后台启动模式，所以可以直接启动服务：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入&#x2F;tmp目录
-cd &#x2F;tmp
-# 一键启动所有服务
-printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t redis-server &#123;&#125;&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>通过ps查看状态：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">ps -ef | grep redis<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>发现服务都已经正常启动：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5j8oofj20xz05pgnz.jpg" alt="image-20210702174255799"></p>
-<p>如果要关闭所有进程，可以执行命令：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">ps -ef | grep redis | awk &#39;&#123;print $2&#125;&#39; | xargs kill<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>或者（推荐这种方式）：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t redis-cli -p &#123;&#125; shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-
-
-<h2 id="4-4-创建集群"><a href="#4-4-创建集群" class="headerlink" title="4.4.创建集群"></a>4.4.创建集群</h2><p>虽然服务启动了，但是目前每个服务之间都是独立的，没有任何关联。</p>
-<p>我们需要执行命令来创建集群，在Redis5.0之前创建集群比较麻烦，5.0之后集群管理命令都集成到了redis-cli中。</p>
-<p>1）Redis5.0之前</p>
-<p>Redis5.0之前集群命令都是用redis安装包下的src&#x2F;redis-trib.rb来实现的。因为redis-trib.rb是有ruby语言编写的所以需要安装ruby环境。</p>
- <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 安装依赖
-yum -y install zlib ruby rubygems
-gem install redis<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>然后通过命令来管理集群：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 进入redis的src目录
-cd &#x2F;tmp&#x2F;redis-6.2.4&#x2F;src
-# 创建集群
-.&#x2F;redis-trib.rb create --replicas 1 192.168.150.101:7001 192.168.150.101:7002 192.168.150.101:7003 192.168.150.101:8001 192.168.150.101:8002 192.168.150.101:8003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>2）Redis5.0以后</p>
-<p>我们使用的是Redis6.2.4版本，集群管理以及集成到了redis-cli中，格式如下：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli --cluster create --cluster-replicas 1 192.168.200.137:7001 192.168.200.137:7002 192.168.200.137:7003 192.168.200.137:8001 192.168.200.137:8002 192.168.200.137:8003<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>命令说明：</p>
-<ul>
-<li><code>redis-cli --cluster</code>或者<code>./redis-trib.rb</code>：代表集群操作命令</li>
-<li><code>create</code>：代表是创建集群</li>
-<li><code>--replicas 1</code>或者<code>--cluster-replicas 1</code> ：指定集群中每个master的副本个数为1，此时<code>节点总数 ÷ (replicas + 1)</code> 得到的就是master的数量。因此节点列表中的前n个就是master，其它节点都是slave节点，随机分配到不同master</li>
-</ul>
-<p>运行后的样子：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5lqnkaj217b0jqgul.jpg" alt="image-20210702181101969"></p>
-<p>这里输入yes，则集群开始创建：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5mkum9j20qw0mudnn.jpg" alt="image-20210702181215705"></p>
-<p>通过命令可以查看集群状态：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli -p 7001 cluster nodes<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5pxms7j218504ln0t.jpg" alt="image-20210702181922809"></p>
-<h2 id="4-5-测试"><a href="#4-5-测试" class="headerlink" title="4.5.测试"></a>4.5.测试</h2><p>尝试连接7001节点，存储一个数据：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 连接
-redis-cli -p 7001
-# 存储数据
-set num 123
-# 读取数据
-get num
-# 再次存储
-set a 1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>结果悲剧了：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5rblk7j20fm051mxs.jpg" alt="image-20210702182343979"></p>
-<p>集群操作时，需要给<code>redis-cli</code>加上<code>-c</code>参数才可以：</p>
-<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">redis-cli -c -p 7001<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>这次可以了：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5sms7qj20k0078jsg.jpg" alt="image-20210702182602145"></p>
+                <p>Feign的拦截器RequestInterceptor</p>
+<p>SpringCloud的微服务使用Feign进行服务间调用的时候可以使用RequestInterceptor统一拦截请求来完成设置header等相关请求，但RequestInterceptor和ClientHttpRequestInterceptor有点不同，它拿不到原本的请求，所以要通过其他方法来获取原本的请求</p>
+<p>首先创建自定义的RequestInterceptor</p>
+<p>这里通过RequestContextHolder获取到当前的request</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyFeignInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">RequestInterceptor</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">apply</span><span class="token punctuation">(</span><span class="token class-name">RequestTemplate</span> template<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+        <span class="token class-name">ServletRequestAttributes</span> servletRequestAttributes <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ServletRequestAttributes</span><span class="token punctuation">)</span><span class="token class-name">RequestContextHolder</span><span class="token punctuation">.</span><span class="token function">getRequestAttributes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"===request: &#123;&#125;"</span><span class="token punctuation">,</span> template<span class="token punctuation">.</span><span class="token function">url</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        template<span class="token punctuation">.</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token string">"authorization"</span><span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>但是Feign接口不是一个启动类,没有办法直接加载配置类,解决方法如下:</p>
+<p>方式一:</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@FeignClient</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"itemservice"</span><span class="token punctuation">,</span>configuration <span class="token operator">=</span> <span class="token class-name">MyFeignInterceptor</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">ItemClient</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/item/list"</span><span class="token punctuation">)</span>
+    <span class="token class-name">PageResult</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Item</span><span class="token punctuation">></span></span> <span class="token function">getPageInfo</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"page"</span><span class="token punctuation">)</span> <span class="token class-name">Integer</span> page<span class="token punctuation">,</span> <span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"size"</span><span class="token punctuation">)</span> <span class="token class-name">Integer</span> size<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>编写Feign接口时加上configuration &#x3D; MyFeignInterceptor.class参数</p>
+</blockquote>
+<p>方式二:</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h322ppjsosj20dk08gmxa.jpg" alt="image-20220609163003448"></p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+ com.hmall.common.feignConfig.MyFeignInterceptor<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>在resources下创建META-INF&#x2F;spring.factories实现自定义装配</p>
+</blockquote>
 
                 
             </div>
@@ -963,7 +528,7 @@ set a 1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://zmhaoo.github.io/2022/06/03/Redis%E9%9B%86%E7%BE%A4/">https://zmhaoo.github.io/2022/06/03/Redis%E9%9B%86%E7%BE%A4/</a>
+                    <a href="https://zmhaoo.github.io/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/">https://zmhaoo.github.io/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1169,7 +734,7 @@ set a 1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
         repo: '',
         owner: '',
         admin: null,
-        id: '2022-06-03T22-31-43',
+        id: '2022-06-09T16-22-46',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -1193,7 +758,7 @@ set a 1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
 <script src="/libs/gitment/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-    id: 'Fri Jun 03 2022 22:31:43 GMT+0800',
+    id: 'Thu Jun 09 2022 16:22:46 GMT+0800',
     owner: '',
     repo: '',
     oauth: {
@@ -1218,9 +783,9 @@ gitment.render('gitment-content');
 
 <script type="text/javascript">
     disqus_config = function () {
-        this.page.url = 'https://zmhaoo.github.io/2022/06/03/Redis%E9%9B%86%E7%BE%A4/';
-        this.page.identifier = '/2022/06/03/Redis%E9%9B%86%E7%BE%A4/';
-        this.page.title = 'Redis集群';
+        this.page.url = 'https://zmhaoo.github.io/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/';
+        this.page.identifier = '/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/';
+        this.page.title = 'Feign如何加请求头?';
     };
     let disqus_shortname = '';
 
@@ -1274,9 +839,48 @@ gitment.render('gitment-content');
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2022/06/09/Feign%E5%A6%82%E4%BD%95%E5%8A%A0%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="Feign如何加请求头?">
+                        
+                        <span class="card-title">Feign如何加请求头?</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            张鸣昊
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2022/06/06/Redis%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/">
                     <div class="card-image">
@@ -1294,54 +898,13 @@ gitment.render('gitment-content');
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-06-06
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-06
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
                             张鸣昊
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/06/03/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="Redis集群分布式缓存">
-                        
-                        <span class="card-title">Redis集群分布式缓存</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Redis%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    Redis相关技术
-                                </a>
-                            
                             
                         </span>
                     </div>
