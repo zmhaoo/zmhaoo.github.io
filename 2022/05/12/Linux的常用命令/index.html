@@ -35,7 +35,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -473,18 +473,18 @@
 <h4 id="禁用防火墙开机启动"><a href="#禁用防火墙开机启动" class="headerlink" title="#禁用防火墙开机启动"></a>#禁用防火墙开机启动</h4><p>systemctl disable firewalld</p>
 <h4 id="停止网络管理器"><a href="#停止网络管理器" class="headerlink" title="#停止网络管理器"></a>#停止网络管理器</h4><p>systemctl stop NetworkManager</p>
 <h4 id="禁止开机自启"><a href="#禁止开机自启" class="headerlink" title="#禁止开机自启"></a>#禁止开机自启</h4><p>systemctl disable NetworkManager</p>
-<h4 id="加压jdk"><a href="#加压jdk" class="headerlink" title="#加压jdk"></a>#加压jdk</h4><p>tar -zxvf jdk-8u171-linux-x64.tar.gz -C &#x2F;usr&#x2F;local</p>
-<h4 id="配置jdk的环境变量"><a href="#配置jdk的环境变量" class="headerlink" title="#配置jdk的环境变量"></a>#配置jdk的环境变量</h4><p>echo ‘JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdk1.8.0_171’ &gt;&gt; &#x2F;etc&#x2F;profile<br>echo ‘PATH&#x3D;$JAVA_HOME&#x2F;bin:$PATH’ &gt;&gt; &#x2F;etc&#x2F;profile</p>
-<h4 id="重新加载文件"><a href="#重新加载文件" class="headerlink" title="#重新加载文件"></a>#重新加载文件</h4><p>source &#x2F;etc&#x2F;profile</p>
+<h4 id="加压jdk"><a href="#加压jdk" class="headerlink" title="#加压jdk"></a>#加压jdk</h4><p>tar -zxvf jdk-8u171-linux-x64.tar.gz -C /usr/local</p>
+<h4 id="配置jdk的环境变量"><a href="#配置jdk的环境变量" class="headerlink" title="#配置jdk的环境变量"></a>#配置jdk的环境变量</h4><p>echo ‘JAVA_HOME=/usr/local/jdk1.8.0_171’ &gt;&gt; /etc/profile<br>echo ‘PATH=$JAVA_HOME/bin:$PATH’ &gt;&gt; /etc/profile</p>
+<h4 id="重新加载文件"><a href="#重新加载文件" class="headerlink" title="#重新加载文件"></a>#重新加载文件</h4><p>source /etc/profile</p>
 <h4 id="查看jdk版本"><a href="#查看jdk版本" class="headerlink" title="#查看jdk版本"></a>#查看jdk版本</h4><p>java -version</p>
-<h4 id="解压tomcat"><a href="#解压tomcat" class="headerlink" title="#解压tomcat"></a>#解压tomcat</h4><p>tar -zxvf apache-tomcat-7.0.57.tar.gz -C &#x2F;usr&#x2F;local</p>
+<h4 id="解压tomcat"><a href="#解压tomcat" class="headerlink" title="#解压tomcat"></a>#解压tomcat</h4><p>tar -zxvf apache-tomcat-7.0.57.tar.gz -C /usr/local</p>
 <h4 id="卸载mariadb数据库"><a href="#卸载mariadb数据库" class="headerlink" title="#卸载mariadb数据库"></a>#卸载mariadb数据库</h4><p>rpm -e –nodeps  <code>rpm -qa | grep mariadb</code></p>
-<h4 id="创建文件夹"><a href="#创建文件夹" class="headerlink" title="#创建文件夹"></a>#创建文件夹</h4><p>mkdir &#x2F;usr&#x2F;local&#x2F;mysql</p>
-<h4 id="解压mysql"><a href="#解压mysql" class="headerlink" title="#解压mysql"></a>#解压mysql</h4><p>tar -zxvf mysql-5.7.25-1.el7.x86_64.rpm-bundle.tar.gz -C &#x2F;usr&#x2F;local&#x2F;mysql</p>
+<h4 id="创建文件夹"><a href="#创建文件夹" class="headerlink" title="#创建文件夹"></a>#创建文件夹</h4><p>mkdir /usr/local/mysql</p>
+<h4 id="解压mysql"><a href="#解压mysql" class="headerlink" title="#解压mysql"></a>#解压mysql</h4><p>tar -zxvf mysql-5.7.25-1.el7.x86_64.rpm-bundle.tar.gz -C /usr/local/mysql</p>
 <h4 id="安装依赖环境"><a href="#安装依赖环境" class="headerlink" title="#安装依赖环境"></a>#安装依赖环境</h4><p>yum install -y net-tools perl libaio openssl gcc pcre-devel zlib-devel openssl vim openssl-devel</p>
-<h4 id="安装mysql"><a href="#安装mysql" class="headerlink" title="#安装mysql"></a>#安装mysql</h4><p>rpm -ivh &#x2F;usr&#x2F;local&#x2F;mysql&#x2F;mysql-community-common-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh &#x2F;usr&#x2F;local&#x2F;mysql&#x2F;mysql-community-libs-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh &#x2F;usr&#x2F;local&#x2F;mysql&#x2F;mysql-community-devel-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh &#x2F;usr&#x2F;local&#x2F;mysql&#x2F;mysql-community-libs-compat-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh &#x2F;usr&#x2F;local&#x2F;mysql&#x2F;mysql-community-client-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh &#x2F;usr&#x2F;local&#x2F;mysql&#x2F;mysql-community-server-5.7.25-1.el7.x86_64.rpm</p>
+<h4 id="安装mysql"><a href="#安装mysql" class="headerlink" title="#安装mysql"></a>#安装mysql</h4><p>rpm -ivh /usr/local/mysql/mysql-community-common-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh /usr/local/mysql/mysql-community-libs-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh /usr/local/mysql/mysql-community-devel-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh /usr/local/mysql/mysql-community-libs-compat-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh /usr/local/mysql/mysql-community-client-5.7.25-1.el7.x86_64.rpm<br>rpm -ivh /usr/local/mysql/mysql-community-server-5.7.25-1.el7.x86_64.rpm</p>
 <h4 id="开启mysql服务"><a href="#开启mysql服务" class="headerlink" title="#开启mysql服务"></a>#开启mysql服务</h4><p>systemctl start mysqld</p>
-<h4 id="查看临时密码"><a href="#查看临时密码" class="headerlink" title="#查看临时密码"></a>#查看临时密码</h4><p>cat &#x2F;var&#x2F;log&#x2F;mysqld.log | grep password</p>
+<h4 id="查看临时密码"><a href="#查看临时密码" class="headerlink" title="#查看临时密码"></a>#查看临时密码</h4><p>cat /var/log/mysqld.log | grep password</p>
 <h4 id="登录数据库"><a href="#登录数据库" class="headerlink" title="#登录数据库"></a>#登录数据库</h4><p>mysql -uroot -p</p>
 <pre><code>set global validate_password_length=4;
 set global validate_password_policy=LOW;
@@ -492,7 +492,7 @@ set password = password(&#39;root&#39;);
 grant all on *.* to &#39;root&#39;@&#39;%&#39; identified by &#39;root&#39;;
 flush privileges;
 </code></pre>
-<h4 id="修改MySQL编码"><a href="#修改MySQL编码" class="headerlink" title="#修改MySQL编码"></a>#修改MySQL编码</h4><p>vim &#x2F;etc&#x2F;my.cnf</p>
+<h4 id="修改MySQL编码"><a href="#修改MySQL编码" class="headerlink" title="#修改MySQL编码"></a>#修改MySQL编码</h4><p>vim /etc/my.cnf</p>
 <pre><code>[client]
 default_character_set=utf8
 
@@ -505,15 +505,15 @@ character_set_server=utf8
 <h4 id="重启服务"><a href="#重启服务" class="headerlink" title="#重启服务"></a>#重启服务</h4><p>systemctl restart mysqld</p>
 <h4 id="查看数据库编码"><a href="#查看数据库编码" class="headerlink" title="#查看数据库编码"></a>#查看数据库编码</h4><p>mysql -uroot -proot -e “show variables like ‘%char%’;”</p>
 <h4 id="安装git"><a href="#安装git" class="headerlink" title="#安装git"></a>#安装git</h4><p>yum install -y git</p>
-<h4 id="解压maven"><a href="#解压maven" class="headerlink" title="#解压maven"></a>#解压maven</h4><p>tar -zxvf apache-maven-3.5.4-bin.tar.gz -C &#x2F;usr&#x2F;local</p>
-<h4 id="配置maven环境变量"><a href="#配置maven环境变量" class="headerlink" title="#配置maven环境变量"></a>#配置maven环境变量</h4><p>echo ‘MAVEN_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;apache-maven-3.5.4’ &gt;&gt; &#x2F;etc&#x2F;profile<br>echo ‘PATH&#x3D;$MAVEN_HOME&#x2F;bin:$PATH’ &gt;&gt; &#x2F;etc&#x2F;profile</p>
-<h4 id="重新加载文件-1"><a href="#重新加载文件-1" class="headerlink" title="#重新加载文件"></a>#重新加载文件</h4><p>source &#x2F;etc&#x2F;profile</p>
+<h4 id="解压maven"><a href="#解压maven" class="headerlink" title="#解压maven"></a>#解压maven</h4><p>tar -zxvf apache-maven-3.5.4-bin.tar.gz -C /usr/local</p>
+<h4 id="配置maven环境变量"><a href="#配置maven环境变量" class="headerlink" title="#配置maven环境变量"></a>#配置maven环境变量</h4><p>echo ‘MAVEN_HOME=/usr/local/apache-maven-3.5.4’ &gt;&gt; /etc/profile<br>echo ‘PATH=$MAVEN_HOME/bin:$PATH’ &gt;&gt; /etc/profile</p>
+<h4 id="重新加载文件-1"><a href="#重新加载文件-1" class="headerlink" title="#重新加载文件"></a>#重新加载文件</h4><p>source /etc/profile</p>
 <h4 id="查看maven版本"><a href="#查看maven版本" class="headerlink" title="#查看maven版本"></a>#查看maven版本</h4><p>mvn -v</p>
-<h4 id="删除settings文件"><a href="#删除settings文件" class="headerlink" title="#删除settings文件"></a>#删除settings文件</h4><p>rm -rf &#x2F;usr&#x2F;local&#x2F;apache-maven-3.5.4&#x2F;conf&#x2F;settings.xml</p>
-<h4 id="拷贝settings文件"><a href="#拷贝settings文件" class="headerlink" title="#拷贝settings文件"></a>#拷贝settings文件</h4><p>cp &#x2F;root&#x2F;settings.xml  &#x2F;usr&#x2F;local&#x2F;apache-maven-3.5.4&#x2F;conf&#x2F;settings.xml</p>
-<h4 id="本地仓库"><a href="#本地仓库" class="headerlink" title="#本地仓库"></a>#本地仓库</h4><p>mv &#x2F;root&#x2F;repo &#x2F;usr&#x2F;local</p>
-<h4 id="修改静态IP"><a href="#修改静态IP" class="headerlink" title="#修改静态IP"></a>#修改静态IP</h4><p>vim &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens32</p>
-<p> BOOTPROTO&#x3D;static<br> IPADDR&#x3D;192.168.100.100<br> GATEWAY&#x3D;192.168.100.2<br> NETMASK&#x3D;255.255.255.0<br> DNS1&#x3D;8.8.8.8</p>
+<h4 id="删除settings文件"><a href="#删除settings文件" class="headerlink" title="#删除settings文件"></a>#删除settings文件</h4><p>rm -rf /usr/local/apache-maven-3.5.4/conf/settings.xml</p>
+<h4 id="拷贝settings文件"><a href="#拷贝settings文件" class="headerlink" title="#拷贝settings文件"></a>#拷贝settings文件</h4><p>cp /root/settings.xml  /usr/local/apache-maven-3.5.4/conf/settings.xml</p>
+<h4 id="本地仓库"><a href="#本地仓库" class="headerlink" title="#本地仓库"></a>#本地仓库</h4><p>mv /root/repo /usr/local</p>
+<h4 id="修改静态IP"><a href="#修改静态IP" class="headerlink" title="#修改静态IP"></a>#修改静态IP</h4><p>vim /etc/sysconfig/network-scripts/ifcfg-ens32</p>
+<p> BOOTPROTO=static<br> IPADDR=192.168.100.100<br> GATEWAY=192.168.100.2<br> NETMASK=255.255.255.0<br> DNS1=8.8.8.8</p>
 <h4 id="重启网卡"><a href="#重启网卡" class="headerlink" title="#重启网卡"></a>#重启网卡</h4><p>systemctl restart network</p>
 
                 

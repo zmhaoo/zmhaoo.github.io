@@ -36,7 +36,7 @@ WebFlux使用场景
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -475,20 +475,20 @@ WebFlux使用场景
 </ol>
 <p>  WebFlux 用于构建响应式 Web 服务。在详细介绍 WebFlux 之前，我们先梳理一下这个新框架的应用场景，了解应用场景才能帮助我们对所要采用的技术体系做出正确的选择。</p>
 <p>因为 Reactor 这样的响应式库可以帮助我们构建一个异步的非阻塞流，并且为开发人员屏蔽了底层的技术复杂度。而基于 Reactor 框架的 WebFlux 进一步降低了开发响应式 Web 服务的难度。</p>
-<p>微服务架构的兴起为 WebFlux 的应用提供了一个很好的场景。我们知道在一个微服务系统中，存在数十乃至数百个独立的微服务，它们相互通信以完成复杂的业务流程。这个过程势必会涉及大量的 I&#x2F;O 操作，尤其是阻塞式 I&#x2F;O 操作会整体增加系统的延迟并降低吞吐量。如果能够在复杂的流程中集成非阻塞、异步通信机制，我们就可以高效处理跨服务之间的网络请求。针对这种场景，WebFlux 是一种非常有效的解决方案。</p>
+<p>微服务架构的兴起为 WebFlux 的应用提供了一个很好的场景。我们知道在一个微服务系统中，存在数十乃至数百个独立的微服务，它们相互通信以完成复杂的业务流程。这个过程势必会涉及大量的 I/O 操作，尤其是阻塞式 I/O 操作会整体增加系统的延迟并降低吞吐量。如果能够在复杂的流程中集成非阻塞、异步通信机制，我们就可以高效处理跨服务之间的网络请求。针对这种场景，WebFlux 是一种非常有效的解决方案。</p>
 <ol start="2">
 <li>WebMVC 和WebFlux</li>
+<li>1 Spring WebMvc<br>Java中的传统的Web容器都是基于Servlet规范来实现的，Spring WebMvc 作为一种经典的Web框架实现，同样也是基于Servlet来实现的。Spring MVC 相信大家都非常熟悉，也是主流的开发框架。这里不在详细介绍，在我的计划中后面会出一系列源码阅读的文章包括Spring、WebMvc和Mybatis等。这里放一张架构图用来和WebFlux作为对比。</li>
 </ol>
-<p>2.1 Spring WebMvc<br>Java中的传统的Web容器都是基于Servlet规范来实现的，Spring WebMvc 作为一种经典的Web框架实现，同样也是基于Servlet来实现的。Spring MVC 相信大家都非常熟悉，也是主流的开发框架。这里不在详细介绍，在我的计划中后面会出一系列源码阅读的文章包括Spring、WebMvc和Mybatis等。这里放一张架构图用来和WebFlux作为对比。</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ljb8yxhnj20i60bgmxv.jpg" alt="5ff17885bcd3b0fc5f5a05bb3e7b25d0"></p>
 <p>2.2 Spring WebFlux<br>由于Spring WebMVC 在实现上并不允许在整个请求生命周期中都采用非阻塞式的操作方式。因此，Spring 在尽量沿用原有的开发模式以及 API 设计上提供了支持异步非阻塞的 Spring WebFlux 框架。</p>
 <p>在使用WebFlux和WebMvc实际的使用并没有太大的区别，实际上WebFlux的核心组件基本都是SpringMvc核心组件的异步非阻塞实现版本。所以在有了差别不大的开发体验。</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ljbfqom1j20md0abdgt.jpg" alt="dcd412209a8bbd51b56f1bfb8a4ca04e"></p>
 <p>2.3 对比两种实现的处理模型<br>Spring WebMvc是一种同步阻塞的处理模型，也就是说当请求过来时，工作线程开始处理请求后，然后开始阻塞等待DB或者IO操作完成，当IO结束是返回响应结果。</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ljblh031j20nw06zq3x.jpg" alt="baf29b5c7786244d46c0e5dcecd33686"></p>
-<p>模型大概如上，可以看到工作线程的实际处理时间远小于花费在阻塞操作上的时间。这意味着工作线程会被 I&#x2F;O 读取或写入数据这一操作所阻塞。从这个简单的图中，我们可以得出结论，线程效率低下。同时，因为所有请求是排队的，相当于一个请求队列，所以接受请求和处理请求这两部分操作实际上是可以共享等待时间的。WebFlux 构建在非阻塞 API 之上，这意味着没有操作需要与 I&#x2F;O 阻塞线程进行交互。接受和处理请求的效率很高，如下图所示。</p>
+<p>模型大概如上，可以看到工作线程的实际处理时间远小于花费在阻塞操作上的时间。这意味着工作线程会被 I/O 读取或写入数据这一操作所阻塞。从这个简单的图中，我们可以得出结论，线程效率低下。同时，因为所有请求是排队的，相当于一个请求队列，所以接受请求和处理请求这两部分操作实际上是可以共享等待时间的。WebFlux 构建在非阻塞 API 之上，这意味着没有操作需要与 I/O 阻塞线程进行交互。接受和处理请求的效率很高，如下图所示。</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ljbp7kfvj20nl0920tw.jpg" alt="470e9c44c254743c7ca52efbe836ba5a"></p>
-<p>将上图中所展示的异步非阻塞请求处理与前面的阻塞过程进行比较，我们会注意到，现在没有在读取请求数据时发生等待，工作线程高效接受新连接。然后，提供了非阻塞 I&#x2F;O 机制的底层操作系统会告诉我们请求数据是否已经接收完成，并且处理器可以在不阻塞的情况下进行处理。</p>
+<p>将上图中所展示的异步非阻塞请求处理与前面的阻塞过程进行比较，我们会注意到，现在没有在读取请求数据时发生等待，工作线程高效接受新连接。然后，提供了非阻塞 I/O 机制的底层操作系统会告诉我们请求数据是否已经接收完成，并且处理器可以在不阻塞的情况下进行处理。</p>
 <p>2.4 性能差异<br>引用维护Spring 框架的 Pivotal 公司软件开发主管 Biju Kunjummen 的测试结果来对这一问题进行解答。</p>
 <p>在 Biju Kunjummen 的测试用例中，他分别基于 WebMVC 所提供的阻塞式 RestTemplate 以及 WebFlux 所提供的非阻塞式 WebClient 工具类对远程 Web 服务发起请求。对于不同组的并发用户（300、1000、1500、3000、5000），他分别发送了一个 delay 属性设置为 300 ms 的请求，每个用户重复该场景 30 次，请求之间的延迟为 1 到 2 秒。测试用例中使用了 Gatling 这款工具来执行压测。</p>
 <p>这里我们截取 300 和 3000 并发用户场景下的结果进行对比，如下面两张图所示。</p>
@@ -880,13 +880,13 @@ gitment.render('gitment-content');
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/05/26/Centos7%E5%AE%89%E8%A3%85Docker/">
+                <a href="/2022/05/25/Gateway%E7%BD%91%E5%85%B3/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Centos7安装Docker">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="Gateway网关">
                         
-                        <span class="card-title">Centos7安装Docker</span>
+                        <span class="card-title">Gateway网关</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -897,14 +897,14 @@ gitment.render('gitment-content');
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-26
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-25
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Docker%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    Docker相关技术
+                            <a href="/categories/SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    SpringCloud微服务技术
                                 </a>
                             
                             

@@ -33,7 +33,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -739,7 +739,7 @@ spring:
 </ol>
 <p>接下来，就重点来学习路由断言和路由过滤器的详细知识</p>
 <h2 id="3-3-断言工厂"><a href="#3-3-断言工厂" class="headerlink" title="3.3.断言工厂"></a><strong>3.3.断言工厂</strong></h2><p>我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件</p>
-<p>例如Path&#x3D;&#x2F;user&#x2F;**是按照路径匹配，这个规则是由</p>
+<p>例如Path=/user/**是按照路径匹配，这个规则是由</p>
 <p><code>org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory</code>类来</p>
 <p>处理的，像这样的断言工厂在SpringCloudGateway还有十几个:</p>
 <table>
@@ -753,52 +753,52 @@ spring:
 <tbody><tr>
 <td align="left">After</td>
 <td align="left">是某个时间点后的请求</td>
-<td align="left">-  After&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver]</td>
+<td align="left">-  After=2037-01-20T17:42:47.789-07:00[America/Denver]</td>
 </tr>
 <tr>
 <td align="left">Before</td>
 <td align="left">是某个时间点之前的请求</td>
-<td align="left">-  Before&#x3D;2031-04-13T15:14:47.433+08:00[Asia&#x2F;Shanghai]</td>
+<td align="left">-  Before=2031-04-13T15:14:47.433+08:00[Asia/Shanghai]</td>
 </tr>
 <tr>
 <td align="left">Between</td>
 <td align="left">是某两个时间点之前的请求</td>
-<td align="left">-  Between&#x3D;2037-01-20T17:42:47.789-07:00[America&#x2F;Denver],  2037-01-21T17:42:47.789-07:00[America&#x2F;Denver]</td>
+<td align="left">-  Between=2037-01-20T17:42:47.789-07:00[America/Denver],  2037-01-21T17:42:47.789-07:00[America/Denver]</td>
 </tr>
 <tr>
 <td align="left">Cookie</td>
 <td align="left">请求必须包含某些cookie</td>
-<td align="left">- Cookie&#x3D;chocolate, ch.p</td>
+<td align="left">- Cookie=chocolate, ch.p</td>
 </tr>
 <tr>
 <td align="left">Header</td>
 <td align="left">请求必须包含某些header</td>
-<td align="left">- Header&#x3D;X-Request-Id, \d+</td>
+<td align="left">- Header=X-Request-Id, \d+</td>
 </tr>
 <tr>
 <td align="left">Host</td>
 <td align="left">请求必须是访问某个host（域名）</td>
-<td align="left">-  Host&#x3D;<strong>.somehost.org,</strong>.anotherhost.org</td>
+<td align="left">-  Host=<strong>.somehost.org,</strong>.anotherhost.org</td>
 </tr>
 <tr>
 <td align="left">Method</td>
 <td align="left">请求方式必须是指定方式</td>
-<td align="left">- Method&#x3D;GET,POST</td>
+<td align="left">- Method=GET,POST</td>
 </tr>
 <tr>
 <td align="left">Path</td>
 <td align="left">请求路径必须符合指定规则</td>
-<td align="left">- Path&#x3D;&#x2F;red&#x2F;{segment},&#x2F;blue&#x2F;**</td>
+<td align="left">- Path=/red/{segment},/blue/**</td>
 </tr>
 <tr>
 <td align="left">Query</td>
 <td align="left">请求参数必须包含指定参数</td>
-<td align="left">- Query&#x3D;name, Jack或者-  Query&#x3D;name</td>
+<td align="left">- Query=name, Jack或者-  Query=name</td>
 </tr>
 <tr>
 <td align="left">RemoteAddr</td>
 <td align="left">请求者的ip必须是指定范围</td>
-<td align="left">- RemoteAddr&#x3D;192.168.1.1&#x2F;24</td>
+<td align="left">- RemoteAddr=192.168.1.1/24</td>
 </tr>
 <tr>
 <td align="left">Weight</td>
@@ -840,7 +840,7 @@ spring:
 </tbody></table>
 <h3 id="3-4-2-请求头过滤器"><a href="#3-4-2-请求头过滤器" class="headerlink" title="3.4.2.请求头过滤器"></a>3.4.2.请求头过滤器</h3><p>下面我们以AddRequestHeader 为例来讲解。</p>
 <blockquote>
-<p><strong>需求</strong>：给所有进入userservice的请求添加一个请求头：Truth&#x3D;itcast is freaking awesome!</p>
+<p><strong>需求</strong>：给所有进入userservice的请求添加一个请求头：Truth=itcast is freaking awesome!</p>
 </blockquote>
 <p>第一步，只需要修改gateway服务的application.yml文件，添加路由过滤即可：</p>
 <pre class="line-numbers language-none"><code class="language-none">spring:

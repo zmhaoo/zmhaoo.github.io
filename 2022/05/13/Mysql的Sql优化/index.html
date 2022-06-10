@@ -10,11 +10,13 @@ insert优化
 
 
 
-经量减少网络之间的I&amp;#x2F;O传输,可以提高性能
+经量减少网络之间的I/O传输,可以提高性能
 
 大批量插入数据
 
-如果需要一次性大批量插入数据,使用insert语句插入性能较低,此时可以使用MYSQL数据库提供的load指令进行插入.操作如下">
+如果需要一次性大批量插入数据,使用insert语句插入性能较低,此时可以使用MYSQL数据库提供的load指令进行插入.操作如下;
+
+#客">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -41,7 +43,7 @@ insert优化
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -480,7 +482,7 @@ insert优化
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5gdckvkj20ep0bzq3q.jpg" alt="image-20220513213453462"></p>
 </li>
 </ul>
-<p>经量减少网络之间的I&#x2F;O传输,可以提高性能</p>
+<p>经量减少网络之间的I/O传输,可以提高性能</p>
 <ul>
 <li>大批量插入数据</li>
 </ul>
@@ -610,7 +612,7 @@ mysql&gt; show index from employee;
 1 row in set, 1 warning (0.00 sec)
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><strong>事项三</strong>:多字段排序时,一个升序一个降序,此时需要注意联合索引在创建时的规则(ASC&#x2F;DESC)</p>
+<p><strong>事项三</strong>:多字段排序时,一个升序一个降序,此时需要注意联合索引在创建时的规则(ASC/DESC)</p>
 <p><strong>事项四</strong>:如果不可避免的出现filesort,大数据量排序时,<strong>可以适当增大排序缓冲区大小sort_buffer_size(默认256k)</strong>,如果在排序时,占满了256k的排序缓冲区,则会涉及到磁盘文件当中进行排序,会降低性能,可以适量增大</p>
 <pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#默认排序缓冲区大小sort_buffer_size为256k
 mysql&gt; show variables like &#39;sort_buffer_size&#39;;
@@ -656,7 +658,7 @@ mysql&gt; show variables like &#39;sort_buffer_size&#39;;
 <pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">explain select * from tb_sku t,(select id from tb_sku order by id limit 200000,10)  a  where t.id &#x3D; a.id;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>mysql官方给出的优化方案</p>
-<h1 id="Count优化"><a href="#Count优化" class="headerlink" title="Count优化"></a>Count优化</h1><h3 id="COUNT的几种用法"><a href="#COUNT的几种用法" class="headerlink" title="COUNT的几种用法"></a>COUNT的几种用法</h3><p>![image-20220516113046371](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220516113046371.png)</p>
+<h1 id="Count优化"><a href="#Count优化" class="headerlink" title="Count优化"></a>Count优化</h1><h3 id="COUNT的几种用法"><a href="#COUNT的几种用法" class="headerlink" title="COUNT的几种用法"></a>COUNT的几种用法</h3><p>![image-20220516113046371](/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220516113046371.png)</p>
 <h1 id="update优化-InnoDB中索引-行锁-表锁的关系"><a href="#update优化-InnoDB中索引-行锁-表锁的关系" class="headerlink" title="update优化(InnoDB中索引-行锁-表锁的关系)"></a>update优化(InnoDB中索引-行锁-表锁的关系)</h1><h3 id="正常情况"><a href="#正常情况" class="headerlink" title="正常情况"></a>正常情况</h3><p>Mysql中的InnoDB引擎<strong>默认是行级锁</strong>,当一个客户端通过主键id修改一个条数据时,这条数据会被锁上,另一个客户端通过<strong>同一个ID修改</strong>这个被锁住的数据时,就会堵塞**(如果是不同id则不会阻塞)**</p>
 <p>客户端A:条件相同</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5ewvch5j20jj078q43.jpg" alt="image-20220516114611297"></p>

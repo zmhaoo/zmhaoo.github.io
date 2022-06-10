@@ -37,7 +37,7 @@ Spring的注解
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -545,7 +545,7 @@ Spring的注解
 </li>
 <li><p>@scope(“application”)- 在 web 环境中，每个应用范围内会创建新的实例</p>
 <ul>
-<li>注:singleton和prototype区别</li>
+<li>  注:singleton和prototype区别</li>
 </ul>
 <p>第一 ,singleton单实例,protptype多实例</p>
 <p>第二,设置scope值是singleton时候,加载spring配置文件时就会创建单实例对象</p>
@@ -567,11 +567,11 @@ Spring的注解
 <p>   创建类,实现接口beanpostProcessor,创建后置处理器</p>
 </blockquote>
 <ul>
-<li>标注了&#x3D;&#x3D;<strong>@PostConstruct</strong>&#x3D;&#x3D;的方法是初始化方法,会&#x3D;&#x3D;<strong>在bean实例被创建之后</strong>&#x3D;&#x3D;调用.</li>
-<li>标注了**@PreDestroy** 的方法是销毁方法,**&#x3D;&#x3D;singleton范围的bean&#x3D;&#x3D;**的销毁方法会在Spring&#x3D;&#x3D;在容器关闭前被调用&#x3D;&#x3D;.</li>
+<li>标注了==<strong>@PostConstruct</strong>==的方法是初始化方法,会==<strong>在bean实例被创建之后</strong>==调用.</li>
+<li>标注了**@PreDestroy** 的方法是销毁方法,**==singleton范围的bean==**的销毁方法会在Spring==在容器关闭前被调用==.</li>
 <li>延迟初始化<ul>
-<li>默认情况下singleton范围的bean是容器创建时就会&#x3D;&#x3D;<strong>创建</strong>&#x3D;&#x3D;</li>
-<li>如果希望&#x3D;&#x3D;<strong>用到时才创建</strong>&#x3D;&#x3D;,可以使用 &#x3D;&#x3D;<strong>@Lazy</strong>&#x3D;&#x3D; 注解标注在类上来延迟创建(懒汉单例)</li>
+<li>默认情况下singleton范围的bean是容器创建时就会==<strong>创建</strong>==</li>
+<li>如果希望==<strong>用到时才创建</strong>==,可以使用 ==<strong>@Lazy</strong>== 注解标注在类上来延迟创建(懒汉单例)</li>
 </ul>
 </li>
 </ul>
@@ -579,8 +579,8 @@ Spring的注解
 
 <h1 id="扩展-初始化库"><a href="#扩展-初始化库" class="headerlink" title="扩展:初始化库"></a>扩展:初始化库</h1><p>把DDL和DML的sql分别存储于resources下的schema.sql和data.sql这两个文件中,然后在application.properties中配置</p>
 <blockquote>
-<p>spring.sql.init.mode&#x3D;always</p>
-<p>spring.sql.init.mode&#x3D;UTF-8 </p>
+<p>spring.sql.init.mode=always</p>
+<p>spring.sql.init.mode=UTF-8 </p>
 </blockquote>
 <h2 id="Spring中编译异常导致事务回滚失效问题"><a href="#Spring中编译异常导致事务回滚失效问题" class="headerlink" title="Spring中编译异常导致事务回滚失效问题"></a>Spring中编译异常导致事务回滚失效问题</h2><p>为什么当我们用@Transactional注解来进行事务的管理的时候,如果出现编译时异常,发现事务还是提交了,没有回滚?</p>
 <ul>
@@ -588,7 +588,7 @@ Spring的注解
 <p>–&gt; spring默认只有抛出运行时异常(即RuntimException及子类)或Error及子类时,才回回滚事务</p>
 <p>–&gt; 如果抛出的是其他编译时期异常,则仍会提交事务</p>
 <blockquote>
-<p>解决方法:配置@Transaction(rollbackFor &#x3D; xxxException.class)</p>
+<p>解决方法:配置@Transaction(rollbackFor = xxxException.class)</p>
 </blockquote>
 </li>
 </ul>
@@ -607,24 +607,24 @@ Spring的注解
 <ul>
 <li>默认参数为:</li>
 </ul>
-<p>@Transactional(propagation &#x3D; propagation.REQUIRED)   有则加入,无则创建</p>
+<p>@Transactional(propagation = propagation.REQUIRED)   有则加入,无则创建</p>
 <ul>
 <li>如果无论如何都想开启新事务,这是用以下参数:</li>
 </ul>
-<p>@Transactional(propagation &#x3D; propagation.REQUIRES_NEW) 总是需要一个新事物 </p>
+<p>@Transactional(propagation = propagation.REQUIRES_NEW) 总是需要一个新事物 </p>
 </blockquote>
 <h1 id="Transactional事务传播行为失效"><a href="#Transactional事务传播行为失效" class="headerlink" title="@Transactional事务传播行为失效"></a>@Transactional事务传播行为失效</h1><blockquote>
 <p>事务传播行为失效是为在同一个类中,一个事务方法调另一个事务方法,此时被调用的方法实际上是this执行的,不是spring注入的代理对象,@Transactional底层是由spring创建的代理对象调用的AOP通知执行的事务逻辑,如果是this.方法名就不是代理对象调用了,而是被代理对象自己调用自己方法,所以被调用@Transaction事务注解也就不会生效了.</p>
 </blockquote>
 <blockquote>
-<p>解决方法:底层原因跟循环依赖一样,只需要在配置文件配置:main.allow.circular&#x3D;reference&#x3D;true即可</p>
+<p>解决方法:底层原因跟循环依赖一样,只需要在配置文件配置:main.allow.circular=reference=true即可</p>
 <p>注意:spring2.6.0之前的版本不需要配置,有spring自动处理</p>
 </blockquote>
 <h1 id="循环依赖问题"><a href="#循环依赖问题" class="headerlink" title="循环依赖问题"></a>循环依赖问题</h1><blockquote>
 <p>Spring2.6.0之前的版本会自动解决</p>
 </blockquote>
 <blockquote>
-<p>spring2.6.0及后版本需要在配置文件开启:main.allow.circular&#x3D;reference&#x3D;true</p>
+<p>spring2.6.0及后版本需要在配置文件开启:main.allow.circular=reference=true</p>
 </blockquote>
 <h1 id="原子性与锁失效"><a href="#原子性与锁失效" class="headerlink" title="原子性与锁失效"></a>原子性与锁失效</h1><p>当我们开启一个事务的时候,这个时候如果有多个用户想通过事务来操作数据库,我们的数据库不上锁是非常危险的,会产生线程安全问题,这个时候我们应该想到上锁,但是上锁就能解决问题吗?</p>
 <blockquote>
@@ -666,7 +666,7 @@ Spring的注解
 <li><p>WebMvcConfigurer配置类其实是Spring内部的一种配置方式，采用JavaBean的形式来代替传统的xml配置文件形式进行针对框架个性化定制，可以自定义一些Handler，Interceptor，ViewResolver，MessageConverter</p>
 <blockquote>
 <p>1.1 addInterceptors：拦截器</p>
-<p>addInterceptor：需要一个实现HandlerInterceptor接口的拦截器实例<br>addPathPatterns：用于设置拦截器的过滤路径规则；addPathPatterns(“&#x2F;**”)对所有请求都拦截<br>excludePathPatterns：用于设置不需要拦截的过滤规则<br>拦截器主要用途：进行用户登录状态的拦截，日志的拦截等</p>
+<p>addInterceptor：需要一个实现HandlerInterceptor接口的拦截器实例<br>addPathPatterns：用于设置拦截器的过滤路径规则；addPathPatterns(“/**”)对所有请求都拦截<br>excludePathPatterns：用于设置不需要拦截的过滤规则<br>拦截器主要用途：进行用户登录状态的拦截，日志的拦截等</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
 <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span><span class="token class-name">InterceptorRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">addInterceptors</span><span class="token punctuation">(</span>registry<span class="token punctuation">)</span><span class="token punctuation">;</span>

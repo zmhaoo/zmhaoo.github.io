@@ -37,7 +37,7 @@ docker network create es-net
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -544,16 +544,16 @@ kibana:7.12.1<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <h2 id="2-2-DevTools"><a href="#2-2-DevTools" class="headerlink" title="2.2.DevTools"></a>2.2.DevTools</h2><p>kibana中提供了一个DevTools界面：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7kgei6j20v60et76j.jpg" alt="image-20210506102630393"></p>
 <p>这个界面中可以编写DSL来操作elasticsearch。并且对DSL语句有自动补全功能。</p>
-<h1 id="3-安装IK分词器"><a href="#3-安装IK分词器" class="headerlink" title="3.安装IK分词器"></a>3.安装IK分词器</h1><h2 id="3-1-在线安装ik插件（较慢）"><a href="#3-1-在线安装ik插件（较慢）" class="headerlink" title="3.1.在线安装ik插件（较慢）"></a>3.1.在线安装ik插件（较慢）</h2><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 进入容器内部
-docker exec -it elasticsearch &#x2F;bin&#x2F;bash
+<h1 id="3-安装IK分词器"><a href="#3-安装IK分词器" class="headerlink" title="3.安装IK分词器"></a>3.安装IK分词器</h1><h2 id="3-1-在线安装ik插件（较慢）"><a href="#3-1-在线安装ik插件（较慢）" class="headerlink" title="3.1.在线安装ik插件（较慢）"></a>3.1.在线安装ik插件（较慢）</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 进入容器内部</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> -it elasticsearch /bin/bash
 
-# 在线下载并安装
-.&#x2F;bin&#x2F;elasticsearch-plugin  install https:&#x2F;&#x2F;github.com&#x2F;medcl&#x2F;elasticsearch-analysis-ik&#x2F;releases&#x2F;download&#x2F;v7.12.1&#x2F;elasticsearch-analysis-ik-7.12.1.zip
+<span class="token comment"># 在线下载并安装</span>
+./bin/elasticsearch-plugin  <span class="token function">install</span> https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.12.1/elasticsearch-analysis-ik-7.12.1.zip
 
-#退出
-exit
-#重启容器
-docker restart elasticsearch<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">#退出</span>
+<span class="token builtin class-name">exit</span>
+<span class="token comment">#重启容器</span>
+<span class="token function">docker</span> restart elasticsearch<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h2 id="3-2-离线安装ik插件（推荐）"><a href="#3-2-离线安装ik插件（推荐）" class="headerlink" title="3.2.离线安装ik插件（推荐）"></a>3.2.离线安装ik插件（推荐）</h2><h3 id="1）查看数据卷目录"><a href="#1）查看数据卷目录" class="headerlink" title="1）查看数据卷目录"></a>1）查看数据卷目录</h3><p>安装插件需要知道elasticsearch的plugins目录位置，而我们用了数据卷挂载，因此需要查看elasticsearch的数据卷目录，通过下面命令查看:</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">docker volume inspect es-plugins<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -576,8 +576,8 @@ docker restart elasticsearch<span aria-hidden="true" class="line-numbers-rows"><
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7ijiokj20di06074p.jpg" alt="image-20210506110249144"></p>
 <h3 id="3）上传到es容器的插件数据卷中"><a href="#3）上传到es容器的插件数据卷中" class="headerlink" title="3）上传到es容器的插件数据卷中"></a>3）上传到es容器的插件数据卷中</h3><p>也就是<code>/var/lib/docker/volumes/es-plugins/_data </code>：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7h6xosj20y209tq4p.jpg" alt="image-20210506110704293"></p>
-<h3 id="4）重启容器"><a href="#4）重启容器" class="headerlink" title="4）重启容器"></a>4）重启容器</h3><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 4、重启容器
-docker restart es<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="4）重启容器"><a href="#4）重启容器" class="headerlink" title="4）重启容器"></a>4）重启容器</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 4、重启容器</span>
+<span class="token function">docker</span> restart es<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 查看es日志
 docker logs -f es<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
@@ -673,7 +673,7 @@ docker logs -f es<span aria-hidden="true" class="line-numbers-rows"><span></span
 <p>1）打开IK分词器config目录：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uv7ex5a8j20kx0a5tbe.jpg" alt="image-20210506112225508"></p>
 <p>2）在IKAnalyzer.cfg.xml配置文件内容添加：</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
 <span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">properties</span> <span class="token name">SYSTEM</span> <span class="token string">"http://java.sun.com/dtd/properties.dtd"</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>properties</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>comment</span><span class="token punctuation">></span></span>IK Analyzer 扩展配置<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>comment</span><span class="token punctuation">></span></span>
@@ -706,7 +706,7 @@ docker logs -f elasticsearch<span aria-hidden="true" class="line-numbers-rows"><
 <h2 id="3-4-停用词词典"><a href="#3-4-停用词词典" class="headerlink" title="3.4 停用词词典"></a>3.4 停用词词典</h2><p>在互联网项目中，在网络间传输的速度很快，所以很多语言是不允许在网络上传递的，如：关于宗教、政治等敏感词语，那么我们在搜索时也应该忽略当前词汇。</p>
 <p>IK分词器也提供了强大的停用词功能，让我们在索引时就直接忽略当前的停用词汇表中的内容。</p>
 <p>1）IKAnalyzer.cfg.xml配置文件内容添加：</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
 <span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">properties</span> <span class="token name">SYSTEM</span> <span class="token string">"http://java.sun.com/dtd/properties.dtd"</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>properties</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>comment</span><span class="token punctuation">></span></span>IK Analyzer 扩展配置<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>comment</span><span class="token punctuation">></span></span>
@@ -1205,47 +1205,6 @@ gitment.render('gitment-content');
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/06/03/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="Redis集群分布式缓存">
-                        
-                        <span class="card-title">Redis集群分布式缓存</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Redis%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    Redis相关技术
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
                 <a href="/2022/06/03/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E02/">
                     <div class="card-image">
                         
@@ -1262,15 +1221,56 @@ gitment.render('gitment-content');
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-06-03
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
                             <a href="/categories/ElasticSearch%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
                                     ElasticSearch相关技术
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/06/02/RabbitMQ/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="RbbitMq的使用">
+                        
+                        <span class="card-title">RbbitMq的使用</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-06-02
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/RabbitMq%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    RabbitMq相关技术
                                 </a>
                             
                             

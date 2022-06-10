@@ -38,7 +38,7 @@ Redis常用命令
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -526,7 +526,7 @@ Redis常用命令
 <h3 id="2-2-Redis下载与安装"><a href="#2-2-Redis下载与安装" class="headerlink" title="2.2 Redis下载与安装"></a>2.2 Redis下载与安装</h3><h4 id="2-2-1-Redis下载"><a href="#2-2-1-Redis下载" class="headerlink" title="2.2.1 Redis下载"></a>2.2.1 Redis下载</h4><p>Redis安装包分为windows版和Linux版：</p>
 <ul>
 <li>Windows版下载地址：<a target="_blank" rel="noopener" href="https://github.com/microsoftarchive/redis/releases">https://github.com/microsoftarchive/redis/releases</a></li>
-<li>Linux版下载地址： <a target="_blank" rel="noopener" href="https://download.redis.io/releases/">https://download.redis.io/releases/</a></li>
+<li>Linux版下载地址： <a target="_blank" rel="noopener" href="https://download.redis.io/releases/">https://download.redis.io/releases/</a> </li>
 </ul>
 <p>下载后得到下面安装包：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sj9t3rj20ug02jq34.jpg" alt="image-20210927092053283"></p>
@@ -534,60 +534,60 @@ Redis常用命令
 <p>在Linux系统安装Redis步骤：</p>
 <ol>
 <li>将Redis安装包上传到Linux</li>
-<li>解压安装包，命令：&#x3D;&#x3D;tar -zxvf redis-4.0.0.tar.gz -C &#x2F;usr&#x2F;local&#x3D;&#x3D;</li>
-<li>安装Redis的依赖环境gcc，命令：&#x3D;&#x3D;yum install -y gcc-c++&#x3D;&#x3D;</li>
-<li>进入&#x2F;usr&#x2F;local&#x2F;redis-4.0.0，进行编译，命令：&#x3D;&#x3D;make&#x3D;&#x3D;</li>
-<li>进入redis的src目录进行安装，命令：&#x3D;&#x3D;make install&#x3D;&#x3D;</li>
+<li>解压安装包，命令：==tar -zxvf redis-4.0.0.tar.gz -C /usr/local==</li>
+<li>安装Redis的依赖环境gcc，命令：==yum install -y gcc-c++==</li>
+<li>进入/usr/local/redis-4.0.0，进行编译，命令：==make==</li>
+<li>进入redis的src目录进行安装，命令：==make install==</li>
 </ol>
 <p>安装后重点文件说明：</p>
 <blockquote>
-<p>&#x2F;usr&#x2F;local&#x2F;redis-4.0.0&#x2F;src&#x2F;redis-server：Redis服务启动脚本</p>
-<p>&#x2F;usr&#x2F;local&#x2F;redis-4.0.0&#x2F;src&#x2F;redis-cli：Redis客户端脚本</p>
-<p>&#x2F;usr&#x2F;local&#x2F;redis-4.0.0&#x2F;redis.conf：Redis配置文件</p>
+<p>/usr/local/redis-4.0.0/src/redis-server：Redis服务启动脚本</p>
+<p>/usr/local/redis-4.0.0/src/redis-cli：Redis客户端脚本</p>
+<p>/usr/local/redis-4.0.0/redis.conf：Redis配置文件</p>
 </blockquote>
 <p><strong>2）在Windows中安装Redis</strong></p>
 <p>Redis的Windows版属于绿色软件，直接解压即可使用，解压后目录结构如下：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sl2swwj20sp0bqq48.jpg" alt="image-20210927093112281"></p>
 <h3 id="2-3-Redis服务启动与停止"><a href="#2-3-Redis服务启动与停止" class="headerlink" title="2.3 Redis服务启动与停止"></a>2.3 Redis服务启动与停止</h3><p><strong>1）Linux系统中启动和停止Redis</strong></p>
-<p>执行Redis服务启动脚本文件&#x3D;&#x3D;redis-server&#x3D;&#x3D;：</p>
+<p>执行Redis服务启动脚本文件==redis-server==：</p>
 <p><code>路径：</code></p>
 <p><code>/usr/local/redis-4.0.0/src/redis-server</code></p>
 <p><code>/usr/local/redis-4.0.0/src/redis-cli</code></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5spmhpoj216c0k4jxz.jpg" alt="image-20210927094452556"></p>
-<p>通过启动日志可以看到，Redis默认端口号为&#x3D;&#x3D;6379&#x3D;&#x3D;。</p>
-<p>&#x3D;&#x3D;Ctrl + C&#x3D;&#x3D;停止Redis服务</p>
-<p>通过&#x3D;&#x3D;redis-cli&#x3D;&#x3D;可以连接到本地的Redis服务，默认情况下不需要认证即可连接成功。</p>
-<p>退出客户端可以输入&#x3D;&#x3D;exit&#x3D;&#x3D;或者&#x3D;&#x3D;quit&#x3D;&#x3D;命令。</p>
+<p>通过启动日志可以看到，Redis默认端口号为==6379==。</p>
+<p>==Ctrl + C==停止Redis服务</p>
+<p>通过==redis-cli==可以连接到本地的Redis服务，默认情况下不需要认证即可连接成功。</p>
+<p>退出客户端可以输入==exit==或者==quit==命令。</p>
 <p><strong>2）Windows系统中启动和停止Redis</strong></p>
 <p>Windows系统中启动Redis，直接双击redis-server.exe即可启动Redis服务，redis服务默认端口号为6379</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sqhzd8j20xz0hrdix.jpg" alt="image-20210927100421213"></p>
-<p>&#x3D;&#x3D;Ctrl + C&#x3D;&#x3D;停止Redis服务</p>
-<p>双击&#x3D;&#x3D;redis-cli.exe&#x3D;&#x3D;即可启动Redis客户端，默认连接的是本地的Redis服务，而且不需要认证即可连接成功。</p>
+<p>==Ctrl + C==停止Redis服务</p>
+<p>双击==redis-cli.exe==即可启动Redis客户端，默认连接的是本地的Redis服务，而且不需要认证即可连接成功。</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5sqsuvzj20xz0hr0t8.jpg" alt="image-20210927100319016"></p>
-<p>退出客户端可以输入&#x3D;&#x3D;exit&#x3D;&#x3D;或者&#x3D;&#x3D;quit&#x3D;&#x3D;命令。</p>
+<p>退出客户端可以输入==exit==或者==quit==命令。</p>
 <h3 id="2-4-Redis配置文件"><a href="#2-4-Redis配置文件" class="headerlink" title="2.4 Redis配置文件"></a>2.4 Redis配置文件</h3><p>前面我们已经启动了Redis服务，默认情况下Redis启动后是在前台运行，而且客户端不需要密码就可以连接到Redis服务。如果我们希望Redis服务启动后是在后台运行，同时希望客户端认证通过后才能连接到Redis服务，应该如果做呢？</p>
 <p>此时就需要修改Redis的配置文件：</p>
 <ul>
-<li>Linux系统中Redis配置文件：REDIS_HOME&#x2F;redis.conf</li>
-<li>Windows系统中Redis配置文件：REDIS_HOME&#x2F;redis.windows.conf</li>
+<li>Linux系统中Redis配置文件：REDIS_HOME/redis.conf</li>
+<li>Windows系统中Redis配置文件：REDIS_HOME/redis.windows.conf</li>
 </ul>
 <p><strong>通过修改Redis配置文件可以进行如下配置：</strong></p>
 <p><strong>1）</strong>设置Redis服务后台运行</p>
-<p>​    将配置文件中的&#x3D;&#x3D;daemonize&#x3D;&#x3D;配置项改为yes，默认值为no。</p>
+<p>​    将配置文件中的==daemonize==配置项改为yes，默认值为no。</p>
 <p>​    注意：Windows版的Redis不支持后台运行。</p>
 <p><strong>2）</strong>设置Redis服务密码</p>
-<p>​    将配置文件中的 &#x3D;&#x3D;# requirepass foobared&#x3D;&#x3D; 配置项取消注释，默认为注释状态。foobared为密码，可以根据情况自己指定。</p>
+<p>​    将配置文件中的 ==# requirepass foobared== 配置项取消注释，默认为注释状态。foobared为密码，可以根据情况自己指定。</p>
 <p><strong>3）</strong>设置允许客户端远程连接Redis服务</p>
-<p>​    Redis服务默认只能客户端本地连接，不允许客户端远程连接。将配置文件中的 &#x3D;&#x3D;bind 127.0.0.1&#x3D;&#x3D; 配置项注释掉。</p>
+<p>​    Redis服务默认只能客户端本地连接，不允许客户端远程连接。将配置文件中的 ==bind 127.0.0.1== 配置项注释掉。</p>
 <p><strong>解释说明：</strong></p>
 <blockquote>
-<p>Redis配置文件中 &#x3D;&#x3D;#&#x3D;&#x3D; 表示注释</p>
+<p>Redis配置文件中 ==#== 表示注释</p>
 <p>Redis配置文件中的配置项前面不能有空格，需要顶格写</p>
 <p>daemonize：用来指定redis是否要用守护线程的方式启动，设置成yes时，代表开启守护进程模式。在该模式下，redis会在后台运行</p>
 <p>requirepass：设置Redis的连接密码</p>
 <p>bind：如果指定了bind，则说明只允许来自指定网卡的Redis请求。如果没有指定，就说明可以接受来自任意一个网卡的Redis请求。</p>
 </blockquote>
-<p><strong>注意</strong>：修改配置文件后需要重启Redis服务配置才能生效，&#x3D;&#x3D;并且&#x3D;&#x3D;启动Redis服务时需要显示的指定配置文件：</p>
+<p><strong>注意</strong>：修改配置文件后需要重启Redis服务配置才能生效，==并且==启动Redis服务时需要显示的指定配置文件：</p>
 <p>1）Linux中启动Redis服务</p>
 <pre class="line-numbers language-none"><code class="language-none"># 进入Redis安装目录
 cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
@@ -610,7 +610,7 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <li>哈希 hash</li>
 <li>列表 list</li>
 <li>集合 set</li>
-<li>有序集合 sorted set &#x2F; zset</li>
+<li>有序集合 sorted set / zset</li>
 </ul>
 <h3 id="3-2-Redis-5种常用数据类型"><a href="#3-2-Redis-5种常用数据类型" class="headerlink" title="3.2 Redis 5种常用数据类型"></a>3.2 Redis 5种常用数据类型</h3><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5svuyd2j20od0e50tf.jpg" alt="image-20210927111819871"></p>
 <p><strong>解释说明：</strong></p>
@@ -619,7 +619,7 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>哈希(hash)：适合存储对象</p>
 <p>列表(list)：按照插入顺序排序，可以有重复元素</p>
 <p>集合(set)：无序集合，没有重复元素</p>
-<p>有序集合(sorted set &#x2F; zset)：集合中每个元素关联一个分数（score），根据分数升序排序，没有重复元素</p>
+<p>有序集合(sorted set / zset)：集合中每个元素关联一个分数（score），根据分数升序排序，没有重复元素</p>
 </blockquote>
 <h2 id="4-Redis常用命令"><a href="#4-Redis常用命令" class="headerlink" title="4. Redis常用命令"></a>4. Redis常用命令</h2><h3 id="4-1-字符串string操作命令"><a href="#4-1-字符串string操作命令" class="headerlink" title="4.1 字符串string操作命令"></a>4.1 字符串string操作命令</h3><p>Redis 中字符串类型常用命令：</p>
 <ul>
@@ -694,7 +694,7 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>Spring 对 Redis 客户端进行了整合，提供了 Spring Data Redis，在Spring Boot项目中还提供了对应的Starter，即 spring-boot-starter-data-redis。</p>
 <h3 id="5-2-Jedis"><a href="#5-2-Jedis" class="headerlink" title="5.2 Jedis"></a>5.2 Jedis</h3><p>Jedis 是 Redis 的 Java 版本的客户端实现。</p>
 <p>maven坐标：</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>redis.clients<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>jedis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.8.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
@@ -709,9 +709,9 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>示例代码：</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>itheima<span class="token punctuation">.</span>test</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>junit<span class="token punctuation">.</span></span><span class="token class-name">Test</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">redis<span class="token punctuation">.</span>clients<span class="token punctuation">.</span>jedis<span class="token punctuation">.</span></span><span class="token class-name">Jedis</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Set</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>junit<span class="token punctuation">.</span></span><span class="token class-name">Test</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">redis<span class="token punctuation">.</span>clients<span class="token punctuation">.</span>jedis<span class="token punctuation">.</span></span><span class="token class-name">Jedis</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Set</span></span><span class="token punctuation">;</span>
 
 <span class="token comment">/**
  * 使用Jedis操作Redis
@@ -749,14 +749,14 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>网址：<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-data-redis">https://spring.io/projects/spring-data-redis</a></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5tadff7j21810r67b7.jpg" alt="image-20210927143741458"></p>
 <p>maven坐标：</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.data<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-data-redis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.4.8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>Spring Boot提供了对应的Starter，maven坐标：</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
 	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-data-redis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
@@ -770,7 +770,7 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <li>ListOperations：针对list类型的数据操作</li>
 </ul>
 <h4 id="5-3-2-使用方式"><a href="#5-3-2-使用方式" class="headerlink" title="5.3.2 使用方式"></a>5.3.2 使用方式</h4><h5 id="5-3-2-1-环境搭建"><a href="#5-3-2-1-环境搭建" class="headerlink" title="5.3.2.1 环境搭建"></a>5.3.2.1 环境搭建</h5><p>第一步：创建maven项目springdataredis_demo，配置pom.xml文件</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>project</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0<span class="token punctuation">"</span></span>
          <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
          <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
@@ -817,8 +817,8 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>第二步：编写启动类</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>itheima</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span></span><span class="token punctuation">;</span>
 
 <span class="token annotation punctuation">@SpringBootApplication</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">App</span> <span class="token punctuation">&#123;</span>
@@ -855,12 +855,12 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>第四步：提供配置类</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>itheima<span class="token punctuation">.</span>config</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>cache<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">CachingConfigurerSupport</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Bean</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Configuration</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>data<span class="token punctuation">.</span>redis<span class="token punctuation">.</span>connection<span class="token punctuation">.</span></span><span class="token class-name">RedisConnectionFactory</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>data<span class="token punctuation">.</span>redis<span class="token punctuation">.</span>core<span class="token punctuation">.</span></span><span class="token class-name">RedisTemplate</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>data<span class="token punctuation">.</span>redis<span class="token punctuation">.</span>serializer<span class="token punctuation">.</span></span><span class="token class-name">StringRedisSerializer</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>cache<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">CachingConfigurerSupport</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Bean</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Configuration</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>data<span class="token punctuation">.</span>redis<span class="token punctuation">.</span>connection<span class="token punctuation">.</span></span><span class="token class-name">RedisConnectionFactory</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>data<span class="token punctuation">.</span>redis<span class="token punctuation">.</span>core<span class="token punctuation">.</span></span><span class="token class-name">RedisTemplate</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>data<span class="token punctuation">.</span>redis<span class="token punctuation">.</span>serializer<span class="token punctuation">.</span></span><span class="token class-name">StringRedisSerializer</span></span><span class="token punctuation">;</span>
 
 <span class="token comment">/**
  * Redis配置类
@@ -891,10 +891,10 @@ cd &#x2F;usr&#x2F;local&#x2F;redis-4.0.0
 <p>第五步：提供测试类</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>itheima<span class="token punctuation">.</span>test</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>junit<span class="token punctuation">.</span>runner<span class="token punctuation">.</span></span><span class="token class-name">RunWith</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Autowired</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>test<span class="token punctuation">.</span>context<span class="token punctuation">.</span></span><span class="token class-name">SpringBootTest</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>test<span class="token punctuation">.</span>context<span class="token punctuation">.</span>junit4<span class="token punctuation">.</span></span><span class="token class-name">SpringRunner</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>junit<span class="token punctuation">.</span>runner<span class="token punctuation">.</span></span><span class="token class-name">RunWith</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Autowired</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>test<span class="token punctuation">.</span>context<span class="token punctuation">.</span></span><span class="token class-name">SpringBootTest</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>test<span class="token punctuation">.</span>context<span class="token punctuation">.</span>junit4<span class="token punctuation">.</span></span><span class="token class-name">SpringRunner</span></span><span class="token punctuation">;</span>
 
 <span class="token annotation punctuation">@SpringBootTest</span>
 <span class="token annotation punctuation">@RunWith</span><span class="token punctuation">(</span><span class="token class-name">SpringRunner</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>

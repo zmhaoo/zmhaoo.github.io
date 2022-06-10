@@ -36,7 +36,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -507,7 +507,7 @@ mysqldump: [Warning] Using a password on the command line interface can be insec
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2aau0dv7ij20kw04t0td.jpg" alt="image-20220516155528866"></p>
 <p>   ②.表独占锁<strong>写锁</strong>(write lock):写锁不会阻塞上锁的客户端的读和写,但是会阻塞其他客户端的读和写,阻塞到客户端A释放锁,才能解除阻塞状态.</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ab18a527j20kd04tq3i.jpg" alt="image-20220516160224869"></p>
-<h4 id="1-3语法"><a href="#1-3语法" class="headerlink" title="1.3语法"></a>1.3语法</h4><p>​    1.加锁:lock tables 表名… read&#x2F;write</p>
+<h4 id="1-3语法"><a href="#1-3语法" class="headerlink" title="1.3语法"></a>1.3语法</h4><p>​    1.加锁:lock tables 表名… read/write</p>
 <pre><code> 2.释放锁:unlock tables/客户端断开连接.
 </code></pre>
 <h3 id="2-1元数据锁"><a href="#2-1元数据锁" class="headerlink" title="2.1元数据锁"></a>2.1元数据锁</h3><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2acmvdflbj20wp08rq4r.jpg" alt="image-20220516165749161"></p>
@@ -586,7 +586,7 @@ mysql&gt; select object_type,object_schema,object_name,lock_type,lock_duration f
 <hr>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2afysg3ltj20vs03k3z6.jpg" alt="image-20220516185304652"></p>
 <hr>
-<h4 id="3-间隙锁-x2F-临键锁-演示"><a href="#3-间隙锁-x2F-临键锁-演示" class="headerlink" title="3)间隙锁&#x2F;临键锁-演示"></a>3)间隙锁&#x2F;临键锁-演示</h4><hr>
+<h4 id="3-间隙锁-临键锁-演示"><a href="#3-间隙锁-临键锁-演示" class="headerlink" title="3)间隙锁/临键锁-演示"></a>3)间隙锁/临键锁-演示</h4><hr>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ag1wtzlvj20q303j3yx.jpg" alt="image-20220516185604366"></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ag21w7q8j20x8011t91.jpg" alt="image-20220516185612478"></p>
 <hr>

@@ -35,7 +35,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -472,7 +472,7 @@
                 <h1 id="SpringBoot最重要的两个功能"><a href="#SpringBoot最重要的两个功能" class="headerlink" title="SpringBoot最重要的两个功能"></a>SpringBoot最重要的两个功能</h1><p>1.版本锁定(mybatis为什么没有锁定,因为mybatis开发的比较晚)</p>
 <p>2.自动装配</p>
 <h1 id="SpringBoot默认静态资源的存放目录是什么"><a href="#SpringBoot默认静态资源的存放目录是什么" class="headerlink" title="@SpringBoot默认静态资源的存放目录是什么?"></a>@SpringBoot默认静态资源的存放目录是什么?</h1><ul>
-<li>从以下图片可以得知SpringBoot默认静态资源的存放目录为:classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</li>
+<li>从以下图片可以得知SpringBoot默认静态资源的存放目录为:classpath:/resource/,classpath:/static/,classpath:/public/</li>
 </ul>
 <p>①当启动引导类时,引导类会自动装配,加载spring.factories文件</p>
 <p><img src="https://s1.ax1x.com/2022/04/25/LILA3Q.png" alt="LILA3Q.png"></p>
@@ -486,7 +486,7 @@
 <p><img src="https://s1.ax1x.com/2022/04/25/LILgbt.png" alt="LILgbt.png"></p>
 <p>⑥通过Resources类中可以看到资源常量是一个字符串数组存储,最终赋值给staticLocations的变量,并且通过get方法可以获取到</p>
 <p><img src="https://s1.ax1x.com/2022/04/25/LILWUf.png" alt="LILWUf.png"></p>
-<p><strong>总结:所以当我们没有通过继承WebMvcConfigurationSupport的方式来配置自定义静态资源访问路径时,默认访问路径为classpath:&#x2F;resource&#x2F;,classpath:&#x2F;static&#x2F;,classpath:&#x2F;public&#x2F;</strong></p>
+<p><strong>总结:所以当我们没有通过继承WebMvcConfigurationSupport的方式来配置自定义静态资源访问路径时,默认访问路径为classpath:/resource/,classpath:/static/,classpath:/public/</strong></p>
 <h1 id="WebMvcConfigurationSupport和WebMvcConfiguration什么关系"><a href="#WebMvcConfigurationSupport和WebMvcConfiguration什么关系" class="headerlink" title="WebMvcConfigurationSupport和WebMvcConfiguration什么关系?"></a>WebMvcConfigurationSupport和WebMvcConfiguration什么关系?</h1><p>查看源码注释上查到的解释是，在spring中配置WebMvc时有两种方法，<br>1.继承WebMvcConfigurationSupport或者子类DelegatingWebMVcconfiguration，重写里面相应的方法<br>2.继承WebMvcConfigurer的子抽象类WebMvcConfigurerAdapter(已经过时了)，也是重写里面相应的方法，但是需要在配置类上添加@EnableWebMvc注解。那这两个类直接是什么关系呢？</p>
 <p>3.实现WebMvcConfigurer(因为2已经过时了)，也是重写里面相应的方法，但是需要在配置类上添加@EnableWebMvc注解。</p>
 <p>  细心的开发者会发现，WebMvcConfigurationSupport中那些子类可以重写的空方法在WebMvcConfigurer都有，这说明WebMvcConfigurer只是WebMvcConfigurationSupport的一个扩展类，它并没有扩展新功能，只是为让用户更方便安全的添加自定义配置，为什么说是安全呢？<br>因为如果直接继承WebMvcConfigurationSupport，那么用户可以重写默认的配置，如果对原理不是很清楚地开发者不小心重写了默认的配置，springmvc可能相关功能就无法生效，是一种不安全的行为。但如果是继承WebMvcConfigurerAdapter，那么开发者是在默认配置的基础上添加自定义配置，相对来说更安全一些，只不过要多加一个@EnableWebMvc注解。从这个角度来说，最佳实践还是继承WebMvcConfigurerAdapter</p>

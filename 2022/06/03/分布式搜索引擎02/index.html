@@ -33,7 +33,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -784,7 +784,7 @@ GET /indexName/_search
 <p>翻译一下这个需求，转换为之前说的四个要点：</p>
 <ul>
 <li>原始条件：不确定，可以任意变化</li>
-<li>过滤条件：brand &#x3D; “如家”</li>
+<li>过滤条件：brand = “如家”</li>
 <li>算分函数：可以简单粗暴，直接给固定的算分结果，weight</li>
 <li>运算模式：比如求和</li>
 </ul>
@@ -1032,7 +1032,7 @@ GET /indexName/_search
 <ul>
 <li>高亮是对关键字高亮，因此<strong>搜索条件必须带有关键字</strong>，而不能是范围这样的查询。</li>
 <li>默认情况下，<strong>高亮的字段，必须与搜索指定的字段一致</strong>，否则无法高亮</li>
-<li>如果要对非搜索字段高亮，则需要添加一个属性：required_field_match&#x3D;false</li>
+<li>如果要对非搜索字段高亮，则需要添加一个属性：required_field_match=false</li>
 </ul>
 <p><strong>示例</strong>：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uux86pi2j212w0f277j.jpg" alt="image-20210721203349633"></p>
@@ -1253,7 +1253,7 @@ GET /indexName/_search
 
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>&#x3D;&#x3D;注意：如果多个字段进行高亮设置，必须设置高亮的时候加入requireFieldMatch(false)&#x3D;&#x3D;</p>
+<p>==注意：如果多个字段进行高亮设置，必须设置高亮的时候加入requireFieldMatch(false)==</p>
 <h3 id="3-6-2-高亮结果解析"><a href="#3-6-2-高亮结果解析" class="headerlink" title="3.6.2.高亮结果解析"></a>3.6.2.高亮结果解析</h3><p>高亮的结果与查询的文档结果默认是分离的，并不在一起。</p>
 <p>因此解析高亮的代码需要额外处理：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uuxs9x3gj215a0j143a.jpg" alt="image-20210721222057212"></p>
@@ -1320,7 +1320,7 @@ GET /indexName/_search
 <p>由此可以知道，我们这个请求的信息如下：</p>
 <ul>
 <li>请求方式：POST</li>
-<li>请求路径：&#x2F;hotel&#x2F;list</li>
+<li>请求路径：/hotel/list</li>
 <li>请求参数：JSON对象，包含4个字段：<ul>
 <li>key：搜索关键字</li>
 <li>page：页码</li>
@@ -1353,7 +1353,7 @@ GET /indexName/_search
 <p>因此，我们在<code>cn.itcast.hotel.pojo</code>包下定义一个实体类：</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">cn<span class="token punctuation">.</span>itcast<span class="token punctuation">.</span>hotel<span class="token punctuation">.</span>pojo</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span></span><span class="token punctuation">;</span>
 
 <span class="token annotation punctuation">@Data</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RequestParams</span> <span class="token punctuation">&#123;</span>
@@ -1374,9 +1374,9 @@ GET /indexName/_search
 <p>因此，我们在<code>cn.itcast.hotel.pojo</code>中定义返回结果：</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">cn<span class="token punctuation">.</span>itcast<span class="token punctuation">.</span>hotel<span class="token punctuation">.</span>pojo</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span></span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span></span><span class="token punctuation">;</span>
 
 <span class="token annotation punctuation">@Data</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PageResult</span> <span class="token punctuation">&#123;</span>
@@ -1397,7 +1397,7 @@ GET /indexName/_search
 <h3 id="4-1-3-定义controller"><a href="#4-1-3-定义controller" class="headerlink" title="4.1.3.定义controller"></a>4.1.3.定义controller</h3><p>定义一个HotelController，声明查询接口，满足下列要求：</p>
 <ul>
 <li>请求方式：Post</li>
-<li>请求路径：&#x2F;hotel&#x2F;list</li>
+<li>请求路径：/hotel/list</li>
 <li>请求参数：对象，类型为RequestParam</li>
 <li>返回值：PageResult，包含两个属性<ul>
 <li><code>Long total</code>：总条数</li>
@@ -1600,7 +1600,7 @@ GET /indexName/_search
 <h3 id="4-3-2-修改实体类"><a href="#4-3-2-修改实体类" class="headerlink" title="4.3.2.修改实体类"></a>4.3.2.修改实体类</h3><p>修改在<code>cn.itcast.hotel.pojo</code>包下的实体类RequestParams：</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">cn<span class="token punctuation">.</span>itcast<span class="token punctuation">.</span>hotel<span class="token punctuation">.</span>pojo</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span></span><span class="token punctuation">;</span>
 
 <span class="token annotation punctuation">@Data</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RequestParams</span> <span class="token punctuation">&#123;</span>
@@ -1699,8 +1699,8 @@ GET /indexName/_search
 <p>1）修改HotelDoc类，添加距离字段</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">cn<span class="token punctuation">.</span>itcast<span class="token punctuation">.</span>hotel<span class="token punctuation">.</span>pojo</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">NoArgsConstructor</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">Data</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span></span><span class="token class-name">NoArgsConstructor</span></span><span class="token punctuation">;</span>
 
 
 <span class="token annotation punctuation">@Data</span>
@@ -1742,7 +1742,7 @@ GET /indexName/_search
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uuygrmn0j20s50n278l.jpg" alt="image-20210722100613966"></p>
 <p>重启后测试，发现页面能成功显示距离了：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uuyihn7fj21210gzjue.jpg" alt="image-20210722100838604"></p>
-<p>&#x3D;&#x3D;注意：前端关于地图定位，有问题，因为高德地图定位功能在pc上不太好，需要在前端页面中把定位写死&#x3D;&#x3D;</p>
+<p>==注意：前端关于地图定位，有问题，因为高德地图定位功能在pc上不太好，需要在前端页面中把定位写死==</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uuyjka4rj214v0jmq70.jpg" alt="1647527529680"></p>
 <h2 id="4-4-酒店竞价排名"><a href="#4-4-酒店竞价排名" class="headerlink" title="4.4.酒店竞价排名"></a>4.4.酒店竞价排名</h2><p>需求：让指定的酒店在搜索结果中排名置顶</p>
 <h3 id="4-4-1-需求分析"><a href="#4-4-1-需求分析" class="headerlink" title="4.4.1.需求分析"></a>4.4.1.需求分析</h3><p>要让指定酒店在搜索结果中排名置顶，效果如图：</p>
@@ -2213,13 +2213,13 @@ gitment.render('gitment-content');
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/06/03/%E5%AE%89%E8%A3%85elasticsearch/">
+                <a href="/2022/06/03/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E01/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="安装和集群Elasticsearch">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Elasticsearch使用01">
                         
-                        <span class="card-title">安装和集群Elasticsearch</span>
+                        <span class="card-title">Elasticsearch使用01</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -2254,13 +2254,13 @@ gitment.render('gitment-content');
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/06/03/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E01/">
+                <a href="/2022/06/03/%E5%AE%89%E8%A3%85elasticsearch/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Elasticsearch使用01">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="安装和集群Elasticsearch">
                         
-                        <span class="card-title">Elasticsearch使用01</span>
+                        <span class="card-title">安装和集群Elasticsearch</span>
                     </div>
                 </a>
                 <div class="card-content article-content">

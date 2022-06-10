@@ -40,7 +40,7 @@ AOF持久化
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -516,21 +516,21 @@ AOF持久化
 <p><strong>4）触发RDB条件</strong></p>
 <p>Redis内部有触发RDB的机制，可以在redis.conf文件中找到，格式如下：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 900秒内，如果至少有1个key被修改，则执行bgsave ， 如果是save "" 则表示禁用RDB</span>
-<span class="token attr-name">save</span> <span class="token attr-value">900 1  </span>
-<span class="token attr-name">save</span> <span class="token attr-value">300 10  </span>
-<span class="token attr-name">save</span> <span class="token attr-value">60 10000 </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">save</span> <span class="token value attr-value">900 1  </span>
+<span class="token key attr-name">save</span> <span class="token value attr-value">300 10  </span>
+<span class="token key attr-name">save</span> <span class="token value attr-value">60 10000 </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
 <p>RDB的其它配置也可以在redis.conf文件中设置：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 是否压缩 ,建议不开启，压缩也会消耗cpu，磁盘的话不值钱</span>
-<span class="token attr-name">rdbcompression</span> <span class="token attr-value">yes</span>
+<span class="token key attr-name">rdbcompression</span> <span class="token value attr-value">yes</span>
 
 <span class="token comment"># RDB文件名称</span>
-<span class="token attr-name">dbfilename</span> <span class="token attr-value">dump.rdb  </span>
+<span class="token key attr-name">dbfilename</span> <span class="token value attr-value">dump.rdb  </span>
 
 <span class="token comment"># 文件保存的路径目录</span>
-<span class="token attr-name">dir</span> <span class="token attr-value">./ </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">dir</span> <span class="token value attr-value">./ </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
@@ -561,19 +561,19 @@ AOF持久化
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uvgmojrvj20pi0ccdgk.jpg" alt="image-20210725151543640"></p>
 <h3 id="1-2-2-AOF配置"><a href="#1-2-2-AOF配置" class="headerlink" title="1.2.2.AOF配置"></a>1.2.2.AOF配置</h3><p>AOF默认是关闭的，需要修改redis.conf配置文件来开启AOF：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 是否开启AOF功能，默认是no</span>
-<span class="token attr-name">appendonly</span> <span class="token attr-value">yes</span>
+<span class="token key attr-name">appendonly</span> <span class="token value attr-value">yes</span>
 <span class="token comment"># AOF文件的名称</span>
-<span class="token attr-name">appendfilename</span> <span class="token attr-value">"appendonly.aof"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">appendfilename</span> <span class="token value attr-value">"appendonly.aof"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
 <p>AOF的命令记录的频率也可以通过redis.conf文件来配：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 表示每执行一次写命令，立即记录到AOF文件</span>
-<span class="token attr-name">appendfsync</span> <span class="token attr-value">always </span>
+<span class="token key attr-name">appendfsync</span> <span class="token value attr-value">always </span>
 <span class="token comment"># 写命令执行完先放入AOF缓冲区，然后表示每隔1秒将缓冲区数据写到AOF文件，是默认方案</span>
-<span class="token attr-name">appendfsync</span> <span class="token attr-value">everysec </span>
+<span class="token key attr-name">appendfsync</span> <span class="token value attr-value">everysec </span>
 <span class="token comment"># 写命令执行完先放入AOF缓冲区，由操作系统决定何时将缓冲区内容写回磁盘</span>
-<span class="token attr-name">appendfsync</span> <span class="token attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">appendfsync</span> <span class="token value attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
@@ -585,9 +585,9 @@ AOF持久化
 <p>所以重写命令后，AOF文件内容就是：<code>mset name jack num 666</code></p>
 <p>Redis也会在触发阈值时自动去重写AOF文件。阈值也可以在redis.conf中配置：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># AOF文件比上次文件 增长超过多少百分比则触发重写</span>
-<span class="token attr-name">auto-aof-rewrite-percentage</span> <span class="token attr-value">100</span>
+<span class="token key attr-name">auto-aof-rewrite-percentage</span> <span class="token value attr-value">100</span>
 <span class="token comment"># AOF文件体积最小多大以上才触发重写 </span>
-<span class="token attr-name">auto-aof-rewrite-min-size</span> <span class="token attr-value">64mb </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">auto-aof-rewrite-min-size</span> <span class="token value attr-value">64mb </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
@@ -718,7 +718,7 @@ AOF持久化
 <h3 id="3-3-1-导入Demo工程"><a href="#3-3-1-导入Demo工程" class="headerlink" title="3.3.1.导入Demo工程"></a>3.3.1.导入Demo工程</h3><p>首先，我们引入课前资料提供的Demo工程：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uvfst5jbj205g05xa9x.jpg" alt="image-20210725155124958"> </p>
 <h3 id="3-3-2-引入依赖"><a href="#3-3-2-引入依赖" class="headerlink" title="3.3.2.引入依赖"></a>3.3.2.引入依赖</h3><p>在项目的pom文件中引入依赖：</p>
-<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-data-redis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
@@ -799,7 +799,7 @@ AOF持久化
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uvfjvw1nj20fw05kaap.jpg" alt="image-20210725160138290"></p>
 <p>比如，添加节点的命令：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uvfip02ij2145072n0b.jpg" alt="image-20210725160448139"></p>
-<h3 id="4-3-1-需求分析"><a href="#4-3-1-需求分析" class="headerlink" title="4.3.1.需求分析"></a>4.3.1.需求分析</h3><p>需求：向集群中添加一个新的master节点，并向其中存储 num &#x3D; 10</p>
+<h3 id="4-3-1-需求分析"><a href="#4-3-1-需求分析" class="headerlink" title="4.3.1.需求分析"></a>4.3.1.需求分析</h3><p>需求：向集群中添加一个新的master节点，并向其中存储 num = 10</p>
 <ul>
 <li>启动一个新的redis实例，端口为7004</li>
 <li>添加7004到之前的集群，并作为一个master节点</li>
@@ -817,7 +817,7 @@ AOF持久化
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">cp redis.conf &#x2F;7004<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>修改配置文件：</p>
-<p>&#x3D;&#x3D;注意，原有资料有问题&#x3D;&#x3D;</p>
+<p>==注意，原有资料有问题==</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s&#x2F;6379&#x2F;7004&#x2F;g&#39;  7004&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>启动</p>
@@ -1324,13 +1324,13 @@ gitment.render('gitment-content');
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/06/03/%E5%AE%89%E8%A3%85elasticsearch/">
+                <a href="/2022/06/03/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E03/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="安装和集群Elasticsearch">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Elasticsearch使用03">
                         
-                        <span class="card-title">安装和集群Elasticsearch</span>
+                        <span class="card-title">Elasticsearch使用03</span>
                     </div>
                 </a>
                 <div class="card-content article-content">

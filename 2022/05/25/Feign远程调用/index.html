@@ -37,7 +37,7 @@ Feign是一个声明式的http客户端，官方地址：https://githu">
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -519,7 +519,7 @@ public interface UserClient &#123;
 <ul>
 <li>服务名称：userservice</li>
 <li>请求方式：GET</li>
-<li>请求路径：&#x2F;user&#x2F;{id}</li>
+<li>请求路径：/user/{id}</li>
 <li>请求参数：Long id</li>
 <li>返回值类型：User</li>
 </ul>
@@ -659,7 +659,7 @@ public interface UserClient &#123;
 <p>然后debug走到 return executeAndDecode(template, options);的时候进入到当前方法中</p>
 <p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/1653319052336.png?lastModify=1653489702" alt="1653319052336"></p>
 <p>然后执行F7或者<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l16g2rgbj20ci01w744.jpg" alt="1653318856129">按钮执行下一步</p>
-<p>走过了response &#x3D; client.execute(request, options);这一步，可以看到</p>
+<p>走过了response = client.execute(request, options);这一步，可以看到</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1621a9oj21040m2te5.jpg" alt="1653319122374"></p>
 <p>可以看到client中使用的是ApacheHttpClient</p>
 <p>总结，Feign的优化：</p>

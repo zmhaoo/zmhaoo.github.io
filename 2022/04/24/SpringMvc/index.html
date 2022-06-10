@@ -36,7 +36,7 @@ V:View,视图层,指工程中的html或jsp等页面,作用是与用户进行交�
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -520,20 +520,20 @@ V:View,视图层,指工程中的html或jsp等页面,作用是与用户进行交�
 <h1 id="6-为什么在web-xml中注册DispatcherServlet的而不是Servlet"><a href="#6-为什么在web-xml中注册DispatcherServlet的而不是Servlet" class="headerlink" title="6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?"></a>6.为什么在web.xml中注册DispatcherServlet的而不是Servlet?</h1><ul>
 <li>因为DispatcherServlet中封装了Servlet,配置SpringMVC的前端控制器DispatcherServlet可以对浏览器发送的请求进行统一处理,极大的简化了我们的表述层的代码!</li>
 </ul>
-<h1 id="7-为什么在web-xml中注册DispatcherServlet的匹配路径是-x2F-而不是-x2F"><a href="#7-为什么在web-xml中注册DispatcherServlet的匹配路径是-x2F-而不是-x2F" class="headerlink" title="7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?"></a>7.为什么在web.xml中注册DispatcherServlet的匹配路径是&#x2F;而不是&#x2F;*?</h1><ul>
-<li>因为&#x2F;所配置的请求可以是&#x2F;login或.html或.js或.css方式的请求路径,但是&#x2F;不能匹配.jsp请求路径的请求</li>
+<h1 id="7-为什么在web-xml中注册DispatcherServlet的匹配路径是-而不是"><a href="#7-为什么在web-xml中注册DispatcherServlet的匹配路径是-而不是" class="headerlink" title="7.为什么在web.xml中注册DispatcherServlet的匹配路径是/而不是/*?"></a>7.为什么在web.xml中注册DispatcherServlet的匹配路径是/而不是/*?</h1><ul>
+<li>因为/所配置的请求可以是/login或.html或.js或.css方式的请求路径,但是/不能匹配.jsp请求路径的请求</li>
 </ul>
 <h2 id="8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件"><a href="#8-为什么不让DispatcherServlet匹配路径去匹配-jsp文件" class="headerlink" title="8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?"></a>8.为什么不让DispatcherServlet匹配路径去匹配.jsp文件?</h2><ul>
-<li>因为<strong>JSP文件</strong>的本质就是一个<strong>Servlet文件</strong>,它是需要<strong>服务器指定的Servlet来进行特殊处理</strong>的,所以.jsp文件不需要DispatcherServlet来处理,如果路径能够匹配.jsp文件的话,那么这个.jsp文件的请求也会被当前的SpringMVC来进行处理,那SpringMVC会把当前这个.jps的请求当做一个<strong>普通的请求来处理</strong>,而不会找到相对于的jsp页面,所以要用&#x2F;来排除.jsp页面的请求路径给排除掉,然后<strong>其他的请求</strong>都要交给我们的<strong>前端控制器DispatcherServlet来进行处理</strong></li>
+<li>因为<strong>JSP文件</strong>的本质就是一个<strong>Servlet文件</strong>,它是需要<strong>服务器指定的Servlet来进行特殊处理</strong>的,所以.jsp文件不需要DispatcherServlet来处理,如果路径能够匹配.jsp文件的话,那么这个.jsp文件的请求也会被当前的SpringMVC来进行处理,那SpringMVC会把当前这个.jps的请求当做一个<strong>普通的请求来处理</strong>,而不会找到相对于的jsp页面,所以要用/来排除.jsp页面的请求路径给排除掉,然后<strong>其他的请求</strong>都要交给我们的<strong>前端控制器DispatcherServlet来进行处理</strong></li>
 </ul>
-<h1 id="9-x2F-代表什么"><a href="#9-x2F-代表什么" class="headerlink" title="9.&#x2F;*代表什么?"></a>9.&#x2F;*代表什么?</h1><ul>
-<li>&#x2F;*代表所有请求路径,包括.jsp页面的请求,一般适用于注册Filter过滤器的匹配路径</li>
+<h1 id="9-代表什么"><a href="#9-代表什么" class="headerlink" title="9./*代表什么?"></a>9./*代表什么?</h1><ul>
+<li>/*代表所有请求路径,包括.jsp页面的请求,一般适用于注册Filter过滤器的匹配路径</li>
 </ul>
 <h1 id="10-框架是什么"><a href="#10-框架是什么" class="headerlink" title="10.框架是什么?"></a>10.框架是什么?</h1><ul>
 <li>配置文件+jar包</li>
 </ul>
 <h1 id="11-SpringMVC配置方式①-默认配置方式"><a href="#11-SpringMVC配置方式①-默认配置方式" class="headerlink" title="11.SpringMVC配置方式①:默认配置方式"></a>11.SpringMVC配置方式①:默认配置方式</h1><p>此配置作用下,SpringMVC的配置文件<strong>默认文件位于WEB-INF</strong>下,<strong>默认名称为<servlet-name>-servlet.xml</strong>,例如:一下配置所对应SpringMVC的配置文件位于WEB-INF下,文件名为springMVC-servlet.xml</p>
-<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-name</span><span class="token punctuation">></span></span>SpringMVC<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-name</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-class</span><span class="token punctuation">></span></span>org.springframework.web.servlet.DispatcherServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-class</span><span class="token punctuation">></span></span>
@@ -562,7 +562,7 @@ V:View,视图层,指工程中的html或jsp等页面,作用是与用户进行交�
 <blockquote>
 <p> 因为DispatcherServlet就是一个Servlet,所以声明周期和Servlet是一样的,默认都是在第一次访问的时候进行初始化,但是DispatcherServlet封装了对请求过程所有的处理,所以初始化中要执行很多的内容,如果把众多的处理内容放在第一次访问的时候初始化,就会严重的影响第一次访问的速度</p>
 </blockquote>
-<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--></span>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token comment">&lt;!--配置SpringMVC的前端控制器,对浏览器发送的请求进行统一处理--></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-name</span><span class="token punctuation">></span></span>SpringMVC<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-name</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-class</span><span class="token punctuation">></span></span>org.springframework.web.servlet.DispatcherServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-class</span><span class="token punctuation">></span></span>
@@ -591,7 +591,7 @@ V:View,视图层,指工程中的html或jsp等页面,作用是与用户进行交�
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url-pattern</span><span class="token punctuation">></span></span>/<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url-pattern</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-mapping</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h1 id="文件上传三要素"><a href="#文件上传三要素" class="headerlink" title="文件上传三要素"></a>文件上传三要素</h1><p>![image-20220429090202460](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220429090202460.png)</p>
+<h1 id="文件上传三要素"><a href="#文件上传三要素" class="headerlink" title="文件上传三要素"></a>文件上传三要素</h1><p>![image-20220429090202460](/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220429090202460.png)</p>
 
                 
             </div>

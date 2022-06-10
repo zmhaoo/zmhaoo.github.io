@@ -39,7 +39,7 @@ yum install -y gc">
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -494,14 +494,14 @@ yum install -y gc">
 
 
 <p>然后将课前资料提供的Redis安装包上传到虚拟机的任意目录：</p>
-<p><img src="/assets/image-20210629114325516.png" alt="image-20210629114325516"></p>
-<p>例如，我放到了&#x2F;tmp目录：</p>
-<p><img src="/assets/image-20210629114830642.png" alt="image-20210629114830642"></p>
+<p><img src="assets/image-20210629114325516.png" alt="image-20210629114325516"></p>
+<p>例如，我放到了/tmp目录：</p>
+<p><img src="assets/image-20210629114830642.png" alt="image-20210629114830642"></p>
 <p>解压缩：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">tar -xvf redis-6.2.4.tar.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>解压后：</p>
-<p><img src="/assets/image-20210629114941810.png" alt="image-20210629114941810"></p>
+<p><img src="assets/image-20210629114941810.png" alt="image-20210629114941810"></p>
 <p>进入redis目录：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">cd redis-6.2.4<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
@@ -513,9 +513,9 @@ yum install -y gc">
 <p>如果没有出错，应该就安装成功了。</p>
 <p>然后修改redis.conf文件中的一些配置：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 绑定地址，默认是127.0.0.1，会导致只能在本地访问。修改为0.0.0.0则可以在任意IP访问</span>
-<span class="token attr-name">bind</span> <span class="token attr-value">0.0.0.0</span>
+<span class="token key attr-name">bind</span> <span class="token value attr-value">0.0.0.0</span>
 <span class="token comment"># 数据库数量，设置为1</span>
-<span class="token attr-name">databases</span> <span class="token attr-value">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">databases</span> <span class="token value attr-value">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
@@ -528,7 +528,7 @@ yum install -y gc">
 
 
 <h1 id="2-Redis主从集群"><a href="#2-Redis主从集群" class="headerlink" title="2.Redis主从集群"></a>2.Redis主从集群</h1><h2 id="2-1-集群结构"><a href="#2-1-集群结构" class="headerlink" title="2.1.集群结构"></a>2.1.集群结构</h2><p>我们搭建的主从集群结构如图：</p>
-<p><img src="/assets/image-20210630111505799.png" alt="image-20210630111505799"></p>
+<p><img src="assets/image-20210630111505799.png" alt="image-20210630111505799"></p>
 <p>共包含三个节点，一个主节点，两个从节点。</p>
 <p>这里我们会在同一台虚拟机中开启3个redis实例，模拟主从集群，信息如下：</p>
 <table>
@@ -564,22 +564,22 @@ cd &#x2F;tmp
 mkdir 7001 7002 7003<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>如图：</p>
-<p><img src="/assets/image-20210630113929868.png" alt="image-20210630113929868"></p>
+<p><img src="assets/image-20210630113929868.png" alt="image-20210630113929868"></p>
 <p>2）恢复原始配置</p>
-<p>修改redis-6.2.4&#x2F;redis.conf文件，将其中的持久化模式改为默认的RDB模式，AOF保持关闭状态。</p>
+<p>修改redis-6.2.4/redis.conf文件，将其中的持久化模式改为默认的RDB模式，AOF保持关闭状态。</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># 开启RDB</span>
 <span class="token comment"># save ""</span>
-<span class="token attr-name">save</span> <span class="token attr-value">3600 1</span>
-<span class="token attr-name">save</span> <span class="token attr-value">300 100</span>
-<span class="token attr-name">save</span> <span class="token attr-value">60 10000</span>
+<span class="token key attr-name">save</span> <span class="token value attr-value">3600 1</span>
+<span class="token key attr-name">save</span> <span class="token value attr-value">300 100</span>
+<span class="token key attr-name">save</span> <span class="token value attr-value">60 10000</span>
 
 <span class="token comment"># 关闭AOF</span>
-<span class="token attr-name">appendonly</span> <span class="token attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key attr-name">appendonly</span> <span class="token value attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
 <p>3）拷贝配置文件到每个实例目录</p>
-<p>然后将redis-6.2.4&#x2F;redis.conf文件拷贝到三个目录中（在&#x2F;tmp目录执行下列命令）：</p>
+<p>然后将redis-6.2.4/redis.conf文件拷贝到三个目录中（在/tmp目录执行下列命令）：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 方式一：逐个拷贝
 cp redis-6.2.4&#x2F;redis.conf 7001
 cp redis-6.2.4&#x2F;redis.conf 7002
@@ -590,7 +590,7 @@ echo 7001 7002 7003 | xargs -t -n 1 cp redis-6.2.4&#x2F;redis.conf<span aria-hid
 
 
 <p>4）修改每个实例的端口、工作目录</p>
-<p>修改每个文件夹内的配置文件，将端口分别修改为7001、7002、7003，将rdb文件保存位置都修改为自己所在目录（在&#x2F;tmp目录执行下列命令）：</p>
+<p>修改每个文件夹内的配置文件，将端口分别修改为7001、7002、7003，将rdb文件保存位置都修改为自己所在目录（在/tmp目录执行下列命令）：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sed -i -e &#39;s&#x2F;6379&#x2F;7001&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7001\&#x2F;&#x2F;g&#39; 7001&#x2F;redis.conf
 sed -i -e &#39;s&#x2F;6379&#x2F;7002&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7002\&#x2F;&#x2F;g&#39; 7002&#x2F;redis.conf
 sed -i -e &#39;s&#x2F;6379&#x2F;7003&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2F;dir \&#x2F;tmp\&#x2F;7003\&#x2F;&#x2F;g&#39; 7003&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
@@ -600,11 +600,11 @@ sed -i -e &#39;s&#x2F;6379&#x2F;7003&#x2F;g&#39; -e &#39;s&#x2F;dir .\&#x2F;&#x2
 <p>5）修改每个实例的声明IP</p>
 <p>虚拟机本身有多个IP，为了避免将来混乱，我们需要在redis.conf文件中指定每一个实例的绑定ip信息，格式如下：</p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment"># redis实例的声明 IP</span>
-<span class="token attr-name">replica-announce-ip</span> <span class="token attr-value">192.168.200.137</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<span class="token key attr-name">replica-announce-ip</span> <span class="token value attr-value">192.168.200.137</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 
 
-<p>每个目录都要改，我们一键完成修改（在&#x2F;tmp目录执行下列命令）：</p>
+<p>每个目录都要改，我们一键完成修改（在/tmp目录执行下列命令）：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 逐一执行
 sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7001&#x2F;redis.conf
 sed -i &#39;1a replica-announce-ip 192.168.200.137&#39; 7002&#x2F;redis.conf
@@ -630,7 +630,7 @@ redis-server 7003&#x2F;redis.conf<span aria-hidden="true" class="line-numbers-ro
 
 
 <p>启动后：</p>
-<p><img src="/assets/image-20210630183914491.png" alt="image-20210630183914491"></p>
+<p><img src="assets/image-20210630183914491.png" alt="image-20210630183914491"></p>
 <p>如果要一键停止，可以运行下面命令：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">printf &#39;%s\n&#39; 7001 7002 7003 | xargs -I&#123;&#125; -t redis-cli -p &#123;&#125; shutdown<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
@@ -674,7 +674,7 @@ redis-cli -p 7001
 info replication<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>结果：</p>
-<p><img src="/assets/image-20210630201258802.png" alt="image-20210630201258802"></p>
+<p><img src="assets/image-20210630201258802.png" alt="image-20210630201258802"></p>
 <h2 id="2-5-测试"><a href="#2-5-测试" class="headerlink" title="2.5.测试"></a>2.5.测试</h2><p>执行下列操作以测试：</p>
 <ul>
 <li><p>利用redis-cli连接7001，执行<code>set num 123</code></p>
@@ -686,7 +686,7 @@ info replication<span aria-hidden="true" class="line-numbers-rows"><span></span>
 </ul>
 <p>可以发现，只有在7001这个master节点上可以执行写操作，7002和7003这两个slave节点只能执行读操作。</p>
 <h1 id="3-搭建哨兵集群"><a href="#3-搭建哨兵集群" class="headerlink" title="3.搭建哨兵集群"></a>3.搭建哨兵集群</h1><h2 id="3-1-集群结构"><a href="#3-1-集群结构" class="headerlink" title="3.1.集群结构"></a>3.1.集群结构</h2><p>这里我们搭建一个三节点形成的Sentinel集群，来监管之前的Redis主从集群。如图：</p>
-<p><img src="/assets/image-20210701215227018.png" alt="image-20210701215227018"></p>
+<p><img src="assets/image-20210701215227018.png" alt="image-20210701215227018"></p>
 <p>三个sentinel实例信息如下：</p>
 <table>
 <thead>
@@ -720,7 +720,7 @@ cd &#x2F;tmp
 mkdir s1 s2 s3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>如图：</p>
-<p><img src="/assets/image-20210701215534714.png" alt="image-20210701215534714"></p>
+<p><img src="assets/image-20210701215534714.png" alt="image-20210701215534714"></p>
 <p>然后我们在s1目录创建一个sentinel.conf文件，添加下面的内容：</p>
 <pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">port 27001
 sentinel announce-ip 192.168.200.137
@@ -739,7 +739,7 @@ dir "/tmp/s1"<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 </ul>
 </li>
 </ul>
-<p>然后将s1&#x2F;sentinel.conf文件拷贝到s2、s3两个目录中（在&#x2F;tmp目录执行下列命令）：</p>
+<p>然后将s1/sentinel.conf文件拷贝到s2、s3两个目录中（在/tmp目录执行下列命令）：</p>
 <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 方式一：逐个拷贝
 cp s1&#x2F;sentinel.conf s2
 cp s1&#x2F;sentinel.conf s3
@@ -765,13 +765,13 @@ redis-sentinel s3&#x2F;sentinel.conf<span aria-hidden="true" class="line-numbers
 
 
 <p>启动后：</p>
-<p><img src="/assets/image-20210701220714104.png" alt="image-20210701220714104"></p>
+<p><img src="assets/image-20210701220714104.png" alt="image-20210701220714104"></p>
 <h2 id="3-4-测试"><a href="#3-4-测试" class="headerlink" title="3.4.测试"></a>3.4.测试</h2><p>尝试让master节点7001宕机，查看sentinel日志：</p>
-<p><img src="/assets/image-20210701222857997.png" alt="image-20210701222857997"></p>
+<p><img src="assets/image-20210701222857997.png" alt="image-20210701222857997"></p>
 <p>查看7003的日志：</p>
-<p><img src="/assets/image-20210701223025709.png" alt="image-20210701223025709"></p>
+<p><img src="assets/image-20210701223025709.png" alt="image-20210701223025709"></p>
 <p>查看7002的日志：</p>
-<p><img src="/assets/image-20210701223131264.png" alt="image-20210701223131264"></p>
+<p><img src="assets/image-20210701223131264.png" alt="image-20210701223131264"></p>
 <h1 id="4-搭建分片集群"><a href="#4-搭建分片集群" class="headerlink" title="4.搭建分片集群"></a>4.搭建分片集群</h1><h2 id="4-1-集群结构"><a href="#4-1-集群结构" class="headerlink" title="4.1.集群结构"></a>4.1.集群结构</h2><p>分片集群需要的节点数量较多，这里我们搭建一个最小的分片集群，包含3个master节点，每个master包含一个slave节点，结构如下：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2uu5i3p82j20ee0gjq3n.jpg" alt="image-20210702164116027"></p>
 <p>这里我们会在同一台虚拟机中开启6个redis实例，模拟分片集群，信息如下：</p>
@@ -824,7 +824,7 @@ mkdir 7001 7002 7003 8001 8002 8003<span aria-hidden="true" class="line-numbers-
 
 
 
-<p>在&#x2F;tmp下准备一个新的redis.conf文件，内容如下：</p>
+<p>在/tmp下准备一个新的redis.conf文件，内容如下：</p>
 <pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">port 6379
 <span class="token comment"># 开启集群功能</span>
 cluster-enabled yes
@@ -887,7 +887,7 @@ printf &#39;%s\n&#39; 7001 7002 7003 8001 8002 8003 | xargs -I&#123;&#125; -t re
 <h2 id="4-4-创建集群"><a href="#4-4-创建集群" class="headerlink" title="4.4.创建集群"></a>4.4.创建集群</h2><p>虽然服务启动了，但是目前每个服务之间都是独立的，没有任何关联。</p>
 <p>我们需要执行命令来创建集群，在Redis5.0之前创建集群比较麻烦，5.0之后集群管理命令都集成到了redis-cli中。</p>
 <p>1）Redis5.0之前</p>
-<p>Redis5.0之前集群命令都是用redis安装包下的src&#x2F;redis-trib.rb来实现的。因为redis-trib.rb是有ruby语言编写的所以需要安装ruby环境。</p>
+<p>Redis5.0之前集群命令都是用redis安装包下的src/redis-trib.rb来实现的。因为redis-trib.rb是有ruby语言编写的所以需要安装ruby环境。</p>
  <pre class="line-numbers language-sh" data-language="sh"><code class="language-sh"># 安装依赖
 yum -y install zlib ruby rubygems
 gem install redis<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>

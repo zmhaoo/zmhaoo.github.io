@@ -40,7 +40,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -500,11 +500,11 @@
 <p><strong>①:所有数据都会出现在叶子节点</strong></p>
 <p><strong>②:叶子节点行程一个单项链表的结构</strong></p>
 <ul>
-<li>Hash</li>
+<li> Hash</li>
 </ul>
 <p>  <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u4lqq4j20sc0cedht.jpg" alt="image-20220510105739506"></p>
 <p>  索引特点:</p>
-<p>  1.Hash索引只能用于对等比较(&#x3D;,in),不支持范围查询(between,&gt;,&lt;,…),因为存储顺序不一致</p>
+<p>  1.Hash索引只能用于对等比较(=,in),不支持范围查询(between,&gt;,&lt;,…),因为存储顺序不一致</p>
 <p>  2.无法利用索引完成排序操作</p>
 <p>  3.查询效率高,通常只需要一次检索就可以了,效率通常要高于B+Tree树(这里的通常指的是,没有哈希碰撞的前提下)</p>
 <p>​    存储引擎支持:</p>
@@ -517,7 +517,7 @@
 <h1 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u92miej20r3077t9f.jpg" alt="image-20220510113432105"></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5u9yambj20rd0ac75g.jpg" alt="image-20220510112749285"></p>
 <p><strong>就会隐式的定义一个 rowid 作为聚集索引</strong></p>
-<h1 id="InnoDB—-gt-回表查询"><a href="#InnoDB—-gt-回表查询" class="headerlink" title="InnoDB—-&gt;回表查询"></a>InnoDB—-&gt;回表查询</h1><p>如果想要执行类似于:selecy*from where name &#x3D; ‘Arm’ 这种sql语句,那么mysql先回根据二级索引找到对应的主键,或者带有唯一约束的值,然后通过主键或者唯一约束的值来通过聚集索引来查询对应row(行数据)</p>
+<h1 id="InnoDB—-gt-回表查询"><a href="#InnoDB—-gt-回表查询" class="headerlink" title="InnoDB—-&gt;回表查询"></a>InnoDB—-&gt;回表查询</h1><p>如果想要执行类似于:selecy*from where name = ‘Arm’ 这种sql语句,那么mysql先回根据二级索引找到对应的主键,或者带有唯一约束的值,然后通过主键或者唯一约束的值来通过聚集索引来查询对应row(行数据)</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5uc5k8yj20xs0h80uo.jpg" alt="image-20220510115518828"></p>
 <h1 id="InnoDB主键索引的B-Tree高度为多高呢"><a href="#InnoDB主键索引的B-Tree高度为多高呢" class="headerlink" title="InnoDB主键索引的B+Tree高度为多高呢?"></a>InnoDB主键索引的B+Tree高度为多高呢?</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5udhri1j20jl0hidhd.jpg" alt="image-20220510123359487"></p>
 <p><strong>可以得出,用innodb来存储2000多万条数据,树也只有三层,大大的提高了检索效率!</strong></p>
@@ -525,11 +525,9 @@
 <li><p>创建索引:<strong>构建B+Tree的数据结构,构建一次,一劳永逸,空间换时间</strong></p>
 <pre class="line-numbers language-JAVA" data-language="JAVA"><code class="language-JAVA">* create index idx_user_name on tb_user(name);
 * create unique index idx_user_phone on tb_user(phone);
-* create index idx_user_pro_age_sta on tb_user(profession,age,status); ---&gt; 创建联合索引<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-</li>
+* create index idx_user_pro_age_sta on tb_user(profession,age,status); ---&gt; 创建联合索引<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></li>
 <li><p>查看索引:</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">show index from tb_user<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">show index from tb_user<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
 <li><p>删除索引:</p>
 <pre class="line-numbers language-JAVA" data-language="JAVA"><code class="language-JAVA">drop index idx_user_phone on tb_user<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
@@ -552,7 +550,7 @@
 </li>
 <li><blockquote>
 <p>  慢查询日志记录了所有执行时间超过指定参数(long_query_time,单位:妙,默认10妙)的所有sql语句的日志,我们可以通过查询慢查询日志,来定位执行效率比较低的语句,来做对应的优化处理.</p>
-<p>  Mysql的慢查询日志默认没有开启,需要在Mysql的配置文件(&#x2F;etc&#x2F;my.cnf)中配置如下信息:</p>
+<p>  Mysql的慢查询日志默认没有开启,需要在Mysql的配置文件(/etc/my.cnf)中配置如下信息:</p>
 <pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查询慢查询日志是否开启
 mysql&gt; show variables like &#39;slow_query_log&#39;;
 +----------------+-------+
@@ -569,7 +567,7 @@ slow_query_log&#x3D;1
 long_query_time&#x3D;2
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>配置完毕后,可以通过一下命令重启Mysql服务器进行测试,查询慢日志文件中记录的信息&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;localhost-show.log</p>
+<p>配置完毕后,可以通过一下命令重启Mysql服务器进行测试,查询慢日志文件中记录的信息/var/lib/mysql/localhost-show.log</p>
 <pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#重启mysql服务
   systemctl restart mysqld;
  #进入mysql继续用命令查看当前慢日志开关
@@ -581,7 +579,7 @@ mysql&gt; show variables like &#39;slow_query_log&#39;;
 +----------------+-------+
 1 row in set (0.01 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><strong>当慢查询日志开启后,慢查询日志的位置在&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;的目录下,文件名教localhost-slow.log</strong></p>
+<p><strong>当慢查询日志开启后,慢查询日志的位置在/var/lib/mysql/的目录下,文件名教localhost-slow.log</strong></p>
 <p><strong>注意:但是只用慢查询日志的话,只能锁定一些自己定义的慢查询时间(设定的预设时间),来查到查询慢的sql语句,比较笼统,如果有的sql语句在1.98s或者1.99s其实也是属于慢查询,但是因为配置的原因并不会记录到慢查询日志中去,所以这个时候就要用到profiling工具来辅助sql调优</strong></p>
 </blockquote>
 </li>
@@ -597,7 +595,7 @@ mysql&gt; SELECT @@have_profiling;
 +------------------+
 1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>支持是支持,但是还要检查一下profiling是否是开启状态,<strong>默认是关闭的</strong>,可以通过session&#x2F;global级别开启profiling:</p>
+<p>支持是支持,但是还要检查一下profiling是否是开启状态,<strong>默认是关闭的</strong>,可以通过session/global级别开启profiling:</p>
 <pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">#查看是否开启了profiling开关
 mysql&gt; select @@profiling;
 +-------------+
@@ -683,8 +681,7 @@ mysql&gt; show profile cpu  for query 3;
 | freeing items        | 0.000013 | 0.000000 |   0.000012 |
 | cleaning up          | 0.000012 | 0.000000 |   0.000012 |
 +----------------------+----------+----------+------------+
-17 rows in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
+17 rows in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></blockquote>
 </li>
 <li><p>explain执行计划:</p>
 <p>可以模拟 优化器 执行SQL查询语句，并不会去真正的执行这条SQL，从而知道 MySQL 是如何处理你的SQL语句的。可用来分析你的查询语句或是表结构的性能瓶颈。<strong>从而评判sql语句的执行性能</strong></p>
@@ -702,7 +699,7 @@ mysql&gt; explain select * from dish;
 <p><strong>id:</strong></p>
 <p>select查询的序列号,表示查询中执行select子句或者是操作表的顺序(id相同,执行顺序从上到下:id不同,值越大,越先执行)</p>
 <p><strong>select_type:</strong></p>
-<p>表示SELECT的类型,常见的取值有SIMPLE(简单表,即不实用表连接或者子查询),PRIMARY(主查询),PRIMARY(主查询,即外层的查询),UNION(UNION中搞得第二个或者后面的查询语句),SUBQUERY(SELECT&#x2F;WHERE之后包含了子查询)等</p>
+<p>表示SELECT的类型,常见的取值有SIMPLE(简单表,即不实用表连接或者子查询),PRIMARY(主查询),PRIMARY(主查询,即外层的查询),UNION(UNION中搞得第二个或者后面的查询语句),SUBQUERY(SELECT/WHERE之后包含了子查询)等</p>
 <p><strong>type:</strong></p>
 <p>表示连接类型,性能由好到差的连接类型为NULL,system,const,eq_ref,ref,range,index,all.</p>
 <p><strong>possible_key:</strong></p>
@@ -744,7 +741,7 @@ mysql&gt; explain select * from dish;
 <ul>
 <li>范围查询</li>
 </ul>
-<p>联合索引中,出现范围查询(&gt;,&lt;),范围查询右侧的列索引会失效(<strong>但是&lt;&#x3D;,&gt;&#x3D;索引会生效</strong>)</p>
+<p>联合索引中,出现范围查询(&gt;,&lt;),范围查询右侧的列索引会失效(<strong>但是&lt;=,&gt;=索引会生效</strong>)</p>
 <ul>
 <li>索引列运算</li>
 </ul>
@@ -767,7 +764,7 @@ mysql&gt; explain select * from dish;
 </ul>
 <p>如果MYSQL评估使用索引比全表更慢,则不使用索引.(比如查询一个比最小数据大的所有数据,因此本来就是要走全表扫描的,索引还不如直接走全表扫描来的快,也就不会走索引)</p>
 <ul>
-<li><strong>关于字段是否有null</strong> —重点</li>
+<li><strong>关于字段是否有null</strong> —重点 </li>
 </ul>
 <p><strong>在where后面进行null值判断,导致索引失效的原因并不是null本身,而是mysql根据数据分布来自动判断是否用索引,比如一个字段里绝大多数都是null,这个时候你查询字段里为null的值,mysql会认为全表扫描比索引来的更快,所以不会使用索引,如果一个字段里的null是极少数的,那么当你查询字段里为null的值的数据的时候,mysql会判断全表扫描的性能要低于索引查询,这个时候就会使用索引!</strong></p>
 <p>因为在判断时候,联合索引必须要有最左前缀,如果用or,就不能保证有最左前缀,所以直接全表扫描!</p>
@@ -875,7 +872,7 @@ select count(distinct substring(email,1,5))&#x2F;count(*) from tb_user;<span ari
 <p>SQL提示</p>
 <p>覆盖索引</p>
 <p>前缀索引</p>
-<p>单例&#x2F;联合索引</p>
+<p>单例/联合索引</p>
 </blockquote>
 
                 

@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="NEGINX学习总结, Zmhaoo&#39;s Blog">
     <meta name="description" content="Nginx-概述1.1 介绍 
-Nginx是一款轻量级的Web服务器&amp;#x2F;反向代理服务器及电子邮件（IMAP&amp;#x2F;POP3）代理服务器。其特点是占有内存少，并发能力强，事实上nginx的并发能力在同类型的网页服务器中表现较好，中">
+Nginx是一款轻量级的Web服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器。其特点是占有内存少，并发能力强，事实上nginx的并发能力在同类型的网页服务器中表现较好，中国大陆使用nginx">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -33,7 +33,7 @@ Nginx是一款轻量级的Web服务器&amp;#x2F;反向代理服务器及电子�
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -468,7 +468,7 @@ Nginx是一款轻量级的Web服务器&amp;#x2F;反向代理服务器及电子�
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="Nginx-概述"><a href="#Nginx-概述" class="headerlink" title="Nginx-概述"></a>Nginx-概述</h2><h3 id="1-1-介绍"><a href="#1-1-介绍" class="headerlink" title="1.1 介绍"></a>1.1 介绍</h3><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5q6nrd7j206t01pgli.jpg" alt="image-20210829234142590"> </p>
-<p>Nginx是一款轻量级的Web服务器&#x2F;反向代理服务器及电子邮件（IMAP&#x2F;POP3）代理服务器。其特点是占有内存少，并发能力强，事实上nginx的并发能力在同类型的网页服务器中表现较好，中国大陆使用nginx的网站有：百度、京东、新浪、网易、腾讯、淘宝等。</p>
+<p>Nginx是一款轻量级的Web服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器。其特点是占有内存少，并发能力强，事实上nginx的并发能力在同类型的网页服务器中表现较好，中国大陆使用nginx的网站有：百度、京东、新浪、网易、腾讯、淘宝等。</p>
 <p>Nginx是由<strong>伊戈尔·赛索耶夫</strong>为俄罗斯访问量第二的Rambler.ru站点（俄文：Рамблер）开发的，第一个公开版本0.1.0发布于2004年10月4日。</p>
 <p>官网：<a target="_blank" rel="noopener" href="https://nginx.org/">https://nginx.org/</a></p>
 <h3 id="4-2-下载和安装"><a href="#4-2-下载和安装" class="headerlink" title="4.2 下载和安装"></a>4.2 下载和安装</h3><h4 id="4-2-1-下载"><a href="#4-2-1-下载" class="headerlink" title="4.2.1 下载"></a>4.2.1 下载</h4><p>在Nginx的官网的下载页面中(<a target="_blank" rel="noopener" href="http://nginx.org/en/download.html)%EF%BC%8C%E5%B0%B1%E5%B1%95%E7%A4%BA%E4%BA%86%E5%BD%93%E5%89%8DNginx%E7%89%88%E6%9C%AC%EF%BC%8C%E5%B9%B6%E6%8F%90%E4%BE%9B%E4%BA%86%E4%B8%8B%E8%BD%BD%E7%9A%84%E8%BF%9E%E6%8E%A5%E3%80%82">http://nginx.org/en/download.html)，就展示了当前Nginx版本，并提供了下载的连接。</a> 如下： </p>
@@ -504,7 +504,7 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <p><strong>5). 编译&amp;安装</strong></p>
 <pre class="line-numbers language-none"><code class="language-none">make &amp; make install<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<h3 id="4-3-目录结构"><a href="#4-3-目录结构" class="headerlink" title="4.3 目录结构"></a>4.3 目录结构</h3><p>安装完Nginx后，我们可以切换到Nginx的安装目录(&#x2F;usr&#x2F;local&#x2F;nginx)，先来熟悉一下Nginx的目录结构，如下图：</p>
+<h3 id="4-3-目录结构"><a href="#4-3-目录结构" class="headerlink" title="4.3 目录结构"></a>4.3 目录结构</h3><p>安装完Nginx后，我们可以切换到Nginx的安装目录(/usr/local/nginx)，先来熟悉一下Nginx的目录结构，如下图：</p>
 <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qd1z0zj21310jl78b.jpg" alt="image-20210830000933352" style="zoom:90%;" /> 
 
 <blockquote>
@@ -516,7 +516,7 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <table>
 <thead>
 <tr>
-<th>目录&#x2F;文件</th>
+<th>目录/文件</th>
 <th>说明</th>
 <th>备注</th>
 </tr>
@@ -527,7 +527,7 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <td></td>
 </tr>
 <tr>
-<td>conf&#x2F;nginx.conf</td>
+<td>conf/nginx.conf</td>
 <td>Nginx的核心配置文件</td>
 <td>conf下有很多nginx的配置文件，我们主要操作这个核心配置文件</td>
 </tr>
@@ -542,18 +542,18 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <td></td>
 </tr>
 <tr>
-<td>sbin&#x2F;nginx</td>
+<td>sbin/nginx</td>
 <td>二进制文件，用于启动、停止Nginx服务</td>
 <td></td>
 </tr>
 </tbody></table>
-<h2 id="5-Nginx-命令"><a href="#5-Nginx-命令" class="headerlink" title="5. Nginx-命令"></a>5. Nginx-命令</h2><h3 id="5-1-常用命令"><a href="#5-1-常用命令" class="headerlink" title="5.1 常用命令"></a>5.1 常用命令</h3><p>Nginx中，我们的二进制可执行文件(nginx)存放在sbin目录下，虽然只有一个可执行文件，但是我们可以通过该指令配合不同的参数达到更加强大的功能。接下来，我们就演示一下Nginx常见指令, 在执行下面的指令时,都需要在&#x3D;&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;&#x3D;&#x3D;目录下执行。</p>
+<h2 id="5-Nginx-命令"><a href="#5-Nginx-命令" class="headerlink" title="5. Nginx-命令"></a>5. Nginx-命令</h2><h3 id="5-1-常用命令"><a href="#5-1-常用命令" class="headerlink" title="5.1 常用命令"></a>5.1 常用命令</h3><p>Nginx中，我们的二进制可执行文件(nginx)存放在sbin目录下，虽然只有一个可执行文件，但是我们可以通过该指令配合不同的参数达到更加强大的功能。接下来，我们就演示一下Nginx常见指令, 在执行下面的指令时,都需要在==/usr/local/nginx/sbin/==目录下执行。</p>
 <p><strong>1). 查看版本</strong></p>
 <pre class="line-numbers language-none"><code class="language-none">.&#x2F;nginx -v<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qdraafj213002d0t9.jpg" alt="image-20210830223435585"> </p>
 <p><strong>2). 检查配置文件</strong></p>
-<p>修改了nginx.conf核心配置文件之后，在启动Nginx服务之前，可以先检查一下conf&#x2F;nginx.conf文件配置的是否有错误，命令如下：</p>
+<p>修改了nginx.conf核心配置文件之后，在启动Nginx服务之前，可以先检查一下conf/nginx.conf文件配置的是否有错误，命令如下：</p>
 <pre class="line-numbers language-none"><code class="language-none">.&#x2F;nginx -t<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qfj1shj211z03u75q.jpg" alt="image-20210830223511878"> </p>
@@ -574,7 +574,7 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <p>​    A. 关闭防火墙</p>
 <p>​        systemctl stop firewalld</p>
 <p>​    B. 开放80端口</p>
-<p>​        firewall-cmd –zone&#x3D;public –add-port&#x3D;80&#x2F;tcp –permanent</p>
+<p>​        firewall-cmd –zone=public –add-port=80/tcp –permanent</p>
 <p>​        firewall-cmd –reload</p>
 </blockquote>
 <p><strong>4). 停止</strong></p>
@@ -588,13 +588,13 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <p>当修改了Nginx配置文件后，需要重新加载才能生效，可以使用下面命令重新加载配置文件：</p>
 <pre class="line-numbers language-none"><code class="language-none">.&#x2F;nginx -s reload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<h3 id="5-2-环境变量配置"><a href="#5-2-环境变量配置" class="headerlink" title="5.2 环境变量配置"></a>5.2 环境变量配置</h3><p>在上述我们在使用nginx命令在进行服务的启动、停止、重新加载时，都需要用到一个指令nginx，而这个指令是在nginx&#x2F;sbin目录下的，我们每一次使用这个指令都需要切换到sbin目录才可以，使用相对繁琐。那么我们能不能在任意目录下都可以执行该指令来操作nginx呢？答案是可以的，配置nginx的环境变量即可。</p>
-<p>通过vim编辑器，打开&#x2F;etc&#x2F;profile文件, 在PATH环境变量中增加nginx的sbin目录，如下： </p>
+<h3 id="5-2-环境变量配置"><a href="#5-2-环境变量配置" class="headerlink" title="5.2 环境变量配置"></a>5.2 环境变量配置</h3><p>在上述我们在使用nginx命令在进行服务的启动、停止、重新加载时，都需要用到一个指令nginx，而这个指令是在nginx/sbin目录下的，我们每一次使用这个指令都需要切换到sbin目录才可以，使用相对繁琐。那么我们能不能在任意目录下都可以执行该指令来操作nginx呢？答案是可以的，配置nginx的环境变量即可。</p>
+<p>通过vim编辑器，打开/etc/profile文件, 在PATH环境变量中增加nginx的sbin目录，如下： </p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qmhcirj20v302wt9b.jpg" alt="image-20210830225544343"> </p>
-<p>修改完配置文件之后，需要执行 source &#x2F;etc&#x2F;profile 使文件生效。 接下来，我们就可以在任意目录下执行nginx的指令了，如： </p>
+<p>修改完配置文件之后，需要执行 source /etc/profile 使文件生效。 接下来，我们就可以在任意目录下执行nginx的指令了，如： </p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5qoam9sj2127043t9y.jpg" alt="image-20210830225702899"> </p>
 <h2 id="6-Nginx-应用"><a href="#6-Nginx-应用" class="headerlink" title="6. Nginx-应用"></a>6. Nginx-应用</h2><p>介绍了并安装了Nginx之后，本章节将要讲解的是Nginx的使用，我们主要从以下四个方面进行讲解。</p>
-<h3 id="6-1-配置文件结构"><a href="#6-1-配置文件结构" class="headerlink" title="6.1 配置文件结构"></a>6.1 配置文件结构</h3><p>nginx的配置文件(conf&#x2F;nginx.conf)整体上分为三部分: 全局块、events块、http块。这三块的分别配置什么样的信息呢，看下表： </p>
+<h3 id="6-1-配置文件结构"><a href="#6-1-配置文件结构" class="headerlink" title="6.1 配置文件结构"></a>6.1 配置文件结构</h3><p>nginx的配置文件(conf/nginx.conf)整体上分为三部分: 全局块、events块、http块。这三块的分别配置什么样的信息呢，看下表： </p>
 <table>
 <thead>
 <tr>
@@ -625,17 +625,17 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <h3 id="6-2-部署静态资源"><a href="#6-2-部署静态资源" class="headerlink" title="6.2 部署静态资源"></a>6.2 部署静态资源</h3><h4 id="6-2-1-介绍"><a href="#6-2-1-介绍" class="headerlink" title="6.2.1 介绍"></a>6.2.1 介绍</h4><p><strong>Nginx可以作为静态web服务器来部署静态资源</strong>。这里所说的静态资源是指在服务端真实存在，并且能够直接展示的一些文件，比如常见的html页面、css文件、js文件、图片、视频等资源。</p>
 <p><strong>相对于Tomcat，Nginx处理静态资源的能力更加高效，所以在生产环境下，一般都会将静态资源部署到Nginx中。</strong></p>
 <p>将静态资源部署到Nginx非常简单，只需要将文件复制到Nginx安装目录下的html目录中即可。</p>
-<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token attr-name">server</span> <span class="token attr-value">&#123;</span>
-<span class="token attr-name">    listen</span> <span class="token attr-value">80;				#监听端口	</span>
-<span class="token attr-name">    server_name</span> <span class="token attr-value">localhost;	#服务器名称</span>
-<span class="token attr-name">    location</span> <span class="token attr-value">/ &#123;			#匹配客户端请求url</span>
-<span class="token attr-name">        root</span> <span class="token attr-value">html;			#指定静态资源根目录</span>
-<span class="token attr-name">        index</span> <span class="token attr-value">index.html;	#指定默认首页</span>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token key attr-name">server</span> <span class="token value attr-value">&#123;</span>
+<span class="token key attr-name">    listen</span> <span class="token value attr-value">80;				#监听端口	</span>
+<span class="token key attr-name">    server_name</span> <span class="token value attr-value">localhost;	#服务器名称</span>
+<span class="token key attr-name">    location</span> <span class="token value attr-value">/ &#123;			#匹配客户端请求url</span>
+<span class="token key attr-name">        root</span> <span class="token value attr-value">html;			#指定静态资源根目录</span>
+<span class="token key attr-name">        index</span> <span class="token value attr-value">index.html;	#指定默认首页</span>
     &#125;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h4 id="6-2-2-测试"><a href="#6-2-2-测试" class="headerlink" title="6.2.2 测试"></a>6.2.2 测试</h4><p>在资料中，我们提供了一个静态的html文件，我们需要将这个文件部署到nginx中，然后通过nginx访问html静态资源。</p>
-<p><strong>1). 将静态资源上传到 &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;html 目录</strong></p>
+<p><strong>1). 将静态资源上传到 /usr/local/nginx/html 目录</strong></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r16sh0j213v04qmyi.jpg" alt="image-20210830232238402"> </p>
 <p><strong>2). 启动nginx</strong></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5r27gfuj214609dadc.jpg" alt="image-20210830232419462"> </p>
@@ -667,17 +667,17 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <p>反向代理服务器位于用户与目标服务器之间，<strong>但是对于用户而言，反向代理服务器就相当于目标服务器</strong>，即用户直接访问反向代理服务器就可以获得目标服务器的资源，反向代理服务器负责将请求转发给目标服务器。<strong>用户不需要知道目标服务器的地址，也无须在用户端作任何设定，对于用户来说，访问反向代理服务器是完全无感知的。</strong></p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rewzahj20of09o754.jpg" alt="image-20210830233634695"> </p>
 <p>那么在本小节，我们就是要使用nginx来作为反向代理服务器使用。 在nginx中，我们可以在nginx.conf中配置反向代理: </p>
-<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token attr-name">server</span> <span class="token attr-value">&#123;</span>
-<span class="token attr-name">    listen</span> <span class="token attr-value">80;</span>
-<span class="token attr-name">    server_name</span> <span class="token attr-value">localhost;</span>
-<span class="token attr-name">    location</span> <span class="token attr-value">/ &#123;</span>
-<span class="token attr-name">        proxy_pass</span> <span class="token attr-value">http://192.168.100.200:8080; 	#反向代理配置，将请求转发到指定服务</span>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token key attr-name">server</span> <span class="token value attr-value">&#123;</span>
+<span class="token key attr-name">    listen</span> <span class="token value attr-value">80;</span>
+<span class="token key attr-name">    server_name</span> <span class="token value attr-value">localhost;</span>
+<span class="token key attr-name">    location</span> <span class="token value attr-value">/ &#123;</span>
+<span class="token key attr-name">        proxy_pass</span> <span class="token value attr-value">http://192.168.100.200:8080; 	#反向代理配置，将请求转发到指定服务</span>
     &#125;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>上述配置的含义为: 当我们访问nginx的80端口时，</p>
 <p>根据反向代理配置，会将请求转发到 <a target="_blank" rel="noopener" href="http://192.168.100.200:8080/">http://192.168.100.200:8080</a> 对应的服务上。</p>
-<h4 id="6-3-2-测试"><a href="#6-3-2-测试" class="headerlink" title="6.3.2 测试"></a>6.3.2 测试</h4><p>需求: 在192.168.100.200这台服务器中部署了java应用，运行端口为8080，并提供了一个可访问的链接 &#x2F;hello。现在我们需要在访问nginx时，通过nginx将请求转发到192.168.100.200:8080的服务。</p>
+<h4 id="6-3-2-测试"><a href="#6-3-2-测试" class="headerlink" title="6.3.2 测试"></a>6.3.2 测试</h4><p>需求: 在192.168.100.200这台服务器中部署了java应用，运行端口为8080，并提供了一个可访问的链接 /hello。现在我们需要在访问nginx时，通过nginx将请求转发到192.168.100.200:8080的服务。</p>
 <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rgs9s9j20rc06vq3j.jpg" alt="image-20210830235803013" style="zoom:67%;" /> 
 
 
@@ -690,11 +690,11 @@ wget https:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.1.tar.gz<span ari
 <pre class="line-numbers language-none"><code class="language-none">cd &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;conf&#x2F;
 vim nginx.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
-<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token attr-name">server</span> <span class="token attr-value">&#123;</span>
-<span class="token attr-name">    listen</span> <span class="token attr-value">80;</span>
-<span class="token attr-name">    server_name</span> <span class="token attr-value">localhost;</span>
-<span class="token attr-name">    location</span> <span class="token attr-value">/ &#123;</span>
-<span class="token attr-name">        proxy_pass</span> <span class="token attr-value">http://192.168.100.200:8080; 	#反向代理配置，将请求转发到指定服务</span>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token key attr-name">server</span> <span class="token value attr-value">&#123;</span>
+<span class="token key attr-name">    listen</span> <span class="token value attr-value">80;</span>
+<span class="token key attr-name">    server_name</span> <span class="token value attr-value">localhost;</span>
+<span class="token key attr-name">    location</span> <span class="token value attr-value">/ &#123;</span>
+<span class="token key attr-name">        proxy_pass</span> <span class="token value attr-value">http://192.168.100.200:8080; 	#反向代理配置，将请求转发到指定服务</span>
     &#125;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
@@ -725,15 +725,15 @@ vim nginx.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><s
 </tr>
 </thead>
 <tbody><tr>
-<td>![image-20220511211247384](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220511211247384.png)</td>
+<td>![image-20220511211247384](/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220511211247384.png)</td>
 <td>8080</td>
-<td>&#x2F;hello</td>
+<td>/hello</td>
 <td>8080</td>
 </tr>
 <tr>
-<td>![image-20220511211258476](&#x2F;Users&#x2F;zhangminghao&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20220511211258476.png)</td>
+<td>![image-20220511211258476](/Users/zhangminghao/Library/Application Support/typora-user-images/image-20220511211258476.png)</td>
 <td>8081</td>
-<td>&#x2F;hello</td>
+<td>/hello</td>
 <td>8081</td>
 </tr>
 </tbody></table>
@@ -752,16 +752,16 @@ nohup java -jar helloworld-8081.jar &amp;&gt; helloworld-8081.log &amp;<span ari
 <p><strong>3). 在nginx中配置负载均衡</strong></p>
 <p>打开nginx的配置文件nginx.conf并增加如下配置: </p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment">#upstream指令可以定义一组服务器</span>
-<span class="token attr-name">upstream</span> <span class="token attr-value">targetserver&#123;	</span>
-<span class="token attr-name">    server</span> <span class="token attr-value">192.168.100.200:8080;</span>
-<span class="token attr-name">    server</span> <span class="token attr-value">192.168.100.200:8081;</span>
+<span class="token key attr-name">upstream</span> <span class="token value attr-value">targetserver&#123;	</span>
+<span class="token key attr-name">    server</span> <span class="token value attr-value">192.168.100.200:8080;</span>
+<span class="token key attr-name">    server</span> <span class="token value attr-value">192.168.100.200:8081;</span>
 &#125;
 
-<span class="token attr-name">server</span> <span class="token attr-value">&#123;</span>
-<span class="token attr-name">    listen</span> <span class="token attr-value">      80;</span>
-<span class="token attr-name">    server_name</span> <span class="token attr-value"> localhost;</span>
-<span class="token attr-name">    location</span> <span class="token attr-value">/ &#123;</span>
-<span class="token attr-name">        proxy_pass</span> <span class="token attr-value">http://targetserver;</span>
+<span class="token key attr-name">server</span> <span class="token value attr-value">&#123;</span>
+<span class="token key attr-name">    listen</span> <span class="token value attr-value">      80;</span>
+<span class="token key attr-name">    server_name</span> <span class="token value attr-value"> localhost;</span>
+<span class="token key attr-name">    location</span> <span class="token value attr-value">/ &#123;</span>
+<span class="token key attr-name">        proxy_pass</span> <span class="token value attr-value">http://targetserver;</span>
     &#125;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
@@ -770,12 +770,12 @@ nohup java -jar helloworld-8081.jar &amp;&gt; helloworld-8081.log &amp;<span ari
 <p>具体的配置位置如下: </p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rsejyxj20qc08s0tf.jpg" alt="image-20220220182717939"> </p>
 <p><strong>4). 重新加载nginx配置文件,访问</strong></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nginx -s reload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">nginx -s reload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>测试时,我们直接访问nginx(<a target="_blank" rel="noopener" href="http://192.168.100.100/">http://192.168.100.100</a>), 此时nginx会根据负载均衡策略,将请求转发到后面的两台服务器。</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5s04giaj20p403omxc.jpg" alt="image-20220220182548353"> </p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2a5rrfbfhj20ow03v74g.jpg" alt="image-20220220182613070"> </p>
-<p>在上述的测试过程中，我们看到请求均衡的转发到了8080和8081，因为模式的负载均衡策略是&#x3D;&#x3D;轮询&#x3D;&#x3D;。</p>
+<p>在上述的测试过程中，我们看到请求均衡的转发到了8080和8081，因为模式的负载均衡策略是==轮询==。</p>
 <p><font color="red" size="5">注意: 上述所有涉及到的端口号，都需要在对应的服务器的防火墙中开放，或者彻底关闭防火墙</font></p>
 <h4 id="6-4-3-负载均衡策略"><a href="#6-4-3-负载均衡策略" class="headerlink" title="6.4.3 负载均衡策略"></a>6.4.3 负载均衡策略</h4><p>处理上述默认的轮询策略以外，在Nginx中还提供了其他的负载均衡策略，如下： </p>
 <table>
@@ -819,9 +819,9 @@ nohup java -jar helloworld-8081.jar &amp;&gt; helloworld-8081.log &amp;<span ari
 </tbody></table>
 <p>权重的配置： </p>
 <pre class="line-numbers language-properties" data-language="properties"><code class="language-properties"><span class="token comment">#upstream指令可以定义一组服务器</span>
-<span class="token attr-name">upstream</span> <span class="token attr-value">targetserver&#123;	</span>
-<span class="token attr-name">    server</span> <span class="token attr-value">192.168.100.200:8080 weight=10;</span>
-<span class="token attr-name">    server</span> <span class="token attr-value">192.168.100.200:8081 weight=5;</span>
+<span class="token key attr-name">upstream</span> <span class="token value attr-value">targetserver&#123;	</span>
+<span class="token key attr-name">    server</span> <span class="token value attr-value">192.168.100.200:8080 weight=10;</span>
+<span class="token key attr-name">    server</span> <span class="token value attr-value">192.168.100.200:8081 weight=5;</span>
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>上述配置的weight权重是相对的，在上述的配置中，效果就是，在大数据量的请求下，最终8080接收的请求数是8081的两倍。</p>
