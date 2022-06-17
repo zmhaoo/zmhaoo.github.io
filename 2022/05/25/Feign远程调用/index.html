@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta name="keywords" content="Feign远程调用, Zmhaoo&#39;s Blog">
     <meta name="description" content="1.Feign远程调用先来看我们以前利用RestTemplate发起远程调用的代码：
-
+ 
 存在下面的问题：
 •代码可读性差，编程体验不统一
 •参数复杂URL难以维护
-Feign是一个声明式的http客户端，官方地址：https://githu">
+Feign是一个声明式的http客户端，官方地址：https://gith">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -481,13 +481,13 @@ Feign是一个声明式的http客户端，官方地址：https://githu">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h1 id="1-Feign远程调用"><a href="#1-Feign远程调用" class="headerlink" title="1.Feign远程调用"></a><strong>1.Feign远程调用</strong></h1><p>先来看我们以前利用RestTemplate发起远程调用的代码：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174814204.png?lastModify=1653489702" alt="image-20210714174814204"></p>
+<p> <img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h3b120c7hqj20fv01emx7.jpg" alt="image-20220617102242185"></p>
 <p>存在下面的问题：</p>
 <p>•代码可读性差，编程体验不统一</p>
 <p>•参数复杂URL难以维护</p>
 <p>Feign是一个声明式的http客户端，官方地址：<a target="_blank" rel="noopener" href="https://github.com/OpenFeign/feign">https://github.com/OpenFeign/feign</a></p>
 <p>其作用就是帮助我们优雅的实现http请求的发送，解决上面提到的问题。</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714174918088.png?lastModify=1653489702" alt="image-20210714174918088"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h3b12182vxj20fd03ejro.jpg" alt="image-20220617102250405"></p>
 <h2 id="1-1-Feign替代RestTemplate"><a href="#1-1-Feign替代RestTemplate" class="headerlink" title="1.1.Feign替代RestTemplate"></a><strong>1.1.Feign替代RestTemplate</strong></h2><p>Fegin的使用步骤如下：</p>
 <h3 id="1）引入依赖"><a href="#1）引入依赖" class="headerlink" title="1）引入依赖"></a>1）引入依赖</h3><p>我们在order-service服务的pom文件中引入feign的依赖：</p>
 <pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
@@ -498,7 +498,7 @@ Feign是一个声明式的http客户端，官方地址：https://githu">
 
 
 <h3 id="2）添加注解"><a href="#2）添加注解" class="headerlink" title="2）添加注解"></a>2）添加注解</h3><p>在order-service的启动类添加注解开启Feign的功能：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714175102524.png?lastModify=1653489702" alt="image-20210714175102524"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h3b130zujbj20fr05cdgb.jpg" alt="image-20220617102346900"></p>
 <h3 id="3）编写Feign的客户端"><a href="#3）编写Feign的客户端" class="headerlink" title="3）编写Feign的客户端"></a>3）编写Feign的客户端</h3><p>在order-service中新建一个接口，内容如下：</p>
 <pre class="line-numbers language-none"><code class="language-none">package cn.itcast.order.client;
 
@@ -628,7 +628,13 @@ public interface UserClient &#123;
 &lt;dependency&gt;
     &lt;groupId&gt;io.github.openfeign&lt;&#x2F;groupId&gt;
     &lt;artifactId&gt;feign-httpclient&lt;&#x2F;artifactId&gt;
-&lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+&lt;&#x2F;dependency&gt;
+
+&lt;!--用httpclinet或者okhttp代替默认的URLconnlection,因为默认的不支持连接池,下面会说--&gt;
+&lt;dependency&gt;
+            &lt;groupId&gt;io.github.openfeign&lt;&#x2F;groupId&gt;
+            &lt;artifactId&gt;feign-httpclient&lt;&#x2F;artifactId&gt;
+        &lt;&#x2F;dependency&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
@@ -690,9 +696,9 @@ public interface UserClient &#123;
 </ul>
 <h3 id="1-4-2-抽取方式"><a href="#1-4-2-抽取方式" class="headerlink" title="1.4.2.抽取方式"></a>1.4.2.抽取方式</h3><p>将Feign的Client抽取为独立模块，并且把接口有关的POJO、默认的Feign配置都放到这个模块中，提供给所有消费者使用。</p>
 <p>例如，将UserClient、User、Feign的默认配置都抽取到一个feign-api包中，所有微服务引用该依赖包，即可直接使用。</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714214041796.png?lastModify=1653489702" alt="image-20210714214041796"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h3b16cunv2j20g805ljrl.jpg" alt="image-20220617102658928"></p>
 <h3 id="1-4-3-实现基于抽取的最佳实践"><a href="#1-4-3-实现基于抽取的最佳实践" class="headerlink" title="1.4.3.实现基于抽取的最佳实践"></a>1.4.3.实现基于抽取的最佳实践</h3><h4 id="1）抽取"><a href="#1）抽取" class="headerlink" title="1）抽取"></a>1）抽取</h4><p>首先创建一个module，命名为feign-api：</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714204557771.png?lastModify=1653489702" alt="image-20210714204557771"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h3b16y8w0xj20ft05ajrg.jpg" alt="image-20220617102733932"></p>
 <p>项目结构：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2l1659i8zj209p0520sx.jpg" alt="image-20210714204656214"></p>
 <p>在feign-api中然后引入feign的starter依赖</p>
@@ -704,7 +710,7 @@ public interface UserClient &#123;
 
 
 <p>然后，order-service中编写的UserClient、User、DefaultFeignConfiguration都复制到feign-api项目中</p>
-<p><img src="/Users/zhangminghao/Desktop/06-%E6%9C%8D%E5%8A%A1%E6%A1%86%E6%9E%B6/day02-SpringCloud02/%E8%AE%B2%E4%B9%89/md/assets/image-20210714205221970.png?lastModify=1653489702" alt="image-20210714205221970"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h3b173y5uzj20fp0euaat.jpg" alt="image-20220617102742384"></p>
 <h4 id="2）在order-service中使用feign-api"><a href="#2）在order-service中使用feign-api" class="headerlink" title="2）在order-service中使用feign-api"></a>2）在order-service中使用feign-api</h4><p>首先，删除order-service中的UserClient、User、DefaultFeignConfiguration等类或接口。</p>
 <p>在order-service的pom文件中中引入feign-api的依赖：</p>
 <pre class="line-numbers language-none"><code class="language-none">&lt;dependency&gt;
