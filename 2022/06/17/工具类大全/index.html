@@ -477,7 +477,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="相关依赖"><a href="#相关依赖" class="headerlink" title="相关依赖"></a>相关依赖</h1><pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+                <h1 id="相关依赖"><a href="#相关依赖" class="headerlink" title="相关依赖"></a>相关依赖</h1><pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
             <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>commons-codec<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
             <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>commons-codec<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
@@ -514,11 +514,11 @@
 
 <h1 id="AppJwtUtil"><a href="#AppJwtUtil" class="headerlink" title="AppJwtUtil"></a>AppJwtUtil</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>jsonwebtoken<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">io<span class="token punctuation">.</span>jsonwebtoken<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">SecretKey</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">SecretKeySpec</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">SecretKey</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">SecretKeySpec</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AppJwtUtil</span> <span class="token punctuation">&#123;</span>
 
@@ -635,8 +635,8 @@
 
 <h1 id="Base64Utils"><a href="#Base64Utils" class="headerlink" title="Base64Utils"></a>Base64Utils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">sun<span class="token punctuation">.</span>misc<span class="token punctuation">.</span></span><span class="token class-name">BASE64Decoder</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">sun<span class="token punctuation">.</span>misc<span class="token punctuation">.</span></span><span class="token class-name">BASE64Encoder</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">sun<span class="token punctuation">.</span>misc<span class="token punctuation">.</span></span><span class="token class-name">BASE64Decoder</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">sun<span class="token punctuation">.</span>misc<span class="token punctuation">.</span></span><span class="token class-name">BASE64Encoder</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Base64Utils</span> <span class="token punctuation">&#123;</span>
 
@@ -676,8 +676,8 @@
 
 <h1 id="BCrypt"><a href="#BCrypt" class="headerlink" title="BCrypt"></a>BCrypt</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">UnsupportedEncodingException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">SecureRandom</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">UnsupportedEncodingException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">SecureRandom</span><span class="token punctuation">;</span>
 
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BCrypt</span> <span class="token punctuation">&#123;</span>
@@ -1361,9 +1361,9 @@ public class BurstUtils &#123;
 
 <h1 id="Compute"><a href="#Compute" class="headerlink" title="Compute"></a>Compute</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>swing<span class="token punctuation">.</span>border<span class="token punctuation">.</span></span><span class="token class-name">TitledBorder</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">NumberFormat</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Locale</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>swing<span class="token punctuation">.</span>border<span class="token punctuation">.</span></span><span class="token class-name">TitledBorder</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">NumberFormat</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Locale</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Compute</span> <span class="token punctuation">&#123;</span>
 
@@ -1472,10 +1472,10 @@ public class BurstUtils &#123;
 
 <h1 id="DateUtils"><a href="#DateUtils" class="headerlink" title="DateUtils"></a>DateUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">ParseException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">SimpleDateFormat</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Calendar</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Date</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">ParseException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">SimpleDateFormat</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Calendar</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Date</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DateUtils</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">String</span> DATE_FORMAT <span class="token operator">=</span> <span class="token string">"yyyy-MM-dd"</span><span class="token punctuation">;</span>
@@ -1943,11 +1943,11 @@ public class BurstUtils &#123;
 
 <h1 id="DESUtils"><a href="#DESUtils" class="headerlink" title="DESUtils"></a>DESUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">Cipher</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">SecretKey</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">SecretKeyFactory</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">DESKeySpec</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">IvParameterSpec</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">Cipher</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">SecretKey</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">SecretKeyFactory</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">DESKeySpec</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">IvParameterSpec</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DESUtils</span> <span class="token punctuation">&#123;</span>
 
@@ -2104,10 +2104,10 @@ public class BurstUtils &#123;
 
 <h1 id="FileUtils"><a href="#FileUtils" class="headerlink" title="FileUtils"></a>FileUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">BufferedReader</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">InputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">InputStreamReader</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">BufferedReader</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">InputStream</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">InputStreamReader</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FileUtils</span> <span class="token punctuation">&#123;</span>
 
@@ -2128,8 +2128,8 @@ public class BurstUtils &#123;
 <h1 id="IdsUtils"><a href="#IdsUtils" class="headerlink" title="IdsUtils"></a>IdsUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">Cipher</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">SecretKeySpec</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span><span class="token class-name">Cipher</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span>spec<span class="token punctuation">.</span></span><span class="token class-name">SecretKeySpec</span><span class="token punctuation">;</span>
 
 <span class="token comment">/**
  * 数字ID混淆器，用于前后端数据通信时候的处理
@@ -2212,8 +2212,8 @@ public class BurstUtils &#123;
 
 <h1 id="MD5Utils"><a href="#MD5Utils" class="headerlink" title="MD5Utils"></a>MD5Utils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">MessageDigest</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">NoSuchAlgorithmException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">MessageDigest</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">NoSuchAlgorithmException</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MD5Utils</span> <span class="token punctuation">&#123;</span>
 
@@ -2263,22 +2263,22 @@ public class BurstUtils &#123;
 
 <h1 id="ReflectUtils"><a href="#ReflectUtils" class="headerlink" title="ReflectUtils"></a>ReflectUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>beanutils<span class="token punctuation">.</span></span><span class="token class-name">ConvertUtils</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>lang3<span class="token punctuation">.</span></span><span class="token class-name">StringUtils</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>beanutils<span class="token punctuation">.</span></span><span class="token class-name">ConvertUtils</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>lang3<span class="token punctuation">.</span></span><span class="token class-name">StringUtils</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">BeanInfo</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">IntrospectionException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">Introspector</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">PropertyDescriptor</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Annotation</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">Field</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">InvocationTargetException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">Method</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Arrays</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">HashMap</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Map</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>stream<span class="token punctuation">.</span></span><span class="token class-name">Collectors</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">BeanInfo</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">IntrospectionException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">Introspector</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>beans<span class="token punctuation">.</span></span><span class="token class-name">PropertyDescriptor</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Annotation</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">Field</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">InvocationTargetException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">Method</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Arrays</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">HashMap</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Map</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>stream<span class="token punctuation">.</span></span><span class="token class-name">Collectors</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ReflectUtils</span> <span class="token punctuation">&#123;</span>
 
@@ -2614,7 +2614,7 @@ public class BurstUtils &#123;
 <h1 id="SensitiveWordUtil"><a href="#SensitiveWordUtil" class="headerlink" title="SensitiveWordUtil"></a>SensitiveWordUtil</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SensitiveWordUtil</span> <span class="token punctuation">&#123;</span>
 
@@ -2737,16 +2737,16 @@ public class BurstUtils &#123;
 
 <h1 id="SimHashUtils"><a href="#SimHashUtils" class="headerlink" title="SimHashUtils"></a>SimHashUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>hankcs<span class="token punctuation">.</span>hanlp<span class="token punctuation">.</span>seg<span class="token punctuation">.</span>common<span class="token punctuation">.</span></span><span class="token class-name">Term</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>hankcs<span class="token punctuation">.</span>hanlp<span class="token punctuation">.</span>tokenizer<span class="token punctuation">.</span></span><span class="token class-name">StandardTokenizer</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>lang3<span class="token punctuation">.</span></span><span class="token class-name">StringUtils</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>jsoup<span class="token punctuation">.</span></span><span class="token class-name">Jsoup</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>jsoup<span class="token punctuation">.</span>safety<span class="token punctuation">.</span></span><span class="token class-name">Whitelist</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">com<span class="token punctuation">.</span>hankcs<span class="token punctuation">.</span>hanlp<span class="token punctuation">.</span>seg<span class="token punctuation">.</span>common<span class="token punctuation">.</span></span><span class="token class-name">Term</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">com<span class="token punctuation">.</span>hankcs<span class="token punctuation">.</span>hanlp<span class="token punctuation">.</span>tokenizer<span class="token punctuation">.</span></span><span class="token class-name">StandardTokenizer</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>lang3<span class="token punctuation">.</span></span><span class="token class-name">StringUtils</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>jsoup<span class="token punctuation">.</span></span><span class="token class-name">Jsoup</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>jsoup<span class="token punctuation">.</span>safety<span class="token punctuation">.</span></span><span class="token class-name">Whitelist</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>math<span class="token punctuation">.</span></span><span class="token class-name">BigInteger</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">HashMap</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Map</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>math<span class="token punctuation">.</span></span><span class="token class-name">BigInteger</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">HashMap</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Map</span><span class="token punctuation">;</span>
 
 <span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token string">"all"</span><span class="token punctuation">)</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SimHashUtils</span> <span class="token punctuation">&#123;</span>
@@ -3061,13 +3061,13 @@ public class BurstUtils &#123;
 
 <h1 id="UrlSignUtils"><a href="#UrlSignUtils" class="headerlink" title="UrlSignUtils"></a>UrlSignUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>codec<span class="token punctuation">.</span>digest<span class="token punctuation">.</span></span><span class="token class-name">DigestUtils</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span></span><span class="token class-name">Logger</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span></span><span class="token class-name">LoggerFactory</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">StringUtils</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>codec<span class="token punctuation">.</span>digest<span class="token punctuation">.</span></span><span class="token class-name">DigestUtils</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span></span><span class="token class-name">Logger</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span></span><span class="token class-name">LoggerFactory</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">StringUtils</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Map</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">SortedMap</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Map</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">SortedMap</span><span class="token punctuation">;</span>
 
 <span class="token keyword">public</span> <span class="token keyword">enum</span> <span class="token class-name">UrlSignUtils</span> <span class="token punctuation">&#123;</span>
 
@@ -3105,10 +3105,10 @@ public class BurstUtils &#123;
 
 <h1 id="ZipUtils"><a href="#ZipUtils" class="headerlink" title="ZipUtils"></a>ZipUtils</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>heima<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>common</span><span class="token punctuation">;</span>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ByteArrayInputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ByteArrayOutputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>zip<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ByteArrayInputStream</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ByteArrayOutputStream</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>zip<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
 
 
 <span class="token comment">/**
@@ -3301,6 +3301,1473 @@ public class BurstUtils &#123;
         <span class="token keyword">return</span> decompressed<span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="RedisCache"><a href="#RedisCache" class="headerlink" title="RedisCache"></a>RedisCache</h1><pre class="line-numbers language-none"><code class="language-none">package com.heima.common.RedisCache;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.*;
+import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
+import org.springframework.data.redis.core.types.Expiration;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+@Component
+public class RedisCacheService extends CachingConfigurerSupport &#123;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    public StringRedisTemplate getstringRedisTemplate() &#123;
+        return this.stringRedisTemplate;
+    &#125;
+
+    &#x2F;** -------------------key相关操作--------------------- *&#x2F;
+
+    &#x2F;**
+     * 删除key
+     *
+     * @param key
+     *&#x2F;
+    public void delete(String key) &#123;
+        stringRedisTemplate.delete(key);
+    &#125;
+
+    &#x2F;**
+     * 批量删除key
+     *
+     * @param keys
+     *&#x2F;
+    public void delete(Collection&lt;String&gt; keys) &#123;
+        stringRedisTemplate.delete(keys);
+    &#125;
+
+    &#x2F;**
+     * 序列化key
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public byte[] dump(String key) &#123;
+        return stringRedisTemplate.dump(key);
+    &#125;
+
+    &#x2F;**
+     * 是否存在key
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Boolean exists(String key) &#123;
+        return stringRedisTemplate.hasKey(key);
+    &#125;
+
+    &#x2F;**
+     * 设置过期时间
+     *
+     * @param key
+     * @param timeout
+     * @param unit
+     * @return
+     *&#x2F;
+    public Boolean expire(String key, long timeout, TimeUnit unit) &#123;
+        return stringRedisTemplate.expire(key, timeout, unit);
+    &#125;
+
+    &#x2F;**
+     * 设置过期时间
+     *
+     * @param key
+     * @param date
+     * @return
+     *&#x2F;
+    public Boolean expireAt(String key, Date date) &#123;
+        return stringRedisTemplate.expireAt(key, date);
+    &#125;
+
+    &#x2F;**
+     * 查找匹配的key
+     *
+     * @param pattern
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; keys(String pattern) &#123;
+        return stringRedisTemplate.keys(pattern);
+    &#125;
+
+    &#x2F;**
+     * 将当前数据库的 key 移动到给定的数据库 db 当中
+     *
+     * @param key
+     * @param dbIndex
+     * @return
+     *&#x2F;
+    public Boolean move(String key, int dbIndex) &#123;
+        return stringRedisTemplate.move(key, dbIndex);
+    &#125;
+
+    &#x2F;**
+     * 移除 key 的过期时间，key 将持久保持
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Boolean persist(String key) &#123;
+        return stringRedisTemplate.persist(key);
+    &#125;
+
+    &#x2F;**
+     * 返回 key 的剩余的过期时间
+     *
+     * @param key
+     * @param unit
+     * @return
+     *&#x2F;
+    public Long getExpire(String key, TimeUnit unit) &#123;
+        return stringRedisTemplate.getExpire(key, unit);
+    &#125;
+
+    &#x2F;**
+     * 返回 key 的剩余的过期时间
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long getExpire(String key) &#123;
+        return stringRedisTemplate.getExpire(key);
+    &#125;
+
+    &#x2F;**
+     * 从当前数据库中随机返回一个 key
+     *
+     * @return
+     *&#x2F;
+    public String randomKey() &#123;
+        return stringRedisTemplate.randomKey();
+    &#125;
+
+    &#x2F;**
+     * 修改 key 的名称
+     *
+     * @param oldKey
+     * @param newKey
+     *&#x2F;
+    public void rename(String oldKey, String newKey) &#123;
+        stringRedisTemplate.rename(oldKey, newKey);
+    &#125;
+
+    &#x2F;**
+     * 仅当 newkey 不存在时，将 oldKey 改名为 newkey
+     *
+     * @param oldKey
+     * @param newKey
+     * @return
+     *&#x2F;
+    public Boolean renameIfAbsent(String oldKey, String newKey) &#123;
+        return stringRedisTemplate.renameIfAbsent(oldKey, newKey);
+    &#125;
+
+    &#x2F;**
+     * 返回 key 所储存的值的类型
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public DataType type(String key) &#123;
+        return stringRedisTemplate.type(key);
+    &#125;
+
+    &#x2F;** -------------------string相关操作--------------------- *&#x2F;
+
+    &#x2F;**
+     * 设置指定 key 的值
+     * @param key
+     * @param value
+     *&#x2F;
+    public void set(String key, String value) &#123;
+        stringRedisTemplate.opsForValue().set(key, value);
+    &#125;
+
+    &#x2F;**
+     * 获取指定 key 的值
+     * @param key
+     * @return
+     *&#x2F;
+    public String get(String key) &#123;
+        return stringRedisTemplate.opsForValue().get(key);
+    &#125;
+
+    &#x2F;**
+     * 返回 key 中字符串值的子字符
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public String getRange(String key, long start, long end) &#123;
+        return stringRedisTemplate.opsForValue().get(key, start, end);
+    &#125;
+
+    &#x2F;**
+     * 将给定 key 的值设为 value ，并返回 key 的旧值(old value)
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public String getAndSet(String key, String value) &#123;
+        return stringRedisTemplate.opsForValue().getAndSet(key, value);
+    &#125;
+
+    &#x2F;**
+     * 对 key 所储存的字符串值，获取指定偏移量上的位(bit)
+     *
+     * @param key
+     * @param offset
+     * @return
+     *&#x2F;
+    public Boolean getBit(String key, long offset) &#123;
+        return stringRedisTemplate.opsForValue().getBit(key, offset);
+    &#125;
+
+    &#x2F;**
+     * 批量获取
+     *
+     * @param keys
+     * @return
+     *&#x2F;
+    public List&lt;String&gt; multiGet(Collection&lt;String&gt; keys) &#123;
+        return stringRedisTemplate.opsForValue().multiGet(keys);
+    &#125;
+
+    &#x2F;**
+     * 设置ASCII码, 字符串&#39;a&#39;的ASCII码是97, 转为二进制是&#39;01100001&#39;, 此方法是将二进制第offset位值变为value
+     *
+     * @param key
+     * @param
+     * @param value
+     *            值,true为1, false为0
+     * @return
+     *&#x2F;
+    public boolean setBit(String key, long offset, boolean value) &#123;
+        return stringRedisTemplate.opsForValue().setBit(key, offset, value);
+    &#125;
+
+    &#x2F;**
+     * 将值 value 关联到 key ，并将 key 的过期时间设为 timeout
+     *
+     * @param key
+     * @param value
+     * @param timeout
+     *            过期时间
+     * @param unit
+     *            时间单位, 天:TimeUnit.DAYS 小时:TimeUnit.HOURS 分钟:TimeUnit.MINUTES
+     *            秒:TimeUnit.SECONDS 毫秒:TimeUnit.MILLISECONDS
+     *&#x2F;
+    public void setEx(String key, String value, long timeout, TimeUnit unit) &#123;
+        stringRedisTemplate.opsForValue().set(key, value, timeout, unit);
+    &#125;
+
+    &#x2F;**
+     * 只有在 key 不存在时设置 key 的值
+     *
+     * @param key
+     * @param value
+     * @return 之前已经存在返回false,不存在返回true
+     *&#x2F;
+    public boolean setIfAbsent(String key, String value) &#123;
+        return stringRedisTemplate.opsForValue().setIfAbsent(key, value);
+    &#125;
+
+    &#x2F;**
+     * 用 value 参数覆写给定 key 所储存的字符串值，从偏移量 offset 开始
+     *
+     * @param key
+     * @param value
+     * @param offset
+     *            从指定位置开始覆写
+     *&#x2F;
+    public void setRange(String key, String value, long offset) &#123;
+        stringRedisTemplate.opsForValue().set(key, value, offset);
+    &#125;
+
+    &#x2F;**
+     * 获取字符串的长度
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long size(String key) &#123;
+        return stringRedisTemplate.opsForValue().size(key);
+    &#125;
+
+    &#x2F;**
+     * 批量添加
+     *
+     * @param maps
+     *&#x2F;
+    public void multiSet(Map&lt;String, String&gt; maps) &#123;
+        stringRedisTemplate.opsForValue().multiSet(maps);
+    &#125;
+
+    &#x2F;**
+     * 同时设置一个或多个 key-value 对，当且仅当所有给定 key 都不存在
+     *
+     * @param maps
+     * @return 之前已经存在返回false,不存在返回true
+     *&#x2F;
+    public boolean multiSetIfAbsent(Map&lt;String, String&gt; maps) &#123;
+        return stringRedisTemplate.opsForValue().multiSetIfAbsent(maps);
+    &#125;
+
+    &#x2F;**
+     * 增加(自增长), 负数则为自减
+     *
+     * @param key
+     * @param
+     * @return
+     *&#x2F;
+    public Long incrBy(String key, long increment) &#123;
+        return stringRedisTemplate.opsForValue().increment(key, increment);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param
+     * @return
+     *&#x2F;
+    public Double incrByFloat(String key, double increment) &#123;
+        return stringRedisTemplate.opsForValue().increment(key, increment);
+    &#125;
+
+    &#x2F;**
+     * 追加到末尾
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Integer append(String key, String value) &#123;
+        return stringRedisTemplate.opsForValue().append(key, value);
+    &#125;
+
+    &#x2F;** -------------------hash相关操作------------------------- *&#x2F;
+
+    &#x2F;**
+     * 获取存储在哈希表中指定字段的值
+     *
+     * @param key
+     * @param field
+     * @return
+     *&#x2F;
+    public Object hGet(String key, String field) &#123;
+        return stringRedisTemplate.opsForHash().get(key, field);
+    &#125;
+
+    &#x2F;**
+     * 获取所有给定字段的值
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Map&lt;Object, Object&gt; hGetAll(String key) &#123;
+        return stringRedisTemplate.opsForHash().entries(key);
+    &#125;
+
+    &#x2F;**
+     * 获取所有给定字段的值
+     *
+     * @param key
+     * @param fields
+     * @return
+     *&#x2F;
+    public List&lt;Object&gt; hMultiGet(String key, Collection&lt;Object&gt; fields) &#123;
+        return stringRedisTemplate.opsForHash().multiGet(key, fields);
+    &#125;
+
+    public void hPut(String key, String hashKey, String value) &#123;
+        stringRedisTemplate.opsForHash().put(key, hashKey, value);
+    &#125;
+
+    public void hPutAll(String key, Map&lt;String, String&gt; maps) &#123;
+        stringRedisTemplate.opsForHash().putAll(key, maps);
+    &#125;
+
+    &#x2F;**
+     * 仅当hashKey不存在时才设置
+     *
+     * @param key
+     * @param hashKey
+     * @param value
+     * @return
+     *&#x2F;
+    public Boolean hPutIfAbsent(String key, String hashKey, String value) &#123;
+        return stringRedisTemplate.opsForHash().putIfAbsent(key, hashKey, value);
+    &#125;
+
+    &#x2F;**
+     * 删除一个或多个哈希表字段
+     *
+     * @param key
+     * @param fields
+     * @return
+     *&#x2F;
+    public Long hDelete(String key, Object... fields) &#123;
+        return stringRedisTemplate.opsForHash().delete(key, fields);
+    &#125;
+
+    &#x2F;**
+     * 查看哈希表 key 中，指定的字段是否存在
+     *
+     * @param key
+     * @param field
+     * @return
+     *&#x2F;
+    public boolean hExists(String key, String field) &#123;
+        return stringRedisTemplate.opsForHash().hasKey(key, field);
+    &#125;
+
+    &#x2F;**
+     * 为哈希表 key 中的指定字段的整数值加上增量 increment
+     *
+     * @param key
+     * @param field
+     * @param increment
+     * @return
+     *&#x2F;
+    public Long hIncrBy(String key, Object field, long increment) &#123;
+        return stringRedisTemplate.opsForHash().increment(key, field, increment);
+    &#125;
+
+    &#x2F;**
+     * 为哈希表 key 中的指定字段的整数值加上增量 increment
+     *
+     * @param key
+     * @param field
+     * @param delta
+     * @return
+     *&#x2F;
+    public Double hIncrByFloat(String key, Object field, double delta) &#123;
+        return stringRedisTemplate.opsForHash().increment(key, field, delta);
+    &#125;
+
+    &#x2F;**
+     * 获取所有哈希表中的字段
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Set&lt;Object&gt; hKeys(String key) &#123;
+        return stringRedisTemplate.opsForHash().keys(key);
+    &#125;
+
+    &#x2F;**
+     * 获取哈希表中字段的数量
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long hSize(String key) &#123;
+        return stringRedisTemplate.opsForHash().size(key);
+    &#125;
+
+    &#x2F;**
+     * 获取哈希表中所有值
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public List&lt;Object&gt; hValues(String key) &#123;
+        return stringRedisTemplate.opsForHash().values(key);
+    &#125;
+
+    &#x2F;**
+     * 迭代哈希表中的键值对
+     *
+     * @param key
+     * @param options
+     * @return
+     *&#x2F;
+    public Cursor&lt;Map.Entry&lt;Object, Object&gt;&gt; hScan(String key, ScanOptions options) &#123;
+        return stringRedisTemplate.opsForHash().scan(key, options);
+    &#125;
+
+    &#x2F;** ------------------------list相关操作---------------------------- *&#x2F;
+
+    &#x2F;**
+     * 通过索引获取列表中的元素
+     *
+     * @param key
+     * @param index
+     * @return
+     *&#x2F;
+    public String lIndex(String key, long index) &#123;
+        return stringRedisTemplate.opsForList().index(key, index);
+    &#125;
+
+    &#x2F;**
+     * 获取列表指定范围内的元素
+     *
+     * @param key
+     * @param start
+     *            开始位置, 0是开始位置
+     * @param end
+     *            结束位置, -1返回所有
+     * @return
+     *&#x2F;
+    public List&lt;String&gt; lRange(String key, long start, long end) &#123;
+        return stringRedisTemplate.opsForList().range(key, start, end);
+    &#125;
+
+    &#x2F;**
+     * 存储在list头部
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lLeftPush(String key, String value) &#123;
+        return stringRedisTemplate.opsForList().leftPush(key, value);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lLeftPushAll(String key, String... value) &#123;
+        return stringRedisTemplate.opsForList().leftPushAll(key, value);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lLeftPushAll(String key, Collection&lt;String&gt; value) &#123;
+        return stringRedisTemplate.opsForList().leftPushAll(key, value);
+    &#125;
+
+    &#x2F;**
+     * 当list存在的时候才加入
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lLeftPushIfPresent(String key, String value) &#123;
+        return stringRedisTemplate.opsForList().leftPushIfPresent(key, value);
+    &#125;
+
+    &#x2F;**
+     * 如果pivot存在,再pivot前面添加
+     *
+     * @param key
+     * @param pivot
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lLeftPush(String key, String pivot, String value) &#123;
+        return stringRedisTemplate.opsForList().leftPush(key, pivot, value);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lRightPush(String key, String value) &#123;
+        return stringRedisTemplate.opsForList().rightPush(key, value);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lRightPushAll(String key, String... value) &#123;
+        return stringRedisTemplate.opsForList().rightPushAll(key, value);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lRightPushAll(String key, Collection&lt;String&gt; value) &#123;
+        return stringRedisTemplate.opsForList().rightPushAll(key, value);
+    &#125;
+
+    &#x2F;**
+     * 为已存在的列表添加值
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lRightPushIfPresent(String key, String value) &#123;
+        return stringRedisTemplate.opsForList().rightPushIfPresent(key, value);
+    &#125;
+
+    &#x2F;**
+     * 在pivot元素的右边添加值
+     *
+     * @param key
+     * @param pivot
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lRightPush(String key, String pivot, String value) &#123;
+        return stringRedisTemplate.opsForList().rightPush(key, pivot, value);
+    &#125;
+
+    &#x2F;**
+     * 通过索引设置列表元素的值
+     *
+     * @param key
+     * @param index
+     *            位置
+     * @param value
+     *&#x2F;
+    public void lSet(String key, long index, String value) &#123;
+        stringRedisTemplate.opsForList().set(key, index, value);
+    &#125;
+
+    &#x2F;**
+     * 移出并获取列表的第一个元素
+     *
+     * @param key
+     * @return 删除的元素
+     *&#x2F;
+    public String lLeftPop(String key) &#123;
+        return stringRedisTemplate.opsForList().leftPop(key);
+    &#125;
+
+    &#x2F;**
+     * 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+     *
+     * @param key
+     * @param timeout
+     *            等待时间
+     * @param unit
+     *            时间单位
+     * @return
+     *&#x2F;
+    public String lBLeftPop(String key, long timeout, TimeUnit unit) &#123;
+        return stringRedisTemplate.opsForList().leftPop(key, timeout, unit);
+    &#125;
+
+    &#x2F;**
+     * 移除并获取列表最后一个元素
+     *
+     * @param key
+     * @return 删除的元素
+     *&#x2F;
+    public String lRightPop(String key) &#123;
+        return stringRedisTemplate.opsForList().rightPop(key);
+    &#125;
+
+    &#x2F;**
+     * 移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+     *
+     * @param key
+     * @param timeout
+     *            等待时间
+     * @param unit
+     *            时间单位
+     * @return
+     *&#x2F;
+    public String lBRightPop(String key, long timeout, TimeUnit unit) &#123;
+        return stringRedisTemplate.opsForList().rightPop(key, timeout, unit);
+    &#125;
+
+    &#x2F;**
+     * 移除列表的最后一个元素，并将该元素添加到另一个列表并返回
+     *
+     * @param sourceKey
+     * @param destinationKey
+     * @return
+     *&#x2F;
+    public String lRightPopAndLeftPush(String sourceKey, String destinationKey) &#123;
+        return stringRedisTemplate.opsForList().rightPopAndLeftPush(sourceKey,
+                destinationKey);
+    &#125;
+
+    &#x2F;**
+     * 从列表中弹出一个值，将弹出的元素插入到另外一个列表中并返回它； 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+     *
+     * @param sourceKey
+     * @param destinationKey
+     * @param timeout
+     * @param unit
+     * @return
+     *&#x2F;
+    public String lBRightPopAndLeftPush(String sourceKey, String destinationKey,
+                                        long timeout, TimeUnit unit) &#123;
+        return stringRedisTemplate.opsForList().rightPopAndLeftPush(sourceKey,
+                destinationKey, timeout, unit);
+    &#125;
+    
+    &#x2F;**
+     * 删除集合中值等于value得元素
+     *
+     * @param key
+     * @param index
+     *            index&#x3D;0, 删除所有值等于value的元素; index&gt;0, 从头部开始删除第一个值等于value的元素;
+     *            index&lt;0, 从尾部开始删除第一个值等于value的元素;
+     * @param value
+     * @return
+     *&#x2F;
+    public Long lRemove(String key, long index, String value) &#123;
+        return stringRedisTemplate.opsForList().remove(key, index, value);
+    &#125;
+
+    &#x2F;**
+     * 裁剪list
+     *
+     * @param key
+     * @param start
+     * @param end
+     *&#x2F;
+    public void lTrim(String key, long start, long end) &#123;
+        stringRedisTemplate.opsForList().trim(key, start, end);
+    &#125;
+
+    &#x2F;**
+     * 获取列表长度
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long lLen(String key) &#123;
+        return stringRedisTemplate.opsForList().size(key);
+    &#125;
+
+
+    &#x2F;** --------------------set相关操作-------------------------- *&#x2F;
+
+    &#x2F;**
+     * set添加元素
+     *
+     * @param key
+     * @param values
+     * @return
+     *&#x2F;
+    public Long sAdd(String key, String... values) &#123;
+        return stringRedisTemplate.opsForSet().add(key, values);
+    &#125;
+
+    &#x2F;**
+     * set移除元素
+     *
+     * @param key
+     * @param values
+     * @return
+     *&#x2F;
+    public Long sRemove(String key, Object... values) &#123;
+        return stringRedisTemplate.opsForSet().remove(key, values);
+    &#125;
+
+    &#x2F;**
+     * 移除并返回集合的一个随机元素
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public String sPop(String key) &#123;
+        return stringRedisTemplate.opsForSet().pop(key);
+    &#125;
+
+    &#x2F;**
+     * 将元素value从一个集合移到另一个集合
+     *
+     * @param key
+     * @param value
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Boolean sMove(String key, String value, String destKey) &#123;
+        return stringRedisTemplate.opsForSet().move(key, value, destKey);
+    &#125;
+
+    &#x2F;**
+     * 获取集合的大小
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long sSize(String key) &#123;
+        return stringRedisTemplate.opsForSet().size(key);
+    &#125;
+
+    &#x2F;**
+     * 判断集合是否包含value
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Boolean sIsMember(String key, Object value) &#123;
+        return stringRedisTemplate.opsForSet().isMember(key, value);
+    &#125;
+
+    &#x2F;**
+     * 获取两个集合的交集
+     *
+     * @param key
+     * @param otherKey
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sIntersect(String key, String otherKey) &#123;
+        return stringRedisTemplate.opsForSet().intersect(key, otherKey);
+    &#125;
+
+    &#x2F;**
+     * 获取key集合与多个集合的交集
+     *
+     * @param key
+     * @param otherKeys
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sIntersect(String key, Collection&lt;String&gt; otherKeys) &#123;
+        return stringRedisTemplate.opsForSet().intersect(key, otherKeys);
+    &#125;
+
+    &#x2F;**
+     * key集合与otherKey集合的交集存储到destKey集合中
+     *
+     * @param key
+     * @param otherKey
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long sIntersectAndStore(String key, String otherKey, String destKey) &#123;
+        return stringRedisTemplate.opsForSet().intersectAndStore(key, otherKey,
+                destKey);
+    &#125;
+
+    &#x2F;**
+     * key集合与多个集合的交集存储到destKey集合中
+     *
+     * @param key
+     * @param otherKeys
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long sIntersectAndStore(String key, Collection&lt;String&gt; otherKeys,
+                                   String destKey) &#123;
+        return stringRedisTemplate.opsForSet().intersectAndStore(key, otherKeys,
+                destKey);
+    &#125;
+
+    &#x2F;**
+     * 获取两个集合的并集
+     *
+     * @param key
+     * @param otherKeys
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sUnion(String key, String otherKeys) &#123;
+        return stringRedisTemplate.opsForSet().union(key, otherKeys);
+    &#125;
+
+    &#x2F;**
+     * 获取key集合与多个集合的并集
+     *
+     * @param key
+     * @param otherKeys
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sUnion(String key, Collection&lt;String&gt; otherKeys) &#123;
+        return stringRedisTemplate.opsForSet().union(key, otherKeys);
+    &#125;
+
+    &#x2F;**
+     * key集合与otherKey集合的并集存储到destKey中
+     *
+     * @param key
+     * @param otherKey
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long sUnionAndStore(String key, String otherKey, String destKey) &#123;
+        return stringRedisTemplate.opsForSet().unionAndStore(key, otherKey, destKey);
+    &#125;
+
+    &#x2F;**
+     * key集合与多个集合的并集存储到destKey中
+     *
+     * @param key
+     * @param otherKeys
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long sUnionAndStore(String key, Collection&lt;String&gt; otherKeys,
+                               String destKey) &#123;
+        return stringRedisTemplate.opsForSet().unionAndStore(key, otherKeys, destKey);
+    &#125;
+
+    &#x2F;**
+     * 获取两个集合的差集
+     *
+     * @param key
+     * @param otherKey
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sDifference(String key, String otherKey) &#123;
+        return stringRedisTemplate.opsForSet().difference(key, otherKey);
+    &#125;
+
+    &#x2F;**
+     * 获取key集合与多个集合的差集
+     *
+     * @param key
+     * @param otherKeys
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sDifference(String key, Collection&lt;String&gt; otherKeys) &#123;
+        return stringRedisTemplate.opsForSet().difference(key, otherKeys);
+    &#125;
+
+    &#x2F;**
+     * key集合与otherKey集合的差集存储到destKey中
+     *
+     * @param key
+     * @param otherKey
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long sDifference(String key, String otherKey, String destKey) &#123;
+        return stringRedisTemplate.opsForSet().differenceAndStore(key, otherKey,
+                destKey);
+    &#125;
+
+    &#x2F;**
+     * key集合与多个集合的差集存储到destKey中
+     *
+     * @param key
+     * @param otherKeys
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long sDifference(String key, Collection&lt;String&gt; otherKeys,
+                            String destKey) &#123;
+        return stringRedisTemplate.opsForSet().differenceAndStore(key, otherKeys,
+                destKey);
+    &#125;
+
+    &#x2F;**
+     * 获取集合所有元素
+     *
+     * @param key
+     * @param
+     * @param
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; setMembers(String key) &#123;
+        return stringRedisTemplate.opsForSet().members(key);
+    &#125;
+
+    &#x2F;**
+     * 随机获取集合中的一个元素
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public String sRandomMember(String key) &#123;
+        return stringRedisTemplate.opsForSet().randomMember(key);
+    &#125;
+
+    &#x2F;**
+     * 随机获取集合中count个元素
+     *
+     * @param key
+     * @param count
+     * @return
+     *&#x2F;
+    public List&lt;String&gt; sRandomMembers(String key, long count) &#123;
+        return stringRedisTemplate.opsForSet().randomMembers(key, count);
+    &#125;
+
+    &#x2F;**
+     * 随机获取集合中count个元素并且去除重复的
+     *
+     * @param key
+     * @param count
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; sDistinctRandomMembers(String key, long count) &#123;
+        return stringRedisTemplate.opsForSet().distinctRandomMembers(key, count);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param options
+     * @return
+     *&#x2F;
+    public Cursor&lt;String&gt; sScan(String key, ScanOptions options) &#123;
+        return stringRedisTemplate.opsForSet().scan(key, options);
+    &#125;
+
+    &#x2F;**------------------zSet相关操作--------------------------------*&#x2F;
+
+    &#x2F;**
+     * 添加元素,有序集合是按照元素的score值由小到大排列
+     *
+     * @param key
+     * @param value
+     * @param score
+     * @return
+     *&#x2F;
+    public Boolean zAdd(String key, String value, double score) &#123;
+        return stringRedisTemplate.opsForZSet().add(key, value, score);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param values
+     * @return
+     *&#x2F;
+    public Long zAdd(String key, Set&lt;TypedTuple&lt;String&gt;&gt; values) &#123;
+        return stringRedisTemplate.opsForZSet().add(key, values);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param values
+     * @return
+     *&#x2F;
+    public Long zRemove(String key, Object... values) &#123;
+        return stringRedisTemplate.opsForZSet().remove(key, values);
+    &#125;
+
+    public Long zRemove(String key, Collection&lt;String&gt; values) &#123;
+        if(values!&#x3D;null&amp;&amp;!values.isEmpty())&#123;
+            Object[] objs &#x3D; values.toArray(new Object[values.size()]);
+            return stringRedisTemplate.opsForZSet().remove(key, objs);
+        &#125;
+       return 0L;
+    &#125;
+
+    &#x2F;**
+     * 增加元素的score值，并返回增加后的值
+     *
+     * @param key
+     * @param value
+     * @param delta
+     * @return
+     *&#x2F;
+    public Double zIncrementScore(String key, String value, double delta) &#123;
+        return stringRedisTemplate.opsForZSet().incrementScore(key, value, delta);
+    &#125;
+
+    &#x2F;**
+     * 返回元素在集合的排名,有序集合是按照元素的score值由小到大排列
+     *
+     * @param key
+     * @param value
+     * @return 0表示第一位
+     *&#x2F;
+    public Long zRank(String key, Object value) &#123;
+        return stringRedisTemplate.opsForZSet().rank(key, value);
+    &#125;
+
+    &#x2F;**
+     * 返回元素在集合的排名,按元素的score值由大到小排列
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Long zReverseRank(String key, Object value) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRank(key, value);
+    &#125;
+
+    &#x2F;**
+     * 获取集合的元素, 从小到大排序
+     *
+     * @param key
+     * @param start
+     *            开始位置
+     * @param end
+     *            结束位置, -1查询所有
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; zRange(String key, long start, long end) &#123;
+        return stringRedisTemplate.opsForZSet().range(key, start, end);
+    &#125;
+    
+    &#x2F;**
+     * 获取zset集合的所有元素, 从小到大排序
+     *
+     *&#x2F;
+    public Set&lt;String&gt; zRangeAll(String key) &#123;
+        return zRange(key,0,-1);
+    &#125;
+
+    &#x2F;**
+     * 获取集合元素, 并且把score值也获取
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public Set&lt;TypedTuple&lt;String&gt;&gt; zRangeWithScores(String key, long start,
+                                                    long end) &#123;
+        return stringRedisTemplate.opsForZSet().rangeWithScores(key, start, end);
+    &#125;
+
+    &#x2F;**
+     * 根据Score值查询集合元素
+     *
+     * @param key
+     * @param min
+     *            最小值
+     * @param max
+     *            最大值
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; zRangeByScore(String key, double min, double max) &#123;
+        return stringRedisTemplate.opsForZSet().rangeByScore(key, min, max);
+    &#125;
+
+
+    &#x2F;**
+     * 根据Score值查询集合元素, 从小到大排序
+     *
+     * @param key
+     * @param min
+     *            最小值
+     * @param max
+     *            最大值
+     * @return
+     *&#x2F;
+    public Set&lt;TypedTuple&lt;String&gt;&gt; zRangeByScoreWithScores(String key,
+                                                           double min, double max) &#123;
+        return stringRedisTemplate.opsForZSet().rangeByScoreWithScores(key, min, max);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public Set&lt;TypedTuple&lt;String&gt;&gt; zRangeByScoreWithScores(String key,
+                                                           double min, double max, long start, long end) &#123;
+        return stringRedisTemplate.opsForZSet().rangeByScoreWithScores(key, min, max,
+                start, end);
+    &#125;
+
+    &#x2F;**
+     * 获取集合的元素, 从大到小排序
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; zReverseRange(String key, long start, long end) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRange(key, start, end);
+
+    &#125;
+
+    public Set&lt;String&gt; zReverseRangeByScore(String key, long min, long max) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRangeByScore(key, min, max);
+
+    &#125;
+
+    &#x2F;**
+     * 获取集合的元素, 从大到小排序, 并返回score值
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public Set&lt;TypedTuple&lt;String&gt;&gt; zReverseRangeWithScores(String key,
+                                                           long start, long end) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRangeWithScores(key, start,
+                end);
+    &#125;
+
+    &#x2F;**
+     * 根据Score值查询集合元素, 从大到小排序
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; zReverseRangeByScore(String key, double min,
+                                            double max) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRangeByScore(key, min, max);
+    &#125;
+
+    &#x2F;**
+     * 根据Score值查询集合元素, 从大到小排序
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @return
+     *&#x2F;
+    public Set&lt;TypedTuple&lt;String&gt;&gt; zReverseRangeByScoreWithScores(
+            String key, double min, double max) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRangeByScoreWithScores(key,
+                min, max);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; zReverseRangeByScore(String key, double min,
+                                            double max, long start, long end) &#123;
+        return stringRedisTemplate.opsForZSet().reverseRangeByScore(key, min, max,
+                start, end);
+    &#125;
+
+    &#x2F;**
+     * 根据score值获取集合元素数量
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @return
+     *&#x2F;
+    public Long zCount(String key, double min, double max) &#123;
+        return stringRedisTemplate.opsForZSet().count(key, min, max);
+    &#125;
+
+    &#x2F;**
+     * 获取集合大小
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long zSize(String key) &#123;
+        return stringRedisTemplate.opsForZSet().size(key);
+    &#125;
+
+    &#x2F;**
+     * 获取集合大小
+     *
+     * @param key
+     * @return
+     *&#x2F;
+    public Long zZCard(String key) &#123;
+        return stringRedisTemplate.opsForZSet().zCard(key);
+    &#125;
+
+    &#x2F;**
+     * 获取集合中value元素的score值
+     *
+     * @param key
+     * @param value
+     * @return
+     *&#x2F;
+    public Double zScore(String key, Object value) &#123;
+        return stringRedisTemplate.opsForZSet().score(key, value);
+    &#125;
+
+    &#x2F;**
+     * 移除指定索引位置的成员
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     *&#x2F;
+    public Long zRemoveRange(String key, long start, long end) &#123;
+        return stringRedisTemplate.opsForZSet().removeRange(key, start, end);
+    &#125;
+
+    &#x2F;**
+     * 根据指定的score值的范围来移除成员
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @return
+     *&#x2F;
+    public Long zRemoveRangeByScore(String key, double min, double max) &#123;
+        return stringRedisTemplate.opsForZSet().removeRangeByScore(key, min, max);
+    &#125;
+
+    &#x2F;**
+     * 获取key和otherKey的并集并存储在destKey中
+     *
+     * @param key
+     * @param otherKey
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long zUnionAndStore(String key, String otherKey, String destKey) &#123;
+        return stringRedisTemplate.opsForZSet().unionAndStore(key, otherKey, destKey);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param otherKeys
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long zUnionAndStore(String key, Collection&lt;String&gt; otherKeys,
+                               String destKey) &#123;
+        return stringRedisTemplate.opsForZSet()
+                .unionAndStore(key, otherKeys, destKey);
+    &#125;
+
+    &#x2F;**
+     * 交集
+     *
+     * @param key
+     * @param otherKey
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long zIntersectAndStore(String key, String otherKey,
+                                   String destKey) &#123;
+        return stringRedisTemplate.opsForZSet().intersectAndStore(key, otherKey,
+                destKey);
+    &#125;
+
+    &#x2F;**
+     * 交集
+     *
+     * @param key
+     * @param otherKeys
+     * @param destKey
+     * @return
+     *&#x2F;
+    public Long zIntersectAndStore(String key, Collection&lt;String&gt; otherKeys,
+                                   String destKey) &#123;
+        return stringRedisTemplate.opsForZSet().intersectAndStore(key, otherKeys,
+                destKey);
+    &#125;
+
+    &#x2F;**
+     *
+     * @param key
+     * @param options
+     * @return
+     *&#x2F;
+    public Cursor&lt;TypedTuple&lt;String&gt;&gt; zScan(String key, ScanOptions options) &#123;
+        return stringRedisTemplate.opsForZSet().scan(key, options);
+    &#125;
+
+    &#x2F;**
+     * 扫描主键，建议使用
+     * @param patten
+     * @return
+     *&#x2F;
+    public Set&lt;String&gt; scan(String patten)&#123;
+        Set&lt;String&gt; keys &#x3D; stringRedisTemplate.execute((RedisCallback&lt;Set&lt;String&gt;&gt;) connection -&gt; &#123;
+            Set&lt;String&gt; result &#x3D; new HashSet&lt;&gt;();
+            try (Cursor&lt;byte[]&gt; cursor &#x3D; connection.scan(new ScanOptions.ScanOptionsBuilder()
+                    .match(patten).count(10000).build())) &#123;
+                while (cursor.hasNext()) &#123;
+                    result.add(new String(cursor.next()));
+                &#125;
+            &#125; catch (IOException e) &#123;
+                e.printStackTrace();
+            &#125;
+            return result;
+        &#125;);
+        return  keys;
+    &#125;
+    
+    &#x2F;**
+     * 管道技术，提高性能
+     * @param type
+     * @param values
+     * @return
+     *&#x2F;
+    public List&lt;Object&gt; lRightPushPipeline(String type,Collection&lt;String&gt; values)&#123;
+        List&lt;Object&gt; results &#x3D; stringRedisTemplate.executePipelined(new RedisCallback&lt;Object&gt;() &#123;
+                    public Object doInRedis(RedisConnection connection) throws DataAccessException &#123;
+                        StringRedisConnection stringRedisConn &#x3D; (StringRedisConnection)connection;
+                        &#x2F;&#x2F;集合转换数组
+                        String[] strings &#x3D; values.toArray(new String[values.size()]);
+                        &#x2F;&#x2F;直接批量发送
+                        stringRedisConn.rPush(type, strings);
+                        return null;
+                    &#125;
+                &#125;);
+        return results;
+    &#125;
+
+    public List&lt;Object&gt; refreshWithPipeline(String future_key,String topic_key,Collection&lt;String&gt; values)&#123;
+
+        List&lt;Object&gt; objects &#x3D; stringRedisTemplate.executePipelined(new RedisCallback&lt;Object&gt;() &#123;
+            @Nullable
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException &#123;
+                StringRedisConnection stringRedisConnection &#x3D; (StringRedisConnection)redisConnection;
+                String[] strings &#x3D; values.toArray(new String[values.size()]);
+                stringRedisConnection.rPush(topic_key,strings);
+                stringRedisConnection.zRem(future_key,strings);
+                return null;
+            &#125;
+        &#125;);
+        return objects;
+    &#125;
+    &#x2F;**
+     * 加锁
+     *
+     * @param name
+     * @param expire
+     * @return
+     *&#x2F;
+    public String tryLock(String name, long expire) &#123;
+        name &#x3D; name + &quot;_lock&quot;;
+        String token &#x3D; UUID.randomUUID().toString();
+        RedisConnectionFactory factory &#x3D; stringRedisTemplate.getConnectionFactory();
+        RedisConnection conn &#x3D; factory.getConnection();
+        try &#123;
+
+            &#x2F;&#x2F;参考redis命令：
+            &#x2F;&#x2F;set key value [EX seconds] [PX milliseconds] [NX|XX]
+            Boolean result &#x3D; conn.set(
+                    name.getBytes(),
+                    token.getBytes(),
+                    Expiration.from(expire, TimeUnit.MILLISECONDS),
+                    RedisStringCommands.SetOption.SET_IF_ABSENT &#x2F;&#x2F;NX
+            );
+            if (result !&#x3D; null &amp;&amp; result)
+                return token;
+        &#125; finally &#123;
+            RedisConnectionUtils.releaseConnection(conn, factory,false);
+        &#125;
+        return null;
+    &#125;
+
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
                 
             </div>
